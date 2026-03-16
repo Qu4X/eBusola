@@ -1,6 +1,8 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
+    "siteurl": "https://kursybusola.pl",
+    "sitename": "Kursy Busola",
+    "app_id": "com.ebusola.moodle",
+    "appname": "eBusola",
     "versioncode": 52000,
     "versionname": "5.2.0",
     "cache_update_frequency_usually": 420000,
@@ -68,26 +70,20 @@
         "zh-tw": "正體中文"
     },
     "wsservice": "moodle_mobile_app",
-    "demo_sites": {
-        "student": {
-            "url": "https://school.moodledemo.net",
-            "username": "student",
-            "password": "moodle25"
-        },
-        "teacher": {
-            "url": "https://school.moodledemo.net",
-            "username": "teacher",
-            "password": "moodle25"
-        }
-    },
     "defaultZoomLevel": "none",
     "zoomlevels": {
         "none": 100,
         "medium": 110,
         "high": 120
     },
-    "customurlscheme": "moodlemobile",
-    "sites": [],
+    "customurlscheme": "ebusola",
+    "sites": [
+        {
+            "url": "https://kursybusola.pl",
+            "name": "Kursy Busola",
+            "imageurl": ""
+        }
+    ],
     "multisitesdisplay": "",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
@@ -100,7 +96,7 @@
     "showTopLogo": "hidden",
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.moodle.moodlemobile",
+        "android": "com.ebusola.moodle",
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,
@@ -137,3 +133,4 @@
     "clearIABSessionWhenAutoLogin": "android",
     "collapsibleItemsExpanded": false
 }
+
