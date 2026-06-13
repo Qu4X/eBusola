@@ -73,6 +73,7 @@ export class CoreWindow {
                     const { CoreNavigator } = await import('@services/navigator');
                     CoreNavigator.navigate(path);
                 }
+
                 return;
             }
 
