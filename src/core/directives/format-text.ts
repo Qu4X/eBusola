@@ -568,6 +568,8 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             });
         }
 
+        this.activateAllowedScripts();
+
         this.element.classList.remove('core-disable-media-adapt');
         await this.finishRender(!contentsFormatted.options.filter);
     }
@@ -620,6 +622,8 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
 
         div.innerHTML = formatted;
 
+        this.disableScripts(div);
+
         const elementControllers = await this.treatHTMLElements(div);
 
         return {
@@ -628,6 +632,60 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             options,
             elementControllers,
         };
+    }
+
+    /**
+     * Disable scripts in the content by moving their src to data-original-src to prevent the browser from loading them.
+     * If the script is added to the DOM using innerHTML it isn't loaded anyway, but it's better to be careful.
+     * The scripts remain in the DOM at their original position so they can be activated later if allowed.
+     *
+     * @param div Container where to search the scripts.
+     */
+    protected disableScripts(div: HTMLElement): void {
+        const scripts = Array.from(div.querySelectorAll<HTMLScriptElement>('script[src]'));
+
+        scripts.forEach((script) => {
+            script.dataset.originalSrc = script.getAttribute('src') ?? '';
+            script.removeAttribute('src');
+        });
+    }
+
+    /**
+     * Activate scripts in the rendered content that are allowed by the site, and remove those that aren't.
+     * For each allowed script, a new script element is created via JS (so the browser executes it) and it
+     * replaces the placeholder element, preserving all data attributes and the original DOM position.
+     */
+    protected async activateAllowedScripts(): Promise<void> {
+        const scripts = Array.from(this.element.querySelectorAll<HTMLScriptElement>('script[data-original-src]'));
+        if (!scripts.length) {
+            return;
+        }
+
+        const site = await this.getSite();
+        const allowedScriptUrls = site?.getContentAllowedScriptUrls() ?? [];
+
+        scripts.forEach((script) => {
+            const url = script.dataset.originalSrc ?? '';
+
+            // For now, only absolute URLs are supported to keep it simple. If a script uses a relative URL it won't be loaded.
+            const isAllowed = allowedScriptUrls.some((allowedUrl) => CoreUrl.isSubpathOf(allowedUrl, url));
+            if (isAllowed) {
+                // Create a new script element via JS so the browser executes it, keeping the original DOM position.
+                const newScript = document.createElement('script');
+
+                // Copy all attributes except data-original-src, then set src.
+                Array.from(script.attributes).forEach((attr) => {
+                    if (attr.name !== 'data-original-src') {
+                        newScript.setAttribute(attr.name, attr.value);
+                    }
+                });
+                newScript.src = CoreUrl.resolveProtocolRelativeUrl(url, site?.getURL());
+
+                script.replaceWith(newScript);
+            } else {
+                script.remove();
+            }
+        });
     }
 
     /**
@@ -1051,7 +1109,14 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
 
             return;
         } else if (site && (iframe.dataset[DATASET_APP_SITE_REFERER] === 'true' || CoreUrl.urlNeedsReferer(src))) {
+            iframe.dataset[DATASET_APP_SITE_REFERER] = 'false'; // Avoid doing this multiple times if treated more than once.
             src = site.fixRefererForUrl(src);
+
+            if (src !== iframe.src) {
+                // Empty iframe src before any async code to prevent loading the original url due to a race condition.
+                // In iOS 18-, changing the src of the iframe while it's being loaded doesn't seem to properly load the new page.
+                iframe.src = '';
+            }
         }
 
         await CoreIframe.fixIframeCookies(src);

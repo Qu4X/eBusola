@@ -61,6 +61,7 @@ Feature: Restrict availability of the choice module to a deadline
     And I should find "30 December 2037, 12:00 AM" in the app
     And the UI should match the snapshot
 
+  @lms_from5.2
   Scenario: Enable the choice activity with a start deadline in the past
     Given I set the following fields to these values:
       | timeopen[enabled] | 1 |
@@ -83,6 +84,7 @@ Feature: Restrict availability of the choice module to a deadline
     And I press "OK" in the app
     Then I should find "Your selection" in the app
 
+  @lms_from5.2
   Scenario: Enable the choice activity with a end deadline in the future
     Given I set the following fields to these values:
       | timeclose[enabled] | 1 |

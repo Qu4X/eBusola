@@ -110,7 +110,7 @@ export class CoreModalsService {
      * Opens a Modal.
      *
      * @param options Modal Options.
-     * @returns The modal data when the modal closes.
+     * @returns The modal data when the modal closes. Undefined if the modal is dismissed without data.
      */
     async openModal<T = unknown>(
         options: OpenModalOptions,
@@ -152,6 +152,15 @@ export class CoreModalsService {
             await modal.present();
         }
 
+        // Ensure the modal is accessible to screen readers by focusing the element with aria-modal="true".
+        // Since the surrounding app content is hidden (aria-hidden="true"), the modal must have focus
+        // to be accessible. We focus this wrapper element since the first input field may not exist yet.
+        const ariaModal = modal.shadowRoot?.querySelector<HTMLElement>('[part=content]');
+        if (ariaModal) {
+            ariaModal.tabIndex = -1;
+            ariaModal.focus();
+        }
+
         if (!alreadyDisplayed) {
             fixOverlayAriaHidden(modal);
         }
@@ -161,16 +170,14 @@ export class CoreModalsService {
         navSubscription?.unsubscribe();
         delete this.displayedModals[modalId];
 
-        if (result?.data) {
-            return result?.data;
-        }
+        return result?.data;
     }
 
     /**
      * Opens a side Modal.
      *
      * @param options Modal Options.
-     * @returns The modal data when the modal closes.
+     * @returns The modal data when the modal closes. Undefined if the modal is dismissed without data.
      */
     async openSideModal<T = unknown>(
         options: OpenModalOptions,

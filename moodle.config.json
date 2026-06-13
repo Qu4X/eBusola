@@ -1,10 +1,10 @@
 {
     "siteurl": "https://kursybusola.pl",
     "sitename": "Kursy Busola",
-    "app_id": "com.ebusola.moodle",
+    "app_id": "pl.kursybusola.app",
     "appname": "eBusola",
-    "versioncode": 52000,
-    "versionname": "5.2.0",
+    "versioncode": 53000,
+    "versionname": "5.3.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -70,6 +70,18 @@
         "zh-tw": "正體中文"
     },
     "wsservice": "moodle_mobile_app",
+    "demo_sites": {
+        "student": {
+            "url": "https://school.moodledemo.net",
+            "username": "student",
+            "password": "moodle26"
+        },
+        "teacher": {
+            "url": "https://school.moodledemo.net",
+            "username": "teacher",
+            "password": "moodle26"
+        }
+    },
     "defaultZoomLevel": "none",
     "zoomlevels": {
         "none": 100,

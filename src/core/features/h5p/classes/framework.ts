@@ -189,12 +189,14 @@ export class CoreH5PFramework {
 
         siteId ??= CoreSites.getCurrentSiteId();
 
+        const dependencySql = `SELECT h5pid FROM ${CONTENTS_LIBRARIES_TABLE_NAME} WHERE libraryid IN ` +
+            `(${libraryIds.map(() => '?').join(', ')})`;
+
         await this.contentTables[siteId].updateWhere(
             { filtered: null },
             {
-                sql: `mainlibraryid IN (${libraryIds.map(() => '?').join(', ')})`,
-                sqlParams: libraryIds,
-                js: record => libraryIds.includes(record.mainlibraryid),
+                sql: `mainlibraryid IN (${libraryIds.map(() => '?').join(', ')}) OR id IN (${dependencySql})`,
+                sqlParams: [...libraryIds, ...libraryIds],
             },
         );
     }
@@ -218,7 +220,6 @@ export class CoreH5PFramework {
             await this.librariesCachedAssetsTables[siteId].deleteWhere({
                 sql: hashes.length === 1 ? 'hash = ?' : `hash IN (${hashes.map(() => '?').join(', ')})`,
                 sqlParams: hashes,
-                js: (record) => hashes.includes(record.hash),
             });
         }
 
@@ -656,7 +657,9 @@ export class CoreH5PFramework {
                         'l1.minorversion < l2.minorversion)) ' +
                     'WHERE l1.addto IS NOT NULL AND l2.machinename IS NULL';
 
-        return await db.getRecordsSql<CoreH5PLibraryAddonData>(query);
+        const addons = await db.getRecordsSql<LibraryAddonDBData>(query);
+
+        return addons.map((addon) => this.parseLibAddonData(addon));
     }
 
     /**

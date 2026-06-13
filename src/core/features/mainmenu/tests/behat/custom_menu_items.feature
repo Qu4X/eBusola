@@ -1,4 +1,4 @@
-@app_parallel_run_core @core_mainmenu @app @javascript @custom_menu_items
+@app_parallel_run_core @core_mainmenu @app @javascript @custom_menu_items @lms_from5.2
 Feature: Custom user menu items display
   In order to access custom links in the user menu
   As a user
@@ -10,10 +10,9 @@ Feature: Custom user menu items display
       | username | firstname | lastname | email              |
       | student  | Student   | User     | student@moodle.com |
 
-  @lms_from5.2
   Scenario: Display custom user menu items with different types
     Given I log in as "admin"
-    When I navigate to "General > Mobile app > Mobile features" in site administration
+    When I navigate to "General > Mobile app > Premium features" in site administration
     And I set the field "Custom user menu items" to multiline:
     """
     App item only English|https://www.moodle.org|inappbrowser|en_only
@@ -50,7 +49,7 @@ Feature: Custom user menu items display
 
   Scenario: Display custom menu items with different types
     Given I log in as "admin"
-    When I navigate to "General > Mobile app > Mobile features" in site administration
+    When I navigate to "General > Mobile app > Premium features" in site administration
     And I set the field "Custom menu items" to multiline:
     """
     App item only English|https://www.moodle.org|inappbrowser|en_only

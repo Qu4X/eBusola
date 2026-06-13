@@ -12,13 +12,51 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { mock } from '@/testing/utils';
+import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreH5PFramework } from '../classes/framework';
-import { CoreH5PLibraryCachedAssetsDBRecord } from '../services/database/h5p';
+import {
+    CoreH5PContentDBRecord,
+    CoreH5PLibraryCachedAssetsDBRecord,
+} from '../services/database/h5p';
+import { CoreH5PContentDependencyData } from '../classes/core';
+
+/**
+ * Test-only extension exposing a controlled way to override cached assets table access.
+ * librariesCachedAssetsTables is a protected property so it cannot be overridden in the mock function.
+ */
+class TestableCoreH5PFramework extends CoreH5PFramework {
+
+    /**
+     * Replace the cached assets table for a specific site.
+     *
+     * @param siteId Site ID.
+     * @param table Cached assets table implementation for tests.
+     */
+    setCachedAssetsTable(
+        siteId: string,
+        table: Pick<CoreDatabaseTable<CoreH5PLibraryCachedAssetsDBRecord>, 'getMany' | 'insert' | 'deleteWhere'>,
+    ): void {
+        (this.librariesCachedAssetsTables as Record<string, unknown>)[siteId] = table;
+    }
+
+    /**
+     * Replace the contents table for a specific site.
+     *
+     * @param siteId Site ID.
+     * @param table Contents table implementation for tests.
+     */
+    setContentTable(
+        siteId: string,
+        table: Pick<CoreDatabaseTable<CoreH5PContentDBRecord>, 'updateWhere'>,
+    ): void {
+        (this.contentTables as Record<string, unknown>)[siteId] = table;
+    }
+
+}
 
 describe('CoreH5PFramework', () => {
 
-    const LIBRARIES = {
+    const LIBRARIES: Record<string, CoreH5PContentDependencyData> = {
         'H5P.DragQuestion': {
             libraryId: 1,
             dependencyType: 'preloaded',
@@ -56,34 +94,141 @@ describe('CoreH5PFramework', () => {
 
     let cachedAssetsLastId = 0;
     const cachedAssetsRecords: Record<number, CoreH5PLibraryCachedAssetsDBRecord> = {};
+    const contentRecords: Record<number, CoreH5PContentDBRecord> = {};
+    const contentLibraryDependencies: Array<{ h5pid: number; libraryid: number }> = [];
 
-    let framework: CoreH5PFramework;
+    let framework: TestableCoreH5PFramework;
     beforeEach(() => {
-        framework = mock(new CoreH5PFramework(), {
-            librariesCachedAssetsTables: {
-                [SITE_ID]: {
-                    getMany: (conditions) =>
-                        Object.values(cachedAssetsRecords).filter((record) => record.libraryid === conditions.libraryid),
-                    insert: (record) => {
-                        cachedAssetsRecords[cachedAssetsLastId++] = record;
-                    },
-                    deleteWhere: (conditions) => {
-                        Object.entries(cachedAssetsRecords).forEach(([primaryKey, record]) => {
-                            if (!conditions.js(record)) {
-                                return;
-                            }
+        // Reset environment before each test.
+        cachedAssetsLastId = 0;
+        Object.keys(cachedAssetsRecords).forEach((key) => {
+            delete cachedAssetsRecords[Number(key)];
+        });
+        Object.keys(contentRecords).forEach((key) => {
+            delete contentRecords[Number(key)];
+        });
+        contentLibraryDependencies.length = 0;
 
-                            delete cachedAssetsRecords[primaryKey];
-                        });
-                    },
-                },
+        framework = new TestableCoreH5PFramework();
+
+        framework.setCachedAssetsTable(SITE_ID, {
+            getMany: async (conditions) =>
+                Object.values(cachedAssetsRecords).filter((record) => record.libraryid === conditions?.libraryid),
+            insert: async (record) => {
+                const id = cachedAssetsLastId++;
+                cachedAssetsRecords[id] = {
+                    id: record.id ?? id,
+                    ...record,
+                };
+
+                return id;
+            },
+            deleteWhere: async (conditions) => {
+                const sqlParams = conditions.sqlParams;
+                if (!sqlParams?.length) {
+                    return;
+                }
+
+                Object.entries(cachedAssetsRecords).forEach(([primaryKey, record]) => {
+                    if (sqlParams.includes(record.hash)) {
+                        delete cachedAssetsRecords[Number(primaryKey)];
+                    }
+                });
+            },
+        });
+
+        framework.setContentTable(SITE_ID, {
+            updateWhere: async (fields, conditions) => {
+                const sqlParams = conditions.sqlParams ?? [];
+                const hasDependencySubquery = conditions.sql.includes(' OR id IN (SELECT h5pid ');
+                const mainLibraryIds = hasDependencySubquery ? sqlParams.slice(0, sqlParams.length / 2) : sqlParams;
+                const dependencyLibraryIds = hasDependencySubquery ? sqlParams.slice(sqlParams.length / 2) : [];
+
+                const dependentContentIds = hasDependencySubquery
+                    ? contentLibraryDependencies
+                        .filter((dependency) => dependencyLibraryIds.includes(dependency.libraryid))
+                        .map((dependency) => dependency.h5pid)
+                    : [];
+
+                Object.values(contentRecords).forEach((record) => {
+                    const matchesMainLibrary = mainLibraryIds.includes(record.mainlibraryid);
+                    const matchesDependencyLibrary = dependentContentIds.includes(record.id);
+
+                    if (matchesMainLibrary || matchesDependencyLibrary) {
+                        Object.assign(record, fields);
+                    }
+                });
             },
         });
     });
 
+    it('clearFilteredParameters stops early when no library ids are provided', async () => {
+        contentRecords[100] = {
+            id: 100,
+            jsoncontent: '{}',
+            mainlibraryid: 2,
+            foldername: 'folder-name',
+            fileurl: 'https://example.com/file.h5p',
+            filtered: 'already-filtered',
+            timemodified: 1,
+            timecreated: 1,
+        };
+
+        await framework.clearFilteredParameters([], SITE_ID);
+
+        expect(contentRecords[100].filtered).toEqual('already-filtered');
+    });
+
+    it('clears filtered parameters for main and dependent libraries', async () => {
+        contentRecords[1] = {
+            id: 1,
+            jsoncontent: '{}',
+            mainlibraryid: 2,
+            foldername: 'main-library-content',
+            fileurl: 'https://example.com/main-library-content.h5p',
+            filtered: 'main-library-filtered',
+            timemodified: 1,
+            timecreated: 1,
+        };
+        contentRecords[2] = {
+            id: 2,
+            jsoncontent: '{}',
+            mainlibraryid: 99,
+            foldername: 'dependent-library-content',
+            fileurl: 'https://example.com/dependent-library-content.h5p',
+            filtered: 'dependent-library-filtered',
+            timemodified: 1,
+            timecreated: 1,
+        };
+        contentRecords[3] = {
+            id: 3,
+            jsoncontent: '{}',
+            mainlibraryid: 77,
+            foldername: 'unrelated-content',
+            fileurl: 'https://example.com/unrelated-content.h5p',
+            filtered: 'unrelated-filtered',
+            timemodified: 1,
+            timecreated: 1,
+        };
+
+        // Content 2 depends on library 7, so it should also have filtered params cleared.
+        contentLibraryDependencies.push(
+            { h5pid: 2, libraryid: 7 },
+            { h5pid: 3, libraryid: 45 },
+        );
+
+        const libraryIds = [2, 7];
+
+        await framework.clearFilteredParameters(libraryIds, SITE_ID);
+
+        expect(contentRecords[1].filtered).toBeNull();
+        expect(contentRecords[2].filtered).toBeNull();
+        expect(contentRecords[3].filtered).toEqual('unrelated-filtered');
+    });
+
     it('correctly saves and deletes cached assets in DB', async () => {
-        const saveCachedAssets = async (hash, folderName, librariesNames) => {
-            const dependencies = {};
+        const saveCachedAssets = async (hash: string, folderName: string, librariesNames: string[]) => {
+            const dependencies: Record<string, CoreH5PContentDependencyData> = {};
             librariesNames.forEach((libraryName) => {
                 dependencies[libraryName] = LIBRARIES[libraryName];
             });

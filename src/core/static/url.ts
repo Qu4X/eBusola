@@ -325,6 +325,24 @@ export class CoreUrl {
     }
 
     /**
+     * Given a URL, add a protocol to it if it starts with // (protocol-relative URL).
+     * The protocol is taken from the base URL if provided, otherwise defaults to https.
+     *
+     * @param url The URL to resolve.
+     * @param baseUrl Optional base URL to extract the protocol from.
+     * @returns URL with protocol.
+     */
+    static resolveProtocolRelativeUrl(url: string, baseUrl?: string): string {
+        if (!url.startsWith('//')) {
+            return url;
+        }
+
+        const protocol = (baseUrl && CoreUrl.parse(baseUrl)?.protocol) || 'https';
+
+        return `${protocol}:${url}`;
+    }
+
+    /**
      * Convert a URL to an absolute URL (if it isn't already).
      *
      * @param parentUrl The parent URL.
@@ -1115,6 +1133,31 @@ export class CoreUrl {
      */
     static isRefererScriptUrl(url: string, siteUrl: string): boolean {
         return url.startsWith(CorePath.concatenatePaths(siteUrl, 'admin/tool/mobile/referer.php'));
+    }
+
+    /**
+     * Checks if 'candidateUrl' is a subpath of 'rootUrl'. It ignores protocols and 'www'.
+     *
+     * @param rootUrl The parent URL to compare against.
+     * @param candidateUrl The URL that might be a subpath.
+     * @returns True if candidateUrl is within rootUrl.
+     */
+    static isSubpathOf(rootUrl: string, candidateUrl?: string): boolean {
+        if (!candidateUrl) {
+            return false;
+        }
+
+        const normalize = (url: string) => {
+            const stripped = CoreUrl.removeUrlParts(url, [
+                CoreUrlPartNames.Protocol,
+                CoreUrlPartNames.WWWInDomain,
+            ]);
+
+            // Ensure trailing slash so we don't match "site.com/foo" with "site.com/foobar"
+            return CoreText.addEndingSlash(stripped);
+        };
+
+        return normalize(candidateUrl).startsWith(normalize(rootUrl));
     }
 
 }
