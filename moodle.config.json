@@ -108,7 +108,7 @@
     "showTopLogo": "hidden",
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.ebusola.moodle",
+        "android": "pl.kursybusola.app",
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,

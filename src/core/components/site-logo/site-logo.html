@@ -5,7 +5,12 @@
                 [siteId]="siteId" (onLoad)="imageLoaded($event)" [hidden]="logoError">
         }
         @if (!siteLogo || logoError) {
-            <img [src]="fallbackLogo" class="core-logo core-logo-fallback" [alt]="'core.login.logoof' | translate: { $a: appName }">
+            @if (logoType === 'top') {
+                <img src="assets/img/top_logo.png" class="core-logo core-logo-fallback light-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
+            } @else {
+                <img src="assets/img/login_logo.png" class="core-logo core-logo-fallback light-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
+            }
+            <img src="assets/img/busola_el_logo_dark.png" class="core-logo core-logo-fallback dark-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
         }
     </div>
 }

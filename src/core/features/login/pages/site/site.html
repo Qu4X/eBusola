@@ -18,7 +18,8 @@
 <ion-content class="ion-padding">
     <div class="list-item-limited-width">
         <div class="ion-text-center ion-padding ion-margin-bottom core-login-site-logo" [class.hidden]="hasSites || enteredSiteUrl">
-            <img src="assets/img/login_logo.png" class="avatar-full login-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
+            <img src="assets/img/login_logo.png" class="avatar-full login-logo light-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
+            <img src="assets/img/busola_el_logo_dark.png" class="avatar-full login-logo dark-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
         </div>
         @if (!fixedSites && siteForm) {
             <form [formGroup]="siteForm" (ngSubmit)="connect(siteForm.value.siteUrl, $event)" #siteFormEl>

@@ -1345,7 +1345,9 @@ export class CoreFileProvider {
             return src.replace(`${CoreConstants.CONFIG.ioswebviewscheme}://localhost/_app_file_`, 'file://');
         }
 
-        return src.replace('http://localhost/_app_file_', 'file://');
+        return src
+            .replace('https://localhost/_app_file_', 'file://')
+            .replace('http://localhost/_app_file_', 'file://');
     }
 
     /**
