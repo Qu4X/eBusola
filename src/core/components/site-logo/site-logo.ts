@@ -19,7 +19,7 @@ import { CoreSite } from '@classes/sites/site';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
-import { CoreConstants } from '@/core/constants';
+import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreExternalContentDirective } from '@directives/external-content';
 import { CoreFormatTextDirective } from '@directives/format-text';
@@ -53,6 +53,7 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
     fallbackLogo = '';
     showSiteName = true;
     appName = CoreConstants.CONFIG.appname;
+    readonly contextLevelSystem = ContextLevel.SYSTEM;
 
     protected updateSiteObserver?: CoreEventObserver;
 
