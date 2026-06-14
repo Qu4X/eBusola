@@ -1,8 +1,10 @@
 @if (showLogo && logoLoaded) {
     <div class="core-logo-container">
         @if (siteLogo) {
-            <img [url]="siteLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: siteName }" core-external-content
+            <img [url]="siteLogo" class="core-logo light-logo" [alt]="'core.login.logoof' | translate: { $a: siteName }" core-external-content
                 [siteId]="siteId" (onLoad)="imageLoaded($event)" [hidden]="logoError">
+            <img src="assets/img/busola_el_logo_dark.png" class="core-logo dark-logo"
+                [alt]="'core.login.logoof' | translate: { $a: siteName }" [hidden]="logoError">
         }
         @if (!siteLogo || logoError) {
             @if (logoType === 'top') {

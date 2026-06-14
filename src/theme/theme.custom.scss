@@ -26,6 +26,16 @@
   display: none !important;
 }
 
+.dark .light-logo,
+[data-theme="dark"] .light-logo {
+  display: none !important;
+}
+
+.dark .dark-logo,
+[data-theme="dark"] .dark-logo {
+  display: inline-block !important;
+}
+
 :root.dark,
 body.dark,
 .dark {
@@ -35,11 +45,4 @@ body.dark,
   --ion-color-tertiary-contrast-rgb: 255,255,255;
   --ion-color-tertiary-shade: #00859d;
   --ion-color-tertiary-tint: #1aa1ba;
-
-  .light-logo {
-    display: none !important;
-  }
-  .dark-logo {
-    display: inline-block !important;
-  }
 }
