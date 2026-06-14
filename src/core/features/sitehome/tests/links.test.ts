@@ -17,6 +17,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSiteHomeIndexLinkHandlerService } from '@features/sitehome/services/handlers/index-link';
+import { CoreConstants } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
@@ -37,12 +38,13 @@ describe('Site Home link handlers', () => {
         });
 
         mockSingleton(CoreLoginHelper, { getAvailableSites: async () => [{ url: siteUrl, name: 'Example Campus' }] });
-        mockSingleton(CoreNavigator, ['navigateToSitePath']);
+        mockSingleton(CoreNavigator, { navigateToSitePath: () => Promise.resolve(true) });
 
         CoreContentLinksDelegate.registerHandler(new CoreSiteHomeIndexLinkHandlerService());
 
         // Act.
-        await CoreCustomURLSchemes.handleCustomURL(`moodlemobile://link=${siteUrl}/?redirect=0`);
+        const scheme = CoreConstants.CONFIG.customurlscheme;
+        await CoreCustomURLSchemes.handleCustomURL(`${scheme}://link=${siteUrl}/?redirect=0`);
 
         // Assert.
         expect(CoreNavigator.navigateToSitePath).toHaveBeenCalledWith('/home/site', {
