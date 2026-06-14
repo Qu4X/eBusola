@@ -37,6 +37,7 @@ describe('Site Home link handlers', () => {
         });
 
         mockSingleton(CoreLoginHelper, { getAvailableSites: async () => [{ url: siteUrl, name: 'Example Campus' }] });
+        mockSingleton(CoreNavigator, ['navigateToSitePath']);
 
         CoreContentLinksDelegate.registerHandler(new CoreSiteHomeIndexLinkHandlerService());
 
