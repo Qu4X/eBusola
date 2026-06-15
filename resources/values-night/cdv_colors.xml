@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <color name="cdv_background_color">#282828</color>
+    <color name="cdv_splashscreen_background">#282828</color>
+    <color name="cdv_splashscreen_icon_background">#282828</color>
+</resources>
