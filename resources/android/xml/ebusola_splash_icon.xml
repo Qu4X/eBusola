@@ -1,0 +1,52 @@
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="vector"
+            android:width="432dp"
+            android:height="432dp"
+            android:viewportWidth="432"
+            android:viewportHeight="432">
+            <group android:name="compass_background">
+                <path
+                    android:name="compass_rim"
+                    android:pathData="M 216 98 C 184.716 98 154.682 110.441 132.561 132.561 C 110.441 154.682 98 184.716 98 216 C 98 247.284 110.441 277.318 132.561 299.439 C 154.682 321.559 184.716 334 216 334 C 247.284 334 277.318 321.559 299.439 299.439 C 321.559 277.318 334 247.284 334 216 C 334 184.716 321.559 154.682 299.439 132.561 C 277.318 110.441 247.284 98 216 98 Z"
+                    android:fillColor="@color/compass_rim_color"
+                    android:strokeWidth="1"/>
+                <path
+                    android:name="compass_inside"
+                    android:pathData="M 209 122.2 C 162.5 125.1 125 161.9 121.2 208.2 L 136.4 208.2 L 136.4 223.8 L 121.2 223.8 C 125 270.2 162.4 307 209 310 L 209 294.5 L 224.6 294.5 L 224.6 309.7 C 269.5 305.1 305.1 269 308.7 223.8 L 293.4 223.8 L 293.4 208.2 L 308.7 208.2 C 305 163.1 269.4 127 224.6 122.5 L 224.6 137.6 L 209 137.6 L 209 122.2 Z"
+                    android:fillColor="@color/compass_inside_color"
+                    android:strokeWidth="1"/>
+            </group>
+            <group
+                android:name="compass_needle"
+                android:pivotX="216"
+                android:pivotY="216">
+                <path
+                    android:name="needle1"
+                    android:pathData="M 207.4 220.4 L 195.2 232.6 L 160.9 160.9 L 232.6 195.2 L 220.4 207.4 C 216.8 205.6 212.2 206.1 209.2 209.2 C 206.2 212.2 205.6 216.8 207.4 220.4 Z"
+                    android:fillColor="@color/compass_needle_color"
+                    android:strokeWidth="1"/>
+                <path
+                    android:name="needle2"
+                    android:pathData="M 224.6 211.6 L 236.8 199.4 L 271.1 271.1 L 199.4 236.8 L 211.6 224.6 C 215.2 226.4 219.8 225.9 222.8 222.8 C 225.8 219.8 226.4 215.2 224.6 211.6 Z"
+                    android:fillColor="@color/compass_needle_color"
+                    android:strokeWidth="1"/>
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="compass_needle">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="rotation"
+                android:startOffset="125"
+                android:duration="875"
+                android:valueFrom="0"
+                android:valueTo="180"
+                android:valueType="floatType"
+                android:interpolator="@android:anim/anticipate_overshoot_interpolator"/>
+        </aapt:attr>
+    </target>
+</animated-vector>
