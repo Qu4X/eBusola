@@ -2,7 +2,7 @@
     "siteurl": "https://kursybusola.pl",
     "sitename": "Kursy Busola",
     "app_id": "pl.kursybusola.app",
-    "appname": "eBusola-debug",
+    "appname": "eBusola",
     "versioncode": 53000,
     "versionname": "5.3.0",
     "cache_update_frequency_usually": 420000,
