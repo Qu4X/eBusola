@@ -4,6 +4,6 @@
     <color name="cdv_splashscreen_background">#282828</color>
     <color name="cdv_splashscreen_icon_background">#282828</color>
     <color name="compass_rim_color">#FFFFFF</color>
-    <color name="compass_inside_color">#00000000</color>
+    <color name="compass_inside_color">#15195D</color>
     <color name="compass_needle_color">#FF751F</color>
 </resources>
