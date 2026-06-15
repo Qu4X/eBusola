@@ -1,4 +1,4 @@
-body:not(.core-iframe-fullscreen):not(.core-reading-mode-enabled) .collapsible-header-page {
+body:not(.core-iframe-fullscreen) .collapsible-header-page {
     --collapsible-header-progress: 0;
     --collapsible-header-collapsed-height: 0px;
     --collapsible-header-expanded-y-delta: 0px;
@@ -31,20 +31,21 @@ body:not(.core-iframe-fullscreen):not(.core-reading-mode-enabled) .collapsible-h
         visibility: hidden;
     }
 
-    &:not(.collapsible-header-page-is-collapsed) .collapsible-header-collapsed {
-        --core-header-toolbar-border-width: 0;
-        --core-header-buttons-color: var(--text-color);
-        --core-header-buttons-background: transparent;
-        --core-header-toolbar-background: transparent;
-        width: var(--collapsible-header-content-width, '100%');
+    &:not(.collapsible-header-page-is-collapsed) {
+        &:not(.collapsible-header-page-is-frozen) .collapsible-header-collapsed {
+            --core-header-toolbar-border-width: 0px;
+            --core-header-buttons-color: var(--text-color);
+            --core-header-buttons-background: transparent;
+            --core-header-toolbar-background: transparent;
+            width: var(--collapsible-header-content-width, 100%);
+        }
 
-        h1 {
+        .collapsible-header-collapsed h1 {
             opacity: 0;
             pointer-events: none;
             user-select: none;
             visibility: hidden;
         }
-
     }
 
     &.collapsible-header-page-is-active.collapsible-header-page-is-collapsed.collapsible-header-page-is-within-content ion-header.core-header-shadow {
@@ -52,9 +53,16 @@ body:not(.core-iframe-fullscreen):not(.core-reading-mode-enabled) .collapsible-h
     }
 
     &.collapsible-header-page-is-active {
+        &.collapsible-header-page-is-not-within-content .collapsible-header-expanded {
+            height: calc(var(--collapsible-header-expanded-height) * (1 - var(--collapsible-header-progress)));
+        }
+
+        &.collapsible-header-page-is-disabled .collapsible-header-expanded {
+            height: 0px;
+            opacity: 0;
+        }
 
         .collapsible-header-expanded {
-            height: calc(var(--collapsible-header-expanded-height) * (1 - var(--collapsible-header-progress)));
             transform: translateY(calc(var(--collapsible-header-expanded-y-delta) * var(--collapsible-header-progress)));
             overflow: visible;
 

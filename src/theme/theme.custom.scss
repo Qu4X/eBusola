@@ -21,7 +21,24 @@
  * Dark Theme
  * -------------------------------------------
  */
-:root.dark {
+/* Logo Swapping */
+.dark-logo {
+  display: none !important;
+}
+
+.dark .light-logo,
+[data-theme="dark"] .light-logo {
+  display: none !important;
+}
+
+.dark .dark-logo,
+[data-theme="dark"] .dark-logo {
+  display: inline-block !important;
+}
+
+:root.dark,
+body.dark,
+.dark {
   --ion-color-tertiary: #0097B2;
   --ion-color-tertiary-rgb: 0,151,178;
   --ion-color-tertiary-contrast: #ffffff;

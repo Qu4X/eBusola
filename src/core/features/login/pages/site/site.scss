@@ -53,6 +53,11 @@
     transition: all 0.7s ease-in-out;
     max-height: 9999px;
 
+    .login-logo {
+        max-height: 156px !important;
+        width: auto !important;
+    }
+
     &.hidden {
         opacity: 0;
         visibility: hidden;

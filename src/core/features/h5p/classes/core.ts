@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Md5 } from 'ts-md5/dist/md5';
-
+import { Md5 } from 'ts-md5';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@static/text';
 import { CoreUtils } from '@static/utils';
@@ -33,13 +32,16 @@ export class CoreH5PCore {
 
     static readonly API_VERSION = {
         majorVersion: 1,
-        minorVersion: 27,
+        minorVersion: 28,
     };
 
     static readonly STYLES = [
+        'styles/h5p-fonts.css',
         'styles/h5p.css',
         'styles/h5p-confirmation-dialog.css',
         'styles/h5p-core-button.css',
+        'styles/h5p-theme.css',
+        'styles/h5p-theme-variables.css',
         'styles/h5p-tooltip.css',
         'styles/h5p-table.css',
     ];

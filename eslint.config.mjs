@@ -42,7 +42,6 @@ const appConfig = {
         globals: {
             ...globals.browser,
             ...globals.node,
-            ...globals.es6,
         },
         parserOptions: {
             project: 'tsconfig.app.json', // Use tsconfig.app instead of tsconfig because it limits the files loaded by TS.
@@ -228,6 +227,10 @@ const appConfig = {
         'no-restricted-imports': ['error', {
             'name': 'dayjs',
             'message': 'Please use the dayjs wrapper from @/core/utils/dayjs instead.',
+        }],
+        'no-restricted-syntax': ['error', {
+            selector: "NewExpression[callee.name='CoreDatabaseTableProxy']",
+            message: 'Use CoreDatabaseTableProxy.createInstance instead of new CoreDatabaseTableProxy.',
         }],
         'no-sequences': 'error',
         'one-var': ['error', 'never'],

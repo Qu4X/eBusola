@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser';
+import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser/ngx';
 
 import { CoreNetwork } from '@services/network';
 import { CoreDB } from '@services/db';
@@ -37,6 +37,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { asyncInstance, AsyncInstance } from '../../utils/async-instance';
 import { CoreDatabaseTable } from '../database/database-table';
 import { CoreDatabaseCachingStrategy } from '../database/database-table-proxy';
+import { CoreEagerDatabaseTable } from '../database/eager-database-table';
 import {
     CONFIG_TABLE,
     CoreSiteConfigDBRecord,
@@ -69,8 +70,8 @@ export class CoreSite extends CoreAuthenticatedSite {
 
     protected db!: SQLiteDB;
     protected cacheTable: AsyncInstance<CoreDatabaseTable<CoreSiteWSCacheRecord>>;
-    protected configTable: AsyncInstance<CoreDatabaseTable<CoreSiteConfigDBRecord, 'name', never>>;
-    protected lastViewedTable: AsyncInstance<CoreDatabaseTable<CoreSiteLastViewedDBRecord, CoreSiteLastViewedDBPrimaryKeys>>;
+    protected configTable: AsyncInstance<CoreEagerDatabaseTable<CoreSiteConfigDBRecord, 'name', never>>;
+    protected lastViewedTable: AsyncInstance<CoreEagerDatabaseTable<CoreSiteLastViewedDBRecord, CoreSiteLastViewedDBPrimaryKeys>>;
     protected lastAutoLogin = 0;
     protected tokenPluginFileWorks?: boolean;
     protected tokenPluginFileWorksPromise?: Promise<boolean>;
@@ -252,13 +253,10 @@ export class CoreSite extends CoreAuthenticatedSite {
         return this.cacheTable.reduce(
             {
                 sql: 'SUM(length(data))',
-                js: (size, record) => size + record.data.length,
-                jsInitialValue: 0,
             },
             {
                 sql: `WHERE component = ?${extraClause}`,
                 sqlParams: params,
-                js: record => record.component === component && (params.length === 1 || record.componentId === componentId),
             },
         );
     }
@@ -356,7 +354,6 @@ export class CoreSite extends CoreAuthenticatedSite {
         await this.cacheTable.updateWhere({ expirationTime: 0 }, {
             sql: 'key LIKE ?',
             sqlParams: [`${key}%`],
-            js: record => !!record.key?.startsWith(key),
         });
     }
 
@@ -434,8 +431,6 @@ export class CoreSite extends CoreAuthenticatedSite {
     async getCacheUsage(): Promise<number> {
         return this.cacheTable.reduce({
             sql: 'SUM(length(data))',
-            js: (size, record) => size + record.data.length,
-            jsInitialValue: 0,
         });
     }
 
@@ -557,6 +552,24 @@ export class CoreSite extends CoreAuthenticatedSite {
     }
 
     /**
+     * Get a boolean config of this site.
+     *
+     * @param name Name of the setting to get.
+     * @param ignoreCache True if it should ignore cached data.
+     * @param defaultValue Default value to return if the config is not found or there's an error.
+     * @returns Promise resolved with the config value.
+     */
+    async getBooleanConfig(name: string, ignoreCache?: boolean, defaultValue = false): Promise<boolean> {
+        try {
+            const value = await this.getConfig(name, ignoreCache);
+
+            return value === '1';
+        } catch {
+            return defaultValue;
+        }
+    }
+
+    /**
      * Get the config of this site.
      * It is recommended to use getStoredConfig instead since it's faster and doesn't use network.
      *
@@ -576,7 +589,7 @@ export class CoreSite extends CoreAuthenticatedSite {
             if (name) {
                 // Return the requested setting.
                 for (const x in config.settings) {
-                    if (config.settings[x].name == name) {
+                    if (config.settings[x].name === name) {
                         return String(config.settings[x].value);
                     }
                 }
@@ -962,6 +975,9 @@ export type CoreSiteConfig = Record<string, string> & {
     supportavailability?: string; // String representation of CoreSiteConfigSupportAvailability.
     searchbanner?: string; // Search banner text.
     searchbannerenable?: string; // Whether search banner is enabled.
+    enabledashboard?: string; // Whether dashboard is enabled.
+    enablemyhome?: string; // @since 5.2. Whether my home is enabled.
+    enablemycourses?: string; // @since 5.2. Whether my courses is enabled.
 };
 
 /**

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
-import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
+import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications/ngx';
 
 import { CoreAppDB } from '@services/app-db';
 import { CoreConfig } from '@services/config';
@@ -188,21 +188,21 @@ export class CoreLocalNotificationsProvider {
         await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
         const database = CoreAppDB.getDB();
-        const sitesTable = new CoreDatabaseTableProxy<CoreLocalNotificationsSitesDBRecord, 'id', never>(
+        const sitesTable = CoreDatabaseTableProxy.createInstance<CoreLocalNotificationsSitesDBRecord, 'id', never>(
             { cachingStrategy: CoreDatabaseCachingStrategy.None },
             database,
             LOCAL_NOTIFICATIONS_SITES_TABLE_NAME,
             ['id'],
             null,
         );
-        const componentsTable = new CoreDatabaseTableProxy<CoreLocalNotificationsComponentsDBRecord, 'id', never>(
+        const componentsTable = CoreDatabaseTableProxy.createInstance<CoreLocalNotificationsComponentsDBRecord, 'id', never>(
             { cachingStrategy: CoreDatabaseCachingStrategy.None },
             database,
             COMPONENTS_TABLE_NAME,
             ['id'],
             null,
         );
-        const triggeredTable = new CoreDatabaseTableProxy<CoreLocalNotificationsTriggeredDBRecord>(
+        const triggeredTable = CoreDatabaseTableProxy.createInstance<CoreLocalNotificationsTriggeredDBRecord>(
             { cachingStrategy: CoreDatabaseCachingStrategy.None },
             database,
             TRIGGERED_TABLE_NAME,
@@ -806,9 +806,8 @@ export class CoreLocalNotificationsProvider {
      * time is changed.
      *
      * @param notification Triggered notification.
-     * @returns Promise resolved when stored, rejected otherwise.
      */
-    async trigger(notification: ILocalNotification): Promise<number> {
+    async trigger(notification: ILocalNotification): Promise<void> {
         let time = Date.now();
         if (notification.trigger?.at) {
             // The type says "at" is a Date, but in Android we can receive timestamps instead.
@@ -819,7 +818,7 @@ export class CoreLocalNotificationsProvider {
             }
         }
 
-        return this.triggeredTable.insert({
+        await this.triggeredTable.insert({
             id: notification.id,
             at: time,
         });

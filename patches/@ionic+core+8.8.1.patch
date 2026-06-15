@@ -1,0 +1,405 @@
+diff --git a/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js b/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js
+index 83af8d1..d0dc8d2 100644
+--- a/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js
++++ b/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js
+@@ -137,7 +137,7 @@ const Item = class {
+     // inputs, then those need to individually get each click
+     hasCover() {
+         const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
+-        return inputs.length === 1 && !this.multipleInputs;
++        return inputs.length === 1;
+     }
+     // If the item has an href or button property it will render a native
+     // anchor or button that is clickable
+diff --git a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
+index f7c757d..2234c91 100644
+--- a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
++++ b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
+@@ -78,7 +78,9 @@ const getArrowDimensions = (arrowEl) => {
+         return { arrowWidth: 0, arrowHeight: 0 };
+     }
+     const { width, height } = arrowEl.getBoundingClientRect();
+-    return { arrowWidth: width, arrowHeight: height };
++    // Patched: getBoundingClientRect result does not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
++    return { arrowWidth: width / zoom, arrowHeight: height / zoom };
+ };
+ /**
+  * Returns the recommended dimensions of the popover
+@@ -93,9 +95,11 @@ const getPopoverDimensions = (size, contentEl, triggerEl) => {
+         const triggerDimensions = triggerEl.getBoundingClientRect();
+         contentWidth = triggerDimensions.width;
+     }
++    // Patched: getBoundingClientRect result does not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
+     return {
+-        contentWidth,
+-        contentHeight,
++        contentWidth: contentWidth / zoom,
++        contentHeight: contentHeight / zoom,
+     };
+ };
+ const configureDismissInteraction = (triggerEl, triggerAction, popoverEl, parentPopoverEl) => {
+@@ -492,6 +496,12 @@ const getPopoverPosition = (isRTL, contentWidth, contentHeight, arrowWidth, arro
+             };
+             break;
+     }
++    // Patched: getBoundingClientRect result clientX/clientY do not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
++    referenceCoordinates.top = referenceCoordinates.top / zoom;
++    referenceCoordinates.left = referenceCoordinates.left / zoom;
++    referenceCoordinates.width = referenceCoordinates.width / zoom;
++    referenceCoordinates.height = referenceCoordinates.height / zoom;
+     /**
+      * Get top/left offset that would allow
+      * popover to be positioned on the
+@@ -852,8 +862,10 @@ const iosEnterAnimation = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = helpers.getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const arrowEl = root.querySelector('.popover-arrow');
+@@ -989,8 +1001,10 @@ const mdEnterAnimation = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = helpers.getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
+diff --git a/node_modules/@ionic/core/dist/collection/components/item/item.js b/node_modules/@ionic/core/dist/collection/components/item/item.js
+index 068d9af..a8d3c09 100644
+--- a/node_modules/@ionic/core/dist/collection/components/item/item.js
++++ b/node_modules/@ionic/core/dist/collection/components/item/item.js
+@@ -141,7 +141,7 @@ export class Item {
+     // inputs, then those need to individually get each click
+     hasCover() {
+         const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
+-        return inputs.length === 1 && !this.multipleInputs;
++        return inputs.length === 1;
+     }
+     // If the item has an href or button property it will render a native
+     // anchor or button that is clickable
+diff --git a/node_modules/@ionic/core/dist/collection/components/popover/animations/ios.enter.js b/node_modules/@ionic/core/dist/collection/components/popover/animations/ios.enter.js
+index c8487bc..707d8f4 100644
+--- a/node_modules/@ionic/core/dist/collection/components/popover/animations/ios.enter.js
++++ b/node_modules/@ionic/core/dist/collection/components/popover/animations/ios.enter.js
+@@ -23,8 +23,10 @@ export const iosEnterAnimation = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const arrowEl = root.querySelector('.popover-arrow');
+diff --git a/node_modules/@ionic/core/dist/collection/components/popover/animations/md.enter.js b/node_modules/@ionic/core/dist/collection/components/popover/animations/md.enter.js
+index a440d13..41b08c3 100644
+--- a/node_modules/@ionic/core/dist/collection/components/popover/animations/md.enter.js
++++ b/node_modules/@ionic/core/dist/collection/components/popover/animations/md.enter.js
+@@ -14,8 +14,10 @@ export const mdEnterAnimation = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
+diff --git a/node_modules/@ionic/core/dist/collection/components/popover/utils.js b/node_modules/@ionic/core/dist/collection/components/popover/utils.js
+index eb151a8..e4d7b20 100644
+--- a/node_modules/@ionic/core/dist/collection/components/popover/utils.js
++++ b/node_modules/@ionic/core/dist/collection/components/popover/utils.js
+@@ -64,7 +64,9 @@ export const getArrowDimensions = (arrowEl) => {
+         return { arrowWidth: 0, arrowHeight: 0 };
+     }
+     const { width, height } = arrowEl.getBoundingClientRect();
+-    return { arrowWidth: width, arrowHeight: height };
++    // Patched: getBoundingClientRect result does not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
++    return { arrowWidth: width / zoom, arrowHeight: height / zoom };
+ };
+ /**
+  * Returns the recommended dimensions of the popover
+@@ -79,9 +81,11 @@ export const getPopoverDimensions = (size, contentEl, triggerEl) => {
+         const triggerDimensions = triggerEl.getBoundingClientRect();
+         contentWidth = triggerDimensions.width;
+     }
++    // Patched: getBoundingClientRect result does not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
+     return {
+-        contentWidth,
+-        contentHeight,
++        contentWidth: contentWidth / zoom,
++        contentHeight: contentHeight / zoom,
+     };
+ };
+ export const configureDismissInteraction = (triggerEl, triggerAction, popoverEl, parentPopoverEl) => {
+@@ -480,6 +484,12 @@ export const getPopoverPosition = (isRTL, contentWidth, contentHeight, arrowWidt
+             };
+             break;
+     }
++    // Patched: getBoundingClientRect result clientX/clientY do not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
++    referenceCoordinates.top = referenceCoordinates.top / zoom;
++    referenceCoordinates.left = referenceCoordinates.left / zoom;
++    referenceCoordinates.width = referenceCoordinates.width / zoom;
++    referenceCoordinates.height = referenceCoordinates.height / zoom;
+     /**
+      * Get top/left offset that would allow
+      * popover to be positioned on the
+diff --git a/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js b/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
+index e11ba39..7919471 100644
+--- a/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
++++ b/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
+@@ -135,7 +135,7 @@ const Item = class {
+     // inputs, then those need to individually get each click
+     hasCover() {
+         const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
+-        return inputs.length === 1 && !this.multipleInputs;
++        return inputs.length === 1;
+     }
+     // If the item has an href or button property it will render a native
+     // anchor or button that is clickable
+diff --git a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
+index a68f293..8380a75 100644
+--- a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
++++ b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
+@@ -76,7 +76,9 @@ const getArrowDimensions = (arrowEl) => {
+         return { arrowWidth: 0, arrowHeight: 0 };
+     }
+     const { width, height } = arrowEl.getBoundingClientRect();
+-    return { arrowWidth: width, arrowHeight: height };
++    // Patched: getBoundingClientRect result does not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
++    return { arrowWidth: width / zoom, arrowHeight: height / zoom };
+ };
+ /**
+  * Returns the recommended dimensions of the popover
+@@ -91,9 +93,11 @@ const getPopoverDimensions = (size, contentEl, triggerEl) => {
+         const triggerDimensions = triggerEl.getBoundingClientRect();
+         contentWidth = triggerDimensions.width;
+     }
++    // Patched: getBoundingClientRect result does not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
+     return {
+-        contentWidth,
+-        contentHeight,
++        contentWidth: contentWidth / zoom,
++        contentHeight: contentHeight / zoom,
+     };
+ };
+ const configureDismissInteraction = (triggerEl, triggerAction, popoverEl, parentPopoverEl) => {
+@@ -490,6 +494,12 @@ const getPopoverPosition = (isRTL, contentWidth, contentHeight, arrowWidth, arro
+             };
+             break;
+     }
++    // Patched: getBoundingClientRect result clientX/clientY do not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
++    referenceCoordinates.top = referenceCoordinates.top / zoom;
++    referenceCoordinates.left = referenceCoordinates.left / zoom;
++    referenceCoordinates.width = referenceCoordinates.width / zoom;
++    referenceCoordinates.height = referenceCoordinates.height / zoom;
+     /**
+      * Get top/left offset that would allow
+      * popover to be positioned on the
+@@ -850,8 +860,10 @@ const iosEnterAnimation = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const arrowEl = root.querySelector('.popover-arrow');
+@@ -987,8 +999,10 @@ const mdEnterAnimation = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
+diff --git a/node_modules/@ionic/core/hydrate/index.js b/node_modules/@ionic/core/hydrate/index.js
+index 1d8d9a6..274dabe 100644
+--- a/node_modules/@ionic/core/hydrate/index.js
++++ b/node_modules/@ionic/core/hydrate/index.js
+@@ -20365,7 +20365,7 @@ class Item {
+     // inputs, then those need to individually get each click
+     hasCover() {
+         const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
+-        return inputs.length === 1 && !this.multipleInputs;
++        return inputs.length === 1;
+     }
+     // If the item has an href or button property it will render a native
+     // anchor or button that is clickable
+@@ -29270,7 +29270,9 @@ const getArrowDimensions = (arrowEl) => {
+         return { arrowWidth: 0, arrowHeight: 0 };
+     }
+     const { width, height } = arrowEl.getBoundingClientRect();
+-    return { arrowWidth: width, arrowHeight: height };
++    // Patched: getBoundingClientRect result does not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
++    return { arrowWidth: width / zoom, arrowHeight: height / zoom };
+ };
+ /**
+  * Returns the recommended dimensions of the popover
+@@ -29285,9 +29287,11 @@ const getPopoverDimensions = (size, contentEl, triggerEl) => {
+         const triggerDimensions = triggerEl.getBoundingClientRect();
+         contentWidth = triggerDimensions.width;
+     }
++    // Patched: getBoundingClientRect result does not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
+     return {
+-        contentWidth,
+-        contentHeight,
++        contentWidth: contentWidth / zoom,
++        contentHeight: contentHeight / zoom,
+     };
+ };
+ const configureDismissInteraction = (triggerEl, triggerAction, popoverEl, parentPopoverEl) => {
+@@ -29684,6 +29688,12 @@ const getPopoverPosition = (isRTL, contentWidth, contentHeight, arrowWidth, arro
+             };
+             break;
+     }
++    // Patched: getBoundingClientRect result clientX/clientY do not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
++    referenceCoordinates.top = referenceCoordinates.top / zoom;
++    referenceCoordinates.left = referenceCoordinates.left / zoom;
++    referenceCoordinates.width = referenceCoordinates.width / zoom;
++    referenceCoordinates.height = referenceCoordinates.height / zoom;
+     /**
+      * Get top/left offset that would allow
+      * popover to be positioned on the
+@@ -30044,8 +30054,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const arrowEl = root.querySelector('.popover-arrow');
+@@ -30181,8 +30193,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
+diff --git a/node_modules/@ionic/core/hydrate/index.mjs b/node_modules/@ionic/core/hydrate/index.mjs
+index 56557cb..30c242c 100644
+--- a/node_modules/@ionic/core/hydrate/index.mjs
++++ b/node_modules/@ionic/core/hydrate/index.mjs
+@@ -20363,7 +20363,7 @@ class Item {
+     // inputs, then those need to individually get each click
+     hasCover() {
+         const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
+-        return inputs.length === 1 && !this.multipleInputs;
++        return inputs.length === 1;
+     }
+     // If the item has an href or button property it will render a native
+     // anchor or button that is clickable
+@@ -29268,7 +29268,9 @@ const getArrowDimensions = (arrowEl) => {
+         return { arrowWidth: 0, arrowHeight: 0 };
+     }
+     const { width, height } = arrowEl.getBoundingClientRect();
+-    return { arrowWidth: width, arrowHeight: height };
++    // Patched: getBoundingClientRect result does not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
++    return { arrowWidth: width / zoom, arrowHeight: height / zoom };
+ };
+ /**
+  * Returns the recommended dimensions of the popover
+@@ -29283,9 +29285,11 @@ const getPopoverDimensions = (size, contentEl, triggerEl) => {
+         const triggerDimensions = triggerEl.getBoundingClientRect();
+         contentWidth = triggerDimensions.width;
+     }
++    // Patched: getBoundingClientRect result does not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
+     return {
+-        contentWidth,
+-        contentHeight,
++        contentWidth: contentWidth / zoom,
++        contentHeight: contentHeight / zoom,
+     };
+ };
+ const configureDismissInteraction = (triggerEl, triggerAction, popoverEl, parentPopoverEl) => {
+@@ -29682,6 +29686,12 @@ const getPopoverPosition = (isRTL, contentWidth, contentHeight, arrowWidth, arro
+             };
+             break;
+     }
++    // Patched: getBoundingClientRect result clientX/clientY do not account for CSS zoom.
++    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom-ratio')) || 1;
++    referenceCoordinates.top = referenceCoordinates.top / zoom;
++    referenceCoordinates.left = referenceCoordinates.left / zoom;
++    referenceCoordinates.width = referenceCoordinates.width / zoom;
++    referenceCoordinates.height = referenceCoordinates.height / zoom;
+     /**
+      * Get top/left offset that would allow
+      * popover to be positioned on the
+@@ -30042,8 +30052,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const arrowEl = root.querySelector('.popover-arrow');
+@@ -30179,8 +30191,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);

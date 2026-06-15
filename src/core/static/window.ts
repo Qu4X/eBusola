@@ -65,6 +65,18 @@ export class CoreWindow {
 
             await CoreOpener.openFile(url);
         } else {
+            // Check if it's a local URL.
+            const localOrigin = window.location.origin;
+            if (url.startsWith(localOrigin) || url.startsWith('https://localhost') || url.startsWith('http://localhost')) {
+                const path = url.replace(localOrigin, '').replace('https://localhost', '').replace('http://localhost', '');
+                if (path) {
+                    const { CoreNavigator } = await import('@services/navigator');
+                    CoreNavigator.navigate(path);
+                }
+
+                return;
+            }
+
             let treated = false;
 
             if (name !== '_system') {
