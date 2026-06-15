@@ -42,7 +42,7 @@
             <objectAnimator
                 android:propertyName="rotation"
                 android:startOffset="50"
-                android:duration="600"
+                android:duration="930"
                 android:valueFrom="0"
                 android:valueTo="180"
                 android:valueType="floatType"
