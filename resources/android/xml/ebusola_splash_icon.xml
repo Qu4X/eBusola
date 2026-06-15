@@ -41,8 +41,8 @@
         <aapt:attr name="android:animation">
             <objectAnimator
                 android:propertyName="rotation"
-                android:startOffset="125"
-                android:duration="750"
+                android:startOffset="50"
+                android:duration="600"
                 android:valueFrom="0"
                 android:valueTo="180"
                 android:valueType="floatType"
@@ -53,8 +53,8 @@
         <aapt:attr name="android:animation">
             <objectAnimator
                 android:propertyName="alpha"
-                android:startOffset="875"
-                android:duration="100"
+                android:startOffset="650"
+                android:duration="350"
                 android:valueFrom="1"
                 android:valueTo="0"
                 android:valueType="floatType"
