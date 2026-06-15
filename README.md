@@ -1,10 +1,10 @@
-# Busola Moodle App
+# eBusola
 
-This repository contains a customized and rebranded fork of the official Moodle Mobile App, tailored specifically for the Busola platform.
+This repository contains a customized and rebranded fork of the official Moodle Mobile App, tailored specifically for the eBusola platform.
 
 ## Rebranding & Customization
 
-This fork applies custom branding, configurations, and minor corrections to align the mobile app experience with the Busola platform.
+This fork applies custom branding, configurations, and minor corrections to align the mobile app experience with the eBusola platform.
 
 ## Getting Started
 
