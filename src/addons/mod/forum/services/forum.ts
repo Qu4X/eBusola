@@ -21,12 +21,11 @@ import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
-import { CoreGroups } from '@services/groups';
+import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUrl } from '@static/url';
 import { CoreUtils } from '@static/utils';
 import {
-    CoreStatusWithWarningsWSResponse,
     CoreWSExternalFile,
     CoreWSExternalWarning,
     CoreWSFile,
@@ -55,6 +54,7 @@ import { CoreObject } from '@static/object';
 import { CoreTextFormat } from '@static/text';
 import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
+import { AddonModForumDeletePostWSResponse, AddonModForumUpdateDiscussionPostWSOptionsObject, AddonModForumWS } from './forum-ws';
 
 declare module '@static/events' {
 
@@ -310,12 +310,7 @@ export class AddonModForumProvider {
      * @since 3.8
      */
     async deletePost(postId: number, siteId?: string): Promise<AddonModForumDeletePostWSResponse> {
-        const site = await CoreSites.getSite(siteId);
-        const params: AddonModForumDeletePostWSParams = {
-            postid: postId,
-        };
-
-        return site.write<AddonModForumDeletePostWSResponse>('mod_forum_delete_post', params);
+        return AddonModForumWS.deletePost(postId, siteId);
     }
 
     /**
@@ -360,7 +355,7 @@ export class AddonModForumProvider {
      * @since 3.8
      */
     isDeletePostAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_forum_delete_post');
+        return AddonModForumWS.isDeletePostAvailable();
     }
 
     /**
@@ -370,7 +365,32 @@ export class AddonModForumProvider {
      * @since 3.8
      */
     isUpdatePostAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_forum_update_discussion_post');
+        return AddonModForumWS.isUpdatePostAvailable();
+    }
+
+    /**
+     * Returns whether or not markAsRead WS available or not.
+     *
+     * @returns If WS is available.
+     * @since 5.3
+     */
+    isSetReadStateAvailable(): boolean {
+        return AddonModForumWS.isSetReadStateAvailable();
+    }
+
+    /**
+     * Set the read state of a post.
+     *
+     * @param postId Post id.
+     * @param read Whether to mark as read or unread.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved with true if success, false otherwise.
+     * @since 5.3
+     */
+    async setReadState(postId: number, read: boolean, siteId?: string): Promise<boolean> {
+        const response = await AddonModForumWS.setReadState(postId, read, siteId);
+
+        return response && response.status;
     }
 
     /**
@@ -393,16 +413,16 @@ export class AddonModForumProvider {
             const strAllGroups = Translate.instant('core.allgroups');
 
             // Turn groups into an object where each group is identified by id.
-            const groups = {};
+            const groups: Record<number, CoreGroup> = {};
             result.groups.forEach((fg) => {
                 groups[fg.id] = fg;
             });
 
             // Format discussions.
             discussions.forEach((disc) => {
-                if (disc.groupid == ADDON_MOD_FORUM_ALL_PARTICIPANTS) {
+                if (disc.groupid === ADDON_MOD_FORUM_ALL_PARTICIPANTS) {
                     disc.groupname = strAllParts;
-                } else if (disc.groupid == ADDON_MOD_FORUM_ALL_GROUPS) {
+                } else if (disc.groupid === ADDON_MOD_FORUM_ALL_GROUPS) {
                     // Offline discussions only.
                     disc.groupname = strAllGroups;
                 } else {
@@ -652,12 +672,12 @@ export class AddonModForumProvider {
         posts.sort((a, b) => {
             const timeCreatedA = Number(a.timecreated) || 0;
             const timeCreatedB = Number(b.timecreated) || 0;
-            if (timeCreatedA == 0 || timeCreatedB == 0) {
-            // Leave 0 at the end.
+            if (timeCreatedA === 0 || timeCreatedB === 0) {
+                // Leave 0 at the end.
                 return timeCreatedB - timeCreatedA;
             }
 
-            if (direction == 'ASC') {
+            if (direction === 'ASC') {
                 return timeCreatedA - timeCreatedB;
             } else {
                 return timeCreatedB - timeCreatedA;
@@ -873,8 +893,7 @@ export class AddonModForumProvider {
                 result.error = true;
 
                 return result;
-            })
-        ;
+            });
 
         return getPage(options.page ?? 0);
     }
@@ -1136,8 +1155,8 @@ export class AddonModForumProvider {
             message: message,
 
             options: CoreObject.toArrayOfObjects<
-            AddonModForumAddDiscussionPostWSOptionsArray[0],
-            AddonModForumAddDiscussionPostWSOptionsObject
+                AddonModForumAddDiscussionPostWSOptionsArray[0],
+                AddonModForumAddDiscussionPostWSOptionsObject
             >(
                 options || {},
                 'name',
@@ -1234,34 +1253,38 @@ export class AddonModForumProvider {
      * @param list Array of posts or discussions.
      */
     protected storeUserData(list: AddonModForumPost[] | AddonModForumDiscussion[]): void {
-        const users = {};
+        const users: Record<number, { id: number; fullname: string; profileimageurl?: string }> = {};
 
         list.forEach((entry: AddonModForumPost | AddonModForumDiscussion) => {
             if ('author' in entry) {
                 const authorId = Number(entry.author.id);
                 if (!isNaN(authorId) && !users[authorId]) {
                     users[authorId] = {
-                        id: entry.author.id,
-                        fullname: entry.author.fullname,
+                        id: authorId,
+                        fullname: typeof entry.author.fullname === 'string' ? entry.author.fullname : '',
                         profileimageurl: entry.author.urls?.profileimage,
                     };
                 }
             }
-            const userId = parseInt(entry['userid']);
-            if ('userid' in entry && !isNaN(userId) && !users[userId]) {
-                users[userId] = {
-                    id: userId,
-                    fullname: entry.userfullname,
-                    profileimageurl: entry.userpictureurl,
-                };
+            if ('userid' in entry) {
+                const userId = Number(entry.userid);
+                if (!isNaN(userId) && !users[userId]) {
+                    users[userId] = {
+                        id: userId,
+                        fullname: typeof entry.userfullname === 'string' ? entry.userfullname : '',
+                        profileimageurl: entry.userpictureurl,
+                    };
+                }
             }
-            const userModified = parseInt(entry['usermodified']);
-            if ('usermodified' in entry && !isNaN(userModified) && !users[userModified]) {
-                users[userModified] = {
-                    id: userModified,
-                    fullname: entry.usermodifiedfullname,
-                    profileimageurl: entry.usermodifiedpictureurl,
-                };
+            if ('usermodified' in entry) {
+                const userModified = Number(entry.usermodified);
+                if (!isNaN(userModified) && !users[userModified]) {
+                    users[userModified] = {
+                        id: userModified,
+                        fullname: entry.usermodifiedfullname,
+                        profileimageurl: entry.usermodifiedpictureurl,
+                    };
+                }
             }
         });
 
@@ -1278,7 +1301,7 @@ export class AddonModForumProvider {
      */
     async preparePostForEdition(
         postId: number,
-        area: 'attachment'|'post',
+        area: 'attachment' | 'post',
         options: AddonModForumPreparePostOptions = {},
     ): Promise<AddonModForumPrepareDraftAreaForPostWSResponse> {
         const site = await CoreSites.getSite(options.siteId);
@@ -1314,23 +1337,7 @@ export class AddonModForumProvider {
         options?: AddonModForumUpdateDiscussionPostWSOptionsObject,
         siteId?: string,
     ): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-        const params: AddonModForumUpdateDiscussionPostWSParams = {
-            postid: postId,
-            subject: subject,
-            message: message,
-
-            options: CoreObject.toArrayOfObjects<
-            AddonModForumUpdateDiscussionPostWSOptionsArray[0],
-            AddonModForumUpdateDiscussionPostWSOptionsObject
-            >(
-                options || {},
-                'name',
-                'value',
-            ),
-        };
-
-        const response = await site.write<AddonModForumUpdateDiscussionPostWSResponse>('mod_forum_update_discussion_post', params);
+        const response = await AddonModForumWS.updatePost(postId, subject, message, options, siteId);
 
         return response && response.status;
     }
@@ -1379,38 +1386,38 @@ type AddonModForumGetForumsByCoursesWSParams = {
  * it should be.
  */
 export type AddonModForumData =
-    Omit<CoreCourseModuleStandardElements, 'coursemodule'|'section'|'visible'|'groupmode'|'groupingid'> & {
-    type: AddonModForumType; // The forum type.
-    duedate?: number; // Duedate for the user.
-    cutoffdate?: number; // Cutoffdate for the user.
-    assessed: number; // Aggregate type.
-    assesstimestart: number; // Assess start time.
-    assesstimefinish: number; // Assess finish time.
-    scale: number; // Scale.
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    grade_forum: number; // Whole forum grade.
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    grade_forum_notify: number; // Whether to send notifications to students upon grading by default.
-    maxbytes: number; // Maximum attachment size.
-    maxattachments: number; // Maximum number of attachments.
-    forcesubscribe: number; // Force users to subscribe.
-    trackingtype: number; // Subscription mode.
-    rsstype: number; // RSS feed for this activity.
-    rssarticles: number; // Number of RSS recent articles.
-    timemodified: number; // Time modified.
-    warnafter: number; // Post threshold for warning.
-    blockafter: number; // Post threshold for blocking.
-    blockperiod: number; // Time period for blocking.
-    completiondiscussions: number; // Student must create discussions.
-    completionreplies: number; // Student must post replies.
-    completionposts: number; // Student must post discussions or replies.
-    cmid: number; // Course module id.
-    numdiscussions?: number; // Number of discussions in the forum.
-    cancreatediscussions?: boolean; // If the user can create discussions.
-    lockdiscussionafter?: number; // After what period a discussion is locked.
-    istracked?: boolean; // If the user is tracking the forum.
-    unreadpostscount?: number; // The number of unread posts for tracked forums.
-};
+    Omit<CoreCourseModuleStandardElements, 'coursemodule' | 'section' | 'visible' | 'groupmode' | 'groupingid'> & {
+        type: AddonModForumType; // The forum type.
+        duedate?: number; // Duedate for the user.
+        cutoffdate?: number; // Cutoffdate for the user.
+        assessed: number; // Aggregate type.
+        assesstimestart: number; // Assess start time.
+        assesstimefinish: number; // Assess finish time.
+        scale: number; // Scale.
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        grade_forum: number; // Whole forum grade.
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        grade_forum_notify: number; // Whether to send notifications to students upon grading by default.
+        maxbytes: number; // Maximum attachment size.
+        maxattachments: number; // Maximum number of attachments.
+        forcesubscribe: number; // Force users to subscribe.
+        trackingtype: number; // Subscription mode.
+        rsstype: number; // RSS feed for this activity.
+        rssarticles: number; // Number of RSS recent articles.
+        timemodified: number; // Time modified.
+        warnafter: number; // Post threshold for warning.
+        blockafter: number; // Post threshold for blocking.
+        blockperiod: number; // Time period for blocking.
+        completiondiscussions: number; // Student must create discussions.
+        completionreplies: number; // Student must post replies.
+        completionposts: number; // Student must post discussions or replies.
+        cmid: number; // Course module id.
+        numdiscussions?: number; // Number of discussions in the forum.
+        cancreatediscussions?: boolean; // If the user can create discussions.
+        lockdiscussionafter?: number; // After what period a discussion is locked.
+        istracked?: boolean; // If the user is tracking the forum.
+        unreadpostscount?: number; // The number of unread posts for tracked forums.
+    };
 
 /**
  * Data returned by mod_forum_get_forums_by_courses WS.
@@ -1445,7 +1452,9 @@ export type AddonModForumDiscussion = {
     totalscore: number; // The post message total score.
     mailnow: number; // Mail now?.
     userfullname: string | boolean; // Post author full name.
+    userinitials?: string; // @since 5.3 Post author initials.
     usermodifiedfullname: string; // Post modifier full name.
+    usermodifiedinitials?: string; // @since 5.3 Post modifier initials.
     userpictureurl?: string; // Post author picture.
     usermodifiedpictureurl: string; // Post modifier picture.
     numreplies: number; // The number of replies in the discussion.
@@ -1641,6 +1650,7 @@ export type AddonModForumWSPost = {
     author: {
         id?: number; // Id.
         fullname?: string; // Fullname.
+        initials?: string; // @since 5.3 The initials of the user.
         isdeleted?: boolean; // Isdeleted.
         groups?: { // Groups.
             id: number; // Id.
@@ -1802,32 +1812,6 @@ export type AddonModForumAddDiscussionPostWSOptionsObject = {
 };
 
 /**
- * Array options of mod_forum_update_discussion_post WS.
- */
-export type AddonModForumUpdateDiscussionPostWSOptionsArray = {
-    // Option name.
-    name: 'pinned' | 'discussionsubscribe' | 'inlineattachmentsid' | 'attachmentsid';
-
-    // Option value.
-    // This param is validated in the external function, expected values are:
-    // pinned              (bool) - (only for discussions) whether to pin this discussion or not
-    // discussionsubscribe (bool) - whether to subscribe to the post or not
-    // inlineattachmentsid (int)  - the draft file area id for inline attachments in the text
-    // attachmentsid       (int)  - the draft file area id for attachments.
-    value: string; // The value of the option.
-}[];
-
-/**
- * Object options of mod_forum_update_discussion_post WS.
- */
-export type AddonModForumUpdateDiscussionPostWSOptionsObject = {
-    pinned?: boolean;
-    discussionsubscribe?: boolean;
-    inlineattachmentsid?: number;
-    attachmentsid?: number;
-};
-
-/**
  * Params of mod_forum_add_discussion WS.
  */
 export type AddonModForumAddDiscussionWSParams = {
@@ -1898,18 +1882,6 @@ export type AddonModForumCanAddDiscussionWSParams = {
 export type AddonModForumCanAddDiscussionWSResponse = {
     warnings?: CoreWSExternalWarning[];
 } & AddonModForumCanAddDiscussion;
-
-/**
- * Params of mod_forum_delete_post WS.
- */
-export type AddonModForumDeletePostWSParams = {
-    postid: number; // Post to be deleted. It can be a discussion topic post.
-};
-
-/**
- * Data returned by mod_forum_delete_post WS.
- */
-export type AddonModForumDeletePostWSResponse = CoreStatusWithWarningsWSResponse;
 
 /**
  * Params of mod_forum_get_discussion_post WS.
@@ -2100,22 +2072,6 @@ export type AddonModForumToggleFavouriteStateWSResponse = {
         visible?: boolean; // Visible.
     };
 };
-
-/**
- * Params of mod_forum_update_discussion_post WS.
- */
-export type AddonModForumUpdateDiscussionPostWSParams = {
-    postid: number; // Post to be updated. It can be a discussion topic post.
-    subject?: string; // Updated post subject.
-    message?: string; // Updated post message (HTML assumed if messageformat is not provided).
-    messageformat?: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    options?: AddonModForumUpdateDiscussionPostWSOptionsArray; // Configuration options for the post.
-};
-
-/**
- * Data returned by mod_forum_update_discussion_post WS.
- */
-export type AddonModForumUpdateDiscussionPostWSResponse = CoreStatusWithWarningsWSResponse;
 
 /**
  * Params of mod_forum_prepare_draft_area_for_post WS.

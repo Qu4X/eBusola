@@ -1,40 +1,35 @@
-@if (showLogo && logoLoaded) {
+@if (showLogoEffective() && logoLoaded()) {
     <div class="core-logo-container">
-        @if (siteLogo) {
-            <img [url]="siteLogo" class="core-logo light-logo"
-                [alt]="'core.login.logoof' | translate: { $a: siteName }" core-external-content
-                [siteId]="siteId" (onLoad)="imageLoaded($event)" [hidden]="logoError">
+        @if (siteLogo()) {
+            <img [url]="siteLogo()" class="core-logo light-logo"
+                [alt]="'core.login.logoof' | translate: { $a: siteName() }" core-external-content
+                [siteId]="siteId()" (onLoad)="imageLoaded($event)" [hidden]="logoError()">
             <img src="assets/img/busola_el_logo_dark.png" class="core-logo dark-logo"
-                [alt]="'core.login.logoof' | translate: { $a: siteName }" [hidden]="logoError">
+                [alt]="'core.login.logoof' | translate: { $a: siteName() }" [hidden]="logoError()">
         }
-        @if (!siteLogo || logoError) {
-            @if (logoType === 'top') {
-                <img src="assets/img/top_logo.png" class="core-logo core-logo-fallback light-logo"
-                    [alt]="'core.login.logoof' | translate: { $a: appName }">
-            } @else {
-                <img src="assets/img/login_logo.png" class="core-logo core-logo-fallback light-logo"
-                    [alt]="'core.login.logoof' | translate: { $a: appName }">
-            }
+        @if (!siteLogo() || logoError()) {
+            <img [src]="fallbackLogo()" class="core-logo core-logo-fallback light-logo"
+                [alt]="'core.login.logoof' | translate: { $a: appName() }">
             <img src="assets/img/busola_el_logo_dark.png" class="core-logo core-logo-fallback dark-logo"
-                [alt]="'core.login.logoof' | translate: { $a: appName }">
+                [alt]="'core.login.logoof' | translate: { $a: appName() }">
         }
     </div>
 }
 
-@if (showSiteName && siteName) {
-    @switch (siteNameMode) {
+@if (showSiteName()) {
+    @switch (siteNameMode()) {
         @case ('p') {
             <p class="ion-no-margin ion-no-padding core-logo-sitename">
-                <core-format-text [text]="siteName" [contextLevel]="contextLevelSystem" [contextInstanceId]="0" [siteId]="siteId" />
+                <core-format-text [text]="siteName()" contextLevel="system" [contextInstanceId]="0" [siteId]="siteId()" />
             </p>
         }
         @case ('') {
-            <core-format-text [text]="siteName" [contextLevel]="contextLevelSystem" [contextInstanceId]="0" class="core-logo-sitename"
-                [siteId]="siteId" />
+            <core-format-text [text]="siteName()" contextLevel="system" [contextInstanceId]="0" class="core-logo-sitename"
+                [siteId]="siteId()" />
         }
         @case ('h2') {
             <h2 class="ion-margin-top ion-no-padding core-logo-sitename">
-                <core-format-text [text]="siteName" [contextLevel]="contextLevelSystem" [contextInstanceId]="0" [siteId]="siteId" />
+                <core-format-text [text]="siteName()" contextLevel="system" [contextInstanceId]="0" [siteId]="siteId()" />
             </h2>
         }
     }

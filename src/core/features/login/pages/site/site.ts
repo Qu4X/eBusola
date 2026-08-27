@@ -24,7 +24,7 @@ import {
     CoreLoginSiteSelectorListMethod,
 } from '@features/login/services/login-helper';
 import { CoreError, CoreErrorDebug } from '@classes/errors/error';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreLinkSource } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreUrl, CoreUrlPartNames } from '@static/url';
 import { CoreNavigator } from '@services/navigator';
@@ -365,7 +365,7 @@ export default class CoreLoginSitePage implements OnInit {
      */
     protected async login(siteCheck: CoreSiteCheckResponse): Promise<void> {
         try {
-            await CoreSites.checkApplication(siteCheck.config);
+            await CoreSites.checkApplication(siteCheck.config, null);
 
             CoreForms.triggerFormSubmittedEvent(this.formElement(), true);
 
@@ -463,8 +463,8 @@ export default class CoreLoginSitePage implements OnInit {
             this.filteredSites = this.fixedSites;
         } else {
             this.filteredSites = this.fixedSites.filter((site) =>
-                site.title.toLowerCase().indexOf(newValue) > -1 || site.noProtocolUrl.toLowerCase().indexOf(newValue) > -1 ||
-                site.location.toLowerCase().indexOf(newValue) > -1);
+                site.title.toLowerCase().includes(newValue) || site.noProtocolUrl.toLowerCase().includes(newValue) ||
+                site.location.toLowerCase().includes(newValue));
         }
     }
 
@@ -524,10 +524,10 @@ export default class CoreLoginSitePage implements OnInit {
 
         if (CoreCustomURLSchemes.isCustomURL(text)) {
             try {
-                await CoreCustomURLSchemes.handleCustomURL(text);
+                await CoreCustomURLSchemes.handleCustomURL(text, { source: CoreLinkSource.QR_CODE });
             } catch (error) {
                 if (error && error.data && error.data.isAuthenticationURL && error.data.siteUrl) {
-                    // An error ocurred, but it's an authentication URL and we have the site URL.
+                    // An error occurred, but it's an authentication URL and we have the site URL.
                     this.treatErrorInAuthenticationCustomURL(text, error);
                 } else {
                     CoreCustomURLSchemes.treatHandleCustomURLError(error, text, 'CoreLoginSitePage');
@@ -576,7 +576,7 @@ export default class CoreLoginSitePage implements OnInit {
             // Check if site uses SSO.
             const siteCheck = await CoreSites.checkSite(siteUrl, undefined, 'Site URL page');
 
-            await CoreSites.checkApplication(siteCheck.config);
+            await CoreSites.checkApplication(siteCheck.config, null);
 
             if (!CoreLoginHelper.isSSOLoginNeeded(siteCheck.code)) {
                 // No SSO, go to credentials page.

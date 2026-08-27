@@ -364,6 +364,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
 
     /**
      * Wrap an image with a container to adapt its width.
+     * If the image is inside a picture element, the picture element is wrapped instead.
      *
      * @param img Image to adapt.
      */
@@ -372,13 +373,18 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             return;
         }
 
+        // If the image is inside a picture element, wrap the picture element instead.
+        const elementToWrap = img.parentElement?.tagName === 'PICTURE'
+            ? img.parentElement
+            : img;
+
         // Element to wrap the image.
         const container = document.createElement('span');
         const originalWidth = img.attributes.getNamedItem('width');
 
         const forcedWidth = Number(originalWidth?.value);
         if (originalWidth && !isNaN(forcedWidth)) {
-            if (originalWidth.value.indexOf('%') < 0) {
+            if (!originalWidth.value.includes('%')) {
                 img.style.width = `${forcedWidth}px`;
             } else {
                 img.style.width = `${forcedWidth}%`;
@@ -399,34 +405,27 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             container.classList.add('atto_image_button_text-bottom');
         }
 
-        CoreDom.wrapElement(img, container);
+        CoreDom.wrapElement(elementToWrap, container);
     }
 
     /**
      * Add image viewer button to view adapted images at full size.
      */
     protected async addImageViewerButton(): Promise<void> {
-        const imgs = Array.from(this.element.querySelectorAll('.core-adapted-img-container > img'));
+        const imgs = Array.from(
+            this.element.querySelectorAll<HTMLImageElement>(
+                '.core-adapted-img-container > img, .core-adapted-img-container > picture > img',
+            ),
+        );
         if (!imgs.length) {
             return;
         }
 
         // If cannot calculate element's width, use viewport width to avoid false adapt image icons appearing.
         const elWidth = await this.getElementWidth();
-
-        imgs.forEach((img: HTMLImageElement) => {
+        imgs.forEach((img) => {
             // Skip image if it's inside a link.
             if (img.closest('a')) {
-                return;
-            }
-
-            let imgWidth = Number(img.getAttribute('width'));
-            if (!imgWidth) {
-                // No width attribute, use real size.
-                imgWidth = img.naturalWidth;
-            }
-
-            if (imgWidth <= elWidth) {
                 return;
             }
 
@@ -442,21 +441,27 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             button.innerHTML = `<ion-icon name="fas-${iconName}" aria-hidden="true" src="${src}"></ion-icon>`;
 
             button.addEventListener('click', (e: Event) => {
-                const imgSrc = CoreText.escapeHTML(img.getAttribute('data-original-src') || img.getAttribute('src'));
-
                 e.preventDefault();
                 e.stopPropagation();
-                CoreViewer.viewImage(imgSrc, img.getAttribute('alt'), this.component(), this.componentId());
+
+                const imgElement = img.parentElement?.tagName === 'PICTURE' ? img.parentElement : img;
+                CoreViewer.viewImageElement(imgElement);
             });
 
-            img.parentNode?.appendChild(button);
+            img.closest('.core-adapted-img-container')?.appendChild(button);
 
             if (img.complete && img.naturalWidth > 0) {
-                // Image has already loaded, show the button.
-                button.classList.remove('hidden');
+                // Image has already loaded, show the button only if it's wider than the container.
+                if (img.naturalWidth > elWidth) {
+                    button.classList.remove('hidden');
+                }
             } else {
-                // Show the button when the image is loaded.
-                img.onload = () => button.classList.remove('hidden');
+                // Show the button when the image is loaded, only if it's wider than the container.
+                img.onload = () => {
+                    if (img.naturalWidth > elWidth) {
+                        button.classList.remove('hidden');
+                    }
+                };
             }
         });
     }
@@ -664,7 +669,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         const site = await this.getSite();
         const allowedScriptUrls = site?.getContentAllowedScriptUrls() ?? [];
 
-        scripts.forEach((script) => {
+        await CorePromiseUtils.allPromisesIgnoringErrors(scripts.map(async (script) => {
             const url = script.dataset.originalSrc ?? '';
 
             // For now, only absolute URLs are supported to keep it simple. If a script uses a relative URL it won't be loaded.
@@ -679,13 +684,18 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                         newScript.setAttribute(attr.name, attr.value);
                     }
                 });
-                newScript.src = CoreUrl.resolveProtocolRelativeUrl(url, site?.getURL());
+
+                let scriptUrl = CoreUrl.resolveProtocolRelativeUrl(url, site?.getURL());
+                if (site?.isSitePluginFileUrl(scriptUrl)) {
+                    scriptUrl = await site.checkAndFixPluginfileURL(scriptUrl);
+                }
+                newScript.src = scriptUrl;
 
                 script.replaceWith(newScript);
             } else {
                 script.remove();
             }
-        });
+        }));
     }
 
     /**
@@ -701,6 +711,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         const site = await this.getSite();
 
         const images = Array.from(div.querySelectorAll('img'));
+        const pictures = Array.from(div.querySelectorAll('picture'));
         const anchors = Array.from(div.querySelectorAll('a'));
         const audios = Array.from(div.querySelectorAll('audio'));
         const videos = Array.from(div.querySelectorAll('video'));
@@ -735,11 +746,21 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             this.addExternalContent(anchor);
         });
 
+        const siteId = this.getSiteId();
         const externalImages: CoreExternalContentDirective[] = [];
         if (images && images.length > 0) {
             // Walk through the content to find images, and add our directive.
-            images.forEach((img: HTMLElement) => {
+            images.forEach((img) => {
                 this.addMediaAdaptClass(img);
+
+                if (siteId) {
+                    // Avoid WebView starting network requests before external-content can rewrite URLs.
+                    const srcset = img.getAttribute('srcset');
+                    if (srcset) {
+                        img.setAttribute('data-original-srcset', srcset);
+                        img.removeAttribute('srcset');
+                    }
+                }
 
                 const externalImage = this.addExternalContent(img);
                 if (externalImage && !externalImage.invalid) {
@@ -751,6 +772,22 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 }
             });
         }
+
+        pictures.forEach(picture => {
+            const sources = Array.from(picture.querySelectorAll('source'));
+
+            sources.forEach((source) => {
+                if (siteId) {
+                    // Avoid WebView starting network requests before external-content can rewrite URLs.
+                    const srcset = source.getAttribute('srcset');
+                    if (srcset) {
+                        source.setAttribute('data-original-srcset', srcset);
+                        source.removeAttribute('srcset');
+                    }
+                }
+                this.addExternalContent(source);
+            });
+        });
 
         const audioControllers = audios.map(audio => {
             this.treatMedia(audio);

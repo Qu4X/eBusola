@@ -422,10 +422,12 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
     requestObservable<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets): WSObservable<T> {
         if (this.isLoggedOut() && !CoreAuthenticatedSite.ALLOWED_LOGGEDOUT_WS.includes(method)) {
             // Site is logged out, it cannot call WebServices.
-            this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {});
-
-            // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
-            throw new CoreSilentError(Translate.instant('core.lostconnection'));
+            if (this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {})) {
+                // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
+                throw new CoreSilentError(Translate.instant('core.lostconnection'));
+            } else {
+                throw new CoreError(Translate.instant('core.lostconnection'));
+            }
         }
 
         data = data || {};
@@ -707,10 +709,10 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
             if (CoreWSError.isExpiredTokenError(error)) {
                 // Session expired, trigger event.
-                this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {});
+                // Use a silent error if the event is triggered, the SESSION_EXPIRED event will display a message if needed.
+                useSilentError = this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {});
                 // Change error message. Try to get data from cache, the event will handle the error.
                 error.message = Translate.instant('core.lostconnection');
-                useSilentError = true; // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
             } else if (error.errorcode === 'userdeleted' || error.errorcode === 'wsaccessuserdeleted') {
                 // User deleted, trigger event.
                 this.triggerSiteEvent(CoreEvents.USER_DELETED, { params: data });
@@ -731,14 +733,14 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 throw new CoreWSError(error);
             } else if (error.errorcode === 'forcepasswordchangenotice') {
                 // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
-                this.triggerSiteEvent(CoreEvents.PASSWORD_CHANGE_FORCED, {});
+                // Use a silent error if the event is triggered, the change password page already displays the appropiate info.
+                useSilentError = this.triggerSiteEvent(CoreEvents.PASSWORD_CHANGE_FORCED, {});
                 error.message = Translate.instant('core.forcepasswordchangenotice');
-                useSilentError = true; // Use a silent error, the change password page already displays the appropiate info.
             } else if (error.errorcode === 'usernotfullysetup') {
                 // User not fully setup, trigger event. Try to get data from cache, the event will handle the error.
-                this.triggerSiteEvent(CoreEvents.USER_NOT_FULLY_SETUP, {});
+                // Use a silent error if the event is triggered, the complete profile page already displays the appropiate info.
+                useSilentError = this.triggerSiteEvent(CoreEvents.USER_NOT_FULLY_SETUP, {});
                 error.message = Translate.instant('core.usernotfullysetup');
-                useSilentError = true; // Use a silent error, the complete profile page already displays the appropiate info.
             } else if (error.errorcode === 'sitepolicynotagreed') {
                 // Site policy not agreed, trigger event.
                 this.triggerSiteEvent(CoreEvents.SITE_POLICY_NOT_AGREED, {});
@@ -775,7 +777,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 }
 
                 throw new CoreWSError(error);
-            } else if (preSets.cacheErrors && preSets.cacheErrors.indexOf(error.errorcode) != -1) {
+            } else if (preSets.cacheErrors && preSets.cacheErrors.includes(error.errorcode)) {
                 // Save the error instead of deleting the cache entry so the same content is displayed in offline.
                 this.saveToCache(method, data, error, preSets);
 
@@ -956,7 +958,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         const requests = this.requestQueue;
         this.requestQueue = [];
 
-        if (requests.length == 1 && !CoreAuthenticatedSite.REQUEST_QUEUE_FORCE_WS) {
+        if (requests.length === 1 && !CoreAuthenticatedSite.REQUEST_QUEUE_FORCE_WS) {
             // Only one request, do a regular web service call.
             try {
                 const data = await CoreWS.call(requests[0].method, requests[0].data, requests[0].wsPreSets);
@@ -980,10 +982,10 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                     let value = request.data[key];
                     const match = /^moodlews(setting.*)$/.exec(key);
                     if (match) {
-                        if (match[1] == 'settingfilter' || match[1] == 'settingfileurl') {
+                        if (match[1] === 'settingfilter' || match[1] === 'settingfileurl') {
                             // Undo special treatment of these settings in CoreWS.convertValuesToString.
-                            value = (value == 'true' ? '1' : '0');
-                        } else if (match[1] == 'settinglang') {
+                            value = (value === 'true' ? '1' : '0');
+                        } else if (match[1] === 'settinglang') {
                             // Use the lang globally to avoid exceptions with languages not installed.
                             lang = value;
 
@@ -1353,40 +1355,6 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
     }
 
     /**
-     * Returns the URL to the documentation of the app, based on Moodle version and current language.
-     *
-     * @param page Docs page to go to.
-     * @returns Promise resolved with the Moodle docs URL.
-     *
-     * @deprecated since 4.5. Not needed anymore.
-     */
-    async getDocsUrl(page?: string): Promise<string> {
-        const release = this.infos?.release ? this.infos.release : undefined;
-        let docsUrl = `https://docs.moodle.org/en/${page}`;
-
-        if (release !== undefined) {
-            // Remove this part of the function if this file only uses CoreSites here.
-            const version = CoreSites.getMajorReleaseNumber(release).replace('.', '');
-
-            // Check is a valid number.
-            if (Number(version) >= 24) {
-                // Append release number.
-                docsUrl = docsUrl.replace('https://docs.moodle.org/', `https://docs.moodle.org/${version}/`);
-            }
-        }
-
-        try {
-            // Remove this part of the function if this file only uses CoreLang here.
-            let lang = CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS);
-            lang = CoreLang.getParentLanguage() || lang;
-
-            return docsUrl.replace('/en/', `/${lang}/`);
-        } catch {
-            return docsUrl;
-        }
-    }
-
-    /**
      * @inheritdoc
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
@@ -1615,7 +1583,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
         const position = releases.indexOf(data.major);
 
-        if (position == -1 || position == releases.length - 1) {
+        if (position === -1 || position === releases.length - 1) {
             // Major version not found or it's the last one. Use the last one.
             return MOODLE_RELEASES[releases[position]];
         }
@@ -1647,12 +1615,14 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      *
      * @param eventName Event name.
      * @param data Event data.
+     * @returns Whether the event was triggered.
      */
     protected triggerSiteEvent<Fallback = unknown, Event extends string = string>(
-        eventName: Event,
-        data?: CoreEventData<Event, Fallback>,
-    ): void {
-        CoreEvents.trigger(eventName, data);
+        eventName: Event, // eslint-disable-line @typescript-eslint/no-unused-vars
+        data?: CoreEventData<Event, Fallback>, // eslint-disable-line @typescript-eslint/no-unused-vars
+    ): boolean {
+        // To be overridden. If it's not a valid site it shouldn't trigger events because it can be mistaken with current site.
+        return false;
     }
 
     /**

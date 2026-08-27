@@ -69,14 +69,6 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      * @deprecated since 4.4. Use url instead. Keeping it a bit more time for backward compatibility.
      */
     @Input() src?: string;
-    /**
-     * @deprecated since 4.4. Use url instead. Keeping it a bit more time for backward compatibility.
-     */
-    @Input() href?: string;
-    /**
-     * @deprecated since 4.4. Use posterUrl instead. Keeping it a bit more time for backward compatibility.
-     */
-    @Input() poster?: string;
 
     /**
      * Event emitted when the content is loaded. Only for images.
@@ -159,20 +151,34 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
 
         if (tagName === 'A' || tagName === 'IMAGE') {
             targetAttr = 'href';
-            url = this.url ?? this.href ?? ''; // eslint-disable-line @typescript-eslint/no-deprecated
+            url = this.url ?? '';
 
         } else if (tagName === 'IMG') {
             targetAttr = 'src';
             url = this.url ?? this.src ?? ''; // eslint-disable-line @typescript-eslint/no-deprecated
 
+            await this.handleSrcset(this.siteId);
+
         } else if (tagName === 'AUDIO' || tagName === 'VIDEO' || tagName === 'SOURCE' || tagName === 'TRACK') {
             targetAttr = 'src';
             url = this.url ?? this.src ?? ''; // eslint-disable-line @typescript-eslint/no-deprecated
 
-            if (tagName === 'VIDEO' && (this.posterUrl || this.poster)) { // eslint-disable-line @typescript-eslint/no-deprecated
+            if (tagName === 'SOURCE') {
+                await this.handleSrcset(this.siteId);
+
+                // For elements that only use srcset, url can be empty.
+                // Resolve early when tagName === 'SOURCE' and there is no src URL.
+                if (!url) {
+                    this.onReadyPromise.resolve();
+
+                    return;
+                }
+            }
+
+            if (tagName === 'VIDEO' && this.posterUrl) {
                 // Handle poster.
-                // eslint-disable-next-line @typescript-eslint/no-deprecated
-                this.handleExternalContent('poster', this.posterUrl ?? this.poster ?? '').catch(() => {
+
+                this.handleExternalContent('poster', this.posterUrl ?? '').catch(() => {
                     // Ignore errors.
                 });
             }
@@ -209,27 +215,18 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         }
 
         const site = await CorePromiseUtils.ignoreErrors(CoreSites.getSite(this.siteId));
-        const isSiteFile = site?.isSitePluginFileUrl(url);
 
-        // Try to convert the URL to absolute. This will only work for URLs relative to the site URL, it won't work for
-        // URLs relative to a subpath (e.g. relative to the course page URL).
-        url = site && url ? CoreUrl.toAbsoluteURL(site.getURL(), url) : url;
+        let finalUrl: string;
+        try {
+            finalUrl = await this.getFinalUrl(url, tagName, targetAttr, site);
+        } catch (error) {
+            if (error instanceof CannotDownloadError) {
+                // Remove element since it'll be broken.
+                this.element.parentElement?.removeChild(this.element);
+            }
 
-        if (!url || !url.match(/^https?:\/\//i) || CoreUrl.isLocalFileUrl(url) ||
-                (tagName === 'A' && !(isSiteFile || site?.isSiteThemeImageUrl(url) || CoreUrl.isGravatarUrl(url)))) {
-
-            this.logger.debug(`Ignoring non-downloadable URL: ${url}`);
-
-            throw new CoreError('Non-downloadable URL');
+            throw error;
         }
-
-        if (site && !site.canDownloadFiles() && isSiteFile) {
-            this.element.parentElement?.removeChild(this.element); // Remove element since it'll be broken.
-
-            throw new CoreError(Translate.instant('core.cannotdownloadfiles'));
-        }
-
-        const finalUrl = await this.getUrlToUse(targetAttr, url, site);
 
         this.logger.debug(`Using URL ${finalUrl} for ${url}`);
 
@@ -263,9 +260,9 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         } else {
             this.element.setAttribute(targetAttr, url);
 
-            const originalUrl = targetAttr === 'poster' ?
-                (this.posterUrl ?? this.poster) : // eslint-disable-line @typescript-eslint/no-deprecated
-                (this.url ?? this.src ?? this.href); // eslint-disable-line @typescript-eslint/no-deprecated
+            const originalUrl = targetAttr === 'poster'
+                ? this.posterUrl
+                : (this.url ?? this.src); // eslint-disable-line @typescript-eslint/no-deprecated
             if (originalUrl && originalUrl !== url) {
                 this.element.setAttribute(`data-original-${targetAttr}`, originalUrl);
             }
@@ -282,6 +279,93 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             this.loaded = false;
             this.waitForLoad();
         }
+    }
+
+    /**
+     * Handle srcset attribute, replacing each URL with the local/downloaded version.
+     *
+     * @param siteId Site ID.
+     * @returns Promise resolved when done.
+     */
+    protected async handleSrcset(siteId?: string): Promise<void> {
+        const srcset = this.element.getAttribute('data-original-srcset') ?? this.element.getAttribute('srcset');
+        if (!srcset) {
+            return;
+        }
+
+        if (!this.element.hasAttribute('data-original-srcset')) {
+            this.element.setAttribute('data-original-srcset', srcset);
+        }
+
+        const site = await CorePromiseUtils.ignoreErrors(CoreSites.getSite(siteId));
+
+        // Parse srcset: comma-separated list of "url [descriptor]" pairs.
+        const parts = srcset.split(',').map(part => part.trim()).filter(part => part.length > 0);
+
+        const promises = parts.map(async (part) => {
+            const tokens = part.split(/\s+/);
+            const url = tokens[0];
+            const descriptor = tokens.slice(1).join(' ');
+
+            if (!url) {
+                return part;
+            }
+
+            let finalUrl: string;
+            try {
+                finalUrl = await this.getFinalUrl(url, this.element.tagName, 'srcset', site);
+
+                this.logger.debug(`Using URL ${finalUrl} for ${url} in srcset`);
+
+                return descriptor ? `${finalUrl} ${descriptor}` : finalUrl;
+            } catch (error) {
+                if (error instanceof CannotDownloadError) {
+                    // URL might be broken.
+                    return '';
+                }
+
+                return part;
+            }
+        });
+
+        try {
+            const newParts = await Promise.all(promises);
+            this.element.setAttribute('srcset', newParts.filter(part => part.length > 0).join(', '));
+        } catch {
+            this.logger.error('Error treating srcset.', this.element);
+        }
+    }
+
+    /**
+     * Get the final URL to use in the element, checking if it's valid and can be downloaded.
+     *
+     * @param url URL to treat.
+     * @param tagName Name of the tag using the URL.
+     * @param targetAttr Attribute using the URL.
+     * @param site Site.
+     * @returns Promise resolved with the URL to use in the element.
+     *  If the URL is not valid or can't be downloaded, the promise will be rejected.
+     */
+    protected async getFinalUrl(url: string, tagName: string, targetAttr: string, site?: CoreSite): Promise<string> {
+        const isSiteFile = site?.isSitePluginFileUrl(url);
+
+        // Try to convert the URL to absolute. This will only work for URLs relative to the site URL, it won't work for
+        // URLs relative to a subpath (e.g. relative to the course page URL).
+        url = site && url ? CoreUrl.toAbsoluteURL(site.getURL(), url) : url;
+
+        if (!url || !url.match(/^https?:\/\//i) || CoreUrl.isLocalFileUrl(url) ||
+                (tagName === 'A' && !(isSiteFile || site?.isSiteThemeImageUrl(url) || CoreUrl.isGravatarUrl(url)))) {
+
+            this.logger.debug(`Ignoring non-downloadable URL: ${url}`);
+
+            throw new CoreError('Non-downloadable URL');
+        }
+
+        if (site && !site.canDownloadFiles() && isSiteFile) {
+            throw new CannotDownloadError(Translate.instant('core.cannotdownloadfiles'));
+        }
+
+        return await this.getUrlToUse(targetAttr, url, site);
     }
 
     /**
@@ -595,3 +679,5 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
     }
 
 }
+
+class CannotDownloadError extends CoreError {};

@@ -90,7 +90,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     pluginName = 'forum';
-    descriptionNote?: string;
     promisedDiscussions = new CorePromisedValue<AddonModForumDiscussionsManager>();
     discussionsItems: (AddonModForumDiscussion | AddonModForumOfflineDiscussion)[] = [];
     fetchFailed = false;
@@ -265,7 +264,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     if (data.discussionId) {
                         // Discussion changed, search it in the list of discussions.
                         const discussion = this.discussions?.items.find(
-                            disc => this.discussions?.getSource().isOnlineDiscussion(disc) && data.discussionId == disc.discussion,
+                            disc => this.discussions?.getSource().isOnlineDiscussion(disc) && data.discussionId === disc.discussion,
                         ) as AddonModForumDiscussion;
 
                         if (discussion) {
@@ -297,16 +296,16 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         // Listen for offline ratings saved and synced.
         this.ratingOfflineObserver = CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
-            if (this.forum && data.component == 'mod_forum' && data.ratingArea == 'post' &&
-                    data.contextLevel == ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
+            if (this.forum && data.component === 'mod_forum' && data.ratingArea === 'post' &&
+                    data.contextLevel === ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
                 this.hasOfflineRatings = true;
                 this.hasOffline = true;
             }
         });
 
         this.ratingSyncObserver = CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, async (data) => {
-            if (this.forum && data.component == 'mod_forum' && data.ratingArea == 'post' &&
-                    data.contextLevel == ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
+            if (this.forum && data.component === 'mod_forum' && data.ratingArea === 'post' &&
+                    data.contextLevel === ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
                 this.hasOfflineRatings =
                     await CoreRatingOffline.hasRatings('mod_forum', 'post', ContextLevel.MODULE, this.forum.cmid);
                 this.hasOffline = this.hasOffline || this.hasOfflineRatings;
@@ -408,9 +407,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         const showDueDateMessage = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
         this.description = forum.intro || this.description;
         this.availabilityMessage = AddonModForumHelper.getAvailabilityMessage(forum, showDueDateMessage);
-        this.descriptionNote = Translate.instant('addon.mod_forum.numdiscussions', {
-            numdiscussions: forum.numdiscussions,
-        });
 
         this.dataRetrieved.emit(forum);
 
@@ -453,7 +449,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     // capability to override it.
                     // Just in case the forum was fetched from WS when the cut-off date was not reached but it is now.
                     const cutoffDateReached = AddonModForumHelper.isCutoffDateReached(forum)
-                                    && !accessInfo.cancanoverridecutoff;
+                        && !accessInfo.cancanoverridecutoff;
                     this.canAddDiscussion = !!forum.cancreatediscussions && !cutoffDateReached;
                     this.showQAMessage = forum.type === AddonModForumType.QANDA && !accessInfo.canviewqandawithoutposting;
 
@@ -536,7 +532,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModForumAutoSyncData | AddonModForumManualSyncData): boolean {
         return !!this.forum
-            && (!('source' in syncEventData) || syncEventData.source != 'index')
+            && (!('source' in syncEventData) || syncEventData.source !== 'index')
             && syncEventData.forumId == this.forum.id
             && syncEventData.userId == CoreSites.getCurrentSiteUserId();
     }
@@ -632,7 +628,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param event Click Event.
      * @param discussion Discussion.
      */
-    async showOptionsMenu(event: Event, discussion: AddonModForumDiscussion): Promise<void> {
+    async showOptionsMenu(event: Event, discussion: AddonModForumDiscussion | AddonModForumOfflineDiscussion): Promise<void> {
         if (!this.forum) {
             return;
         }
@@ -656,13 +652,19 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         if (popoverData && popoverData.action) {
             switch (popoverData.action) {
                 case 'lock':
-                    discussion.locked = popoverData.value;
+                    if ('locked' in discussion) {
+                        discussion.locked = popoverData.value;
+                    }
                     break;
                 case 'pin':
-                    discussion.pinned = popoverData.value;
+                    if ('pinned' in discussion) {
+                        discussion.pinned = popoverData.value;
+                    }
                     break;
                 case 'star':
-                    discussion.starred = popoverData.value;
+                    if ('starred' in discussion) {
+                        discussion.starred = popoverData.value;
+                    }
                     break;
                 default:
                     break;

@@ -45,6 +45,7 @@ import { CoreSites } from './sites';
 import { CoreNavigator } from './navigator';
 import { CoreWait } from '@static/wait';
 import { CoreAlerts } from './overlays/alerts';
+import { AndroidNotificationPriority } from '@features/native/constants';
 
 /**
  * Service to handle local notifications.
@@ -320,10 +321,12 @@ export class CoreLocalNotificationsProvider {
             return;
         }
 
+        // @todo: The LocalNotification plugin now allows creating the channel, but the awesome-cordova-plugins
+        // wrapper doesn't have the method yet. Continue using the Push plugin for now.
         await Push.createChannel({
             id: 'default-channel-id',
             description: Translate.instant('addon.calendar.calendarreminders'),
-            importance: 4,
+            importance: AndroidNotificationPriority.HIGH,
         }).catch((error) => {
             this.logger.error('Error changing channel name', error);
         });
@@ -666,7 +669,7 @@ export class CoreLocalNotificationsProvider {
     ): Promise<number> {
         const deferred = new CorePromisedValue<number>();
         const key = `${table}#${id}`;
-        const isQueueEmpty = Object.keys(this.codeRequestsQueue).length == 0;
+        const isQueueEmpty = Object.keys(this.codeRequestsQueue).length === 0;
 
         if (this.codeRequestsQueue[key] !== undefined) {
             // There's already a pending request for this store and ID, add the promise to it.

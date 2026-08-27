@@ -263,17 +263,6 @@ export class CoreUrl {
     }
 
     /**
-     * Removes protocol from the url.
-     *
-     * @param url Site url.
-     * @returns Url without protocol.
-     * @deprecated since 4.5. Use CoreUrl.removeUrlParts(url, CoreUrlPartNames.Protocol) instead.
-     */
-    static removeProtocol(url: string): string {
-        return CoreUrl.removeUrlParts(url, CoreUrlPartNames.Protocol);
-    }
-
-    /**
      * Check if two URLs have the same domain and path.
      *
      * @param urlA First URL.
@@ -310,18 +299,6 @@ export class CoreUrl {
         const urlParts = CoreUrl.parse(url);
 
         return urlParts?.fragment ? `#${urlParts.fragment}` : undefined;
-    }
-
-    /**
-     * Remove the anchor from a URL.
-     *
-     * @param url URL.
-     * @returns URL without anchor if any.
-     *
-     * @deprecated since 4.5. Use CoreUrl.removeUrlParts(url, CoreUrlPartNames.Fragment) instead.
-     */
-    static removeUrlAnchor(url: string): string {
-        return CoreUrl.removeUrlParts(url, CoreUrlPartNames.Fragment);
     }
 
     /**
@@ -503,7 +480,7 @@ export class CoreUrl {
         const urlAndAnchor = urlToTreat.split('#');
         urlToTreat = urlAndAnchor[0];
 
-        let separator = urlToTreat.indexOf('?') !== -1 ? '&' : '?';
+        let separator = urlToTreat.includes('?') ? '&' : '?';
 
         for (const key in params) {
             let value = params[key];
@@ -564,8 +541,8 @@ export class CoreUrl {
         // Do not use tokenpluginfile if site doesn't use slash params, the URL doesn't work.
         // Also, only use it for "core" pluginfile endpoints. Some plugins can implement their own endpoint (like customcert).
         return !CoreConstants.CONFIG.disableTokenFile && !!accessKey && !url.match(/[&?]file=/) && (
-            url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
-            url.indexOf(CorePath.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0) &&
+            url.startsWith(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) ||
+            url.startsWith(CorePath.concatenatePaths(siteUrl, 'webservice/pluginfile.php'))) &&
             !CoreMedia.sourceUsesJavascriptPlayer({ src: url });
     }
 
@@ -678,12 +655,12 @@ export class CoreUrl {
         const canUseTokenPluginFile = accessKey && CoreUrl.canUseTokenPluginFile(url, siteUrl, accessKey);
 
         // First check if we need to fix this url or is already fixed.
-        if (!canUseTokenPluginFile && url.indexOf('token=') !== -1) {
+        if (!canUseTokenPluginFile && url.includes('token=')) {
             return url;
         }
 
         // Check if is a valid URL (contains the pluginfile endpoint) and belongs to the site.
-        if (!CoreUrl.isPluginFileUrl(url) || url.indexOf(CoreText.addEndingSlash(siteUrl)) !== 0) {
+        if (!CoreUrl.isPluginFileUrl(url) || !url.startsWith(CoreText.addEndingSlash(siteUrl))) {
             return url;
         }
 
@@ -692,7 +669,7 @@ export class CoreUrl {
             url = url.replace(/(\/webservice)?\/pluginfile\.php/, `/tokenpluginfile.php/${accessKey}`);
         } else {
             // Use pluginfile.php. Some webservices returns directly the correct download url, others not.
-            if (url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
+            if (url.startsWith(CorePath.concatenatePaths(siteUrl, 'pluginfile.php'))) {
                 url = url.replace('/pluginfile', '/webservice/pluginfile');
             }
 
@@ -845,7 +822,7 @@ export class CoreUrl {
      * @todo Use CoreUrl.parse. It cannot use it right now because it won't detect username on custom URL with double protocol.
      */
     static getUsernameFromUrl(url: string): string | undefined {
-            if (url.indexOf('@') < 0) {
+            if (!url.includes('@')) {
                 return;
             }
 
@@ -891,7 +868,7 @@ export class CoreUrl {
      * @returns Whether the URL is a gravatar URL.
      */
     static isGravatarUrl(url: string): boolean {
-        return url?.indexOf('gravatar.com/avatar') !== -1;
+        return url?.includes('gravatar.com/avatar') ?? false;
     }
 
     /**
@@ -944,7 +921,7 @@ export class CoreUrl {
      * @returns Whether the URL is a pluginfile URL.
      */
     static isPluginFileUrl(url: string): boolean {
-        return url.indexOf('/pluginfile.php') !== -1;
+        return url.includes('/pluginfile.php');
     }
 
     /**
@@ -954,7 +931,7 @@ export class CoreUrl {
      * @returns Whether the URL is a tokenpluginfile URL.
      */
     static isTokenPluginFileUrl(url: string): boolean {
-        return url.indexOf('/tokenpluginfile.php') !== -1;
+        return url.includes('/tokenpluginfile.php');
     }
 
     /**
@@ -969,7 +946,7 @@ export class CoreUrl {
             return imageUrl.startsWith(`${siteUrl}/theme/image.php`);
         }
 
-        return imageUrl?.indexOf('/theme/image.php') !== -1;
+        return imageUrl?.includes('/theme/image.php') ?? false;
     }
 
     /**
@@ -1087,7 +1064,7 @@ export class CoreUrl {
         url = url.replace(/&amp;/g, '&');
 
         // It site URL is supplied, check if the URL belongs to the site.
-        if (siteUrl && url.indexOf(CoreText.addEndingSlash(siteUrl)) !== 0) {
+        if (siteUrl && !url.startsWith(CoreText.addEndingSlash(siteUrl))) {
             return url;
         }
 
@@ -1149,6 +1126,8 @@ export class CoreUrl {
 
         const normalize = (url: string) => {
             const stripped = CoreUrl.removeUrlParts(url, [
+                CoreUrlPartNames.Query,
+                CoreUrlPartNames.Fragment,
                 CoreUrlPartNames.Protocol,
                 CoreUrlPartNames.WWWInDomain,
             ]);

@@ -22,7 +22,7 @@ import { CoreLoginHelper, CoreLoginSSOData } from '@features/login/services/logi
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CorePath } from '@static/path';
-import { CoreConstants } from '../constants';
+import { CoreConstants, CoreLinkSource } from '../constants';
 import { CoreSSO } from '@static/sso';
 import { CoreNavigator, CoreRedirectPayload } from './navigator';
 import { CoreSiteCheckResponse, CoreSites } from './sites';
@@ -32,6 +32,8 @@ import { CoreLoadings } from './overlays/loadings';
 import { CoreAlerts } from './overlays/alerts';
 import { CorePlatform } from './platform';
 import { NO_SITE_ID } from '@features/login/constants';
+import { CoreSitesFactory } from './sites-factory';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /*
  * Provider to handle custom URL schemes.
@@ -65,48 +67,174 @@ export class CoreCustomURLSchemesProvider {
     /**
      * Given some data of a custom URL with a token, create a site if it needs to be created.
      *
+     * @param token Token to use to create the site.
      * @param data URL data.
-     * @returns Promise resolved with the site ID if created or already exists.
+     * @param source Source of the deep link.
+     * @returns Site ID if created or already exists, undefined otherwise.
      */
-    protected async createSiteIfNeeded(data: CoreCustomURLSchemesParams): Promise<string | undefined> {
-        if (!data.token) {
-            return;
-        }
-
-        const currentSite = CoreSites.getCurrentSite();
-
-        if (!currentSite || currentSite.getToken() !== data.token || currentSite.isLoggedOut()) {
-            // Token belongs to a different site or site is logged out, create it. It doesn't matter if it already exists.
-
-            if (!data.siteUrl.match(/^https?:\/\//)) {
-                // URL doesn't have a protocol and it's required to be able to create the site. Check which one to use.
-                const result = await CoreSites.checkSite(data.siteUrl, undefined, 'URL scheme create site');
-
-                data.siteUrl = result.siteUrl;
-
-                await CoreSites.checkApplication(result.config);
-            }
-
-            return CoreSites.newSite(
-                data.siteUrl,
-                data.token,
-                data.privateToken,
-                !!data.isSSOToken,
-                CoreLoginHelper.getOAuthIdFromParams(data.ssoUrlParams),
-            );
-        } else {
+    protected async createSiteIfNeeded(
+        token: string,
+        data: CoreCustomURLSchemesParams,
+        source?: CoreLinkSource,
+    ): Promise<string | undefined> {
+        // First of all, check if it's the current site. This check isn't 100% accurate because the app's token could be expired or
+        // the app could no longer have the token stored if logged out, but it's a fast check and can avoid extra calculations.
+        let isCurrentSite = this.tokenBelongsToCurrentSite(token, data);
+        if (isCurrentSite && !CoreSites.getCurrentSite()?.isLoggedOut()) {
             // Token belongs to current site, no need to create it.
             return CoreSites.getCurrentSiteId();
         }
+
+        // Token belongs to a different site or site is logged out, create it. It doesn't matter if it already exists.
+        let isExistingSite = isCurrentSite;
+
+        if (!isExistingSite && data.siteUrl.match(/^https?:\/\//)) {
+            // Check if site already exists in the app, using only the URL and the token.
+            // Don't use username or userId because we can't be sure they'll match the token.
+            const siteId = await this.checkSiteExistsByUrlAndToken(data.siteUrl, token);
+
+            if (siteId) {
+                isExistingSite = true;
+                isCurrentSite = siteId === CoreSites.getCurrentSiteId();
+            }
+        }
+
+        // The autologin admin setting only applies to certain deep links and to sites that don't exist yet.
+        const shouldCheckAutoLoginSetting = this.shouldCheckAutoLoginSetting(data);
+
+        if (!isExistingSite && (shouldCheckAutoLoginSetting || !data.siteUrl.match(/^https?:\/\//))) {
+            // Validate the URL and get the public config.
+            const result = await CoreSites.checkSite(data.siteUrl, undefined, 'URL scheme create site');
+
+            data.siteUrl = result.siteUrl;
+
+            await CoreSites.checkApplication(result.config, null);
+
+            if (shouldCheckAutoLoginSetting && result.config.tool_mobile_enabledeeplinkautologin === false) {
+                // The site doesn't allow automatic login from deep links, don't create the site.
+                await CoreContentLinksHelper.confirmLinkToSite({ url: data.siteUrl }, this.getDeepLinkSource(data, source));
+
+                return undefined;
+            }
+        }
+
+        const showConfirm = await this.shouldShowConfirmBeforeCreatingSite(data, isCurrentSite, isExistingSite);
+        if (showConfirm) {
+            // Confirm before creating the site.
+            await CoreContentLinksHelper.confirmLinkToSite({ url: data.siteUrl }, this.getDeepLinkSource(data, source));
+        }
+
+        return CoreSites.newSite(
+            data.siteUrl,
+            token,
+            data.privateToken,
+            !!data.isSSOToken,
+            CoreLoginHelper.getOAuthIdFromParams(data.ssoUrlParams),
+        );
+    }
+
+    /**
+     * Check if a token received in a custom URL belongs to the current site.
+     *
+     * @param token Token to check.
+     * @param data URL data.
+     * @returns True if the token belongs to the current site, false otherwise.
+     */
+    protected tokenBelongsToCurrentSite(token: string, data: CoreCustomURLSchemesParams): boolean {
+        const currentSite = CoreSites.getCurrentSite();
+
+        return !!currentSite && currentSite.getToken() === token && currentSite.containsUrl(data.siteUrl);
+    }
+
+    /**
+     * Check whether it's needed to check the autologin setting for a certain URL data.
+     *
+     * @param data URL data.
+     * @returns True if the autologin setting should be checked, false otherwise.
+     */
+    protected shouldCheckAutoLoginSetting(data: CoreCustomURLSchemesParams): boolean {
+        // SSO logins are always allowed, no matter the autologin setting.
+        return !data.isSSOToken;
+    }
+
+    /**
+     * Check if a site already exists for a certain site URL and token.
+     * It will check if the token's user ID matches one of our sites, it won't check if there is a site with same token.
+     *
+     * @param siteUrl Site URL to check.
+     * @param token Token to check.
+     * @returns Site ID if found, undefined otherwise.
+     */
+    protected async checkSiteExistsByUrlAndToken(siteUrl: string, token: string): Promise<string | undefined> {
+        // Don't use token to search site IDs because the app's token could be expired or the app could have deleted it.
+        // Also, each device will have a different token in the future.
+        const siteIds = await CoreSites.getSiteIdsFromUrl(siteUrl, { prioritize: false });
+
+        if (siteIds.length) {
+            // It's possible that the site already exists. Verify it.
+            const tmpSite = CoreSitesFactory.makeAuthenticatedSite(siteUrl, token);
+
+            const siteInfo = await CorePromiseUtils.ignoreErrors(tmpSite.fetchSiteInfo());
+            if (siteInfo) {
+                // Search again, but now using the userid.
+                const siteIdsByUserId = await CoreSites.getSiteIdsFromUrl(siteUrl, {
+                    userId: siteInfo.userid,
+                    prioritize: true,
+                });
+
+                return siteIdsByUserId[0];
+            }
+        }
+    }
+
+    /**
+     * Check if the a confirm needs to be shown before creating a site via deep link.
+     *
+     * @param data Deep link data.
+     * @param isCurrentSite Whether the site is the current site.
+     * @param isExistingSite Whether the site already exists in the app.
+     * @returns True if a confirm should be shown, false otherwise.
+     */
+    protected async shouldShowConfirmBeforeCreatingSite(
+        data: CoreCustomURLSchemesParams,
+        isCurrentSite: boolean,
+        isExistingSite: boolean,
+    ): Promise<boolean> {
+        if (isCurrentSite) {
+            // Not changing site and site is trusted, no need to confirm.
+            return false;
+        }
+
+        if (data.isSSOToken) {
+            // SSO login started in the app, no need to confirm.
+            return false;
+        }
+
+        if (!CoreSites.getCurrentSite()) {
+            // No current site, so not changing site.
+            // If entering an existing site or app has a list of allowed sites, don't confirm because site is trusted.
+            if (isExistingSite) {
+                return false;
+            }
+
+            const hasSiteAllowlist = await CoreLoginHelper.hasSiteAllowlist();
+            if (hasSiteAllowlist) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
      * Handle an URL received by custom URL scheme.
      *
      * @param url URL to treat.
+     * @param options Options.
+     * @param options.source Source of the deep link. By default, CoreLinkSource.LINK.
      * @returns Promise resolved when done. If rejected, the parameter is of type CoreCustomURLSchemesHandleError.
      */
-    async handleCustomURL(url: string): Promise<void> {
+    async handleCustomURL(url: string, options?: { source?: CoreLinkSource }): Promise<void> {
         if (!this.isCustomURL(url)) {
             throw this.createInvalidSchemeError(url);
         }
@@ -170,49 +298,50 @@ export class CoreCustomURLSchemesProvider {
                 throw Translate.instant('core.contentlinks.errorredirectothersite');
             }
 
-            // First of all, create the site if needed.
-            const siteId = await this.createSiteIfNeeded(data);
-
-            if (data.isSSOToken || (data.isAuthenticationURL && siteId && CoreSites.getCurrentSiteId() === siteId)) {
-                // Site created and authenticated, open the page to go.
-                void CoreNavigator.navigateToSiteHome({
-                    params: <CoreRedirectPayload> {
-                        redirectPath: data.redirectPath,
-                        redirectOptions: data.redirectOptions,
-                        urlToOpen: data.urlToOpen,
-                    },
-                });
-
-                return;
-            }
-
             if (data.redirect && !data.redirect.match(/^https?:\/\//)) {
                 // Redirect is a relative URL. Append the site URL.
                 data.redirect = CorePath.concatenatePaths(data.siteUrl, data.redirect);
             }
 
-            let siteIds = [siteId];
+            // Check if the site needs to be created and ask the user to confirm if needed.
+            let siteIds: string[] = [];
+            if (data.token) {
+                const siteId = await this.createSiteIfNeeded(data.token, data, options?.source);
 
-            if (!siteId) {
-                // No site created, check if the site is stored (to know which one to use).
+                if (siteId) {
+                    if (data.isSSOToken || (data.isAuthenticationURL && siteId && CoreSites.getCurrentSiteId() === siteId)) {
+                        // Site created and authenticated, open the page to go.
+                        void CoreNavigator.navigateToSiteHome({
+                            params: <CoreRedirectPayload> {
+                                redirectPath: data.redirectPath,
+                                redirectOptions: data.redirectOptions,
+                                urlToOpen: data.urlToOpen ?? data.redirect,
+                            },
+                        });
+
+                        return;
+                    }
+
+                    siteIds = [siteId];
+                }
+            } else {
                 siteIds = await CoreSites.getSiteIdsFromUrl(data.siteUrl, {
                     prioritize: true,
                     username: data.username,
                     userId: data.userId,
                 });
+
+                if (!siteIds.length || (CoreSites.isLoggedIn() && siteIds[0] !== CoreSites.getCurrentSiteId())) {
+                    // If site is not stored or user will change site, show confirm.
+                    await CoreContentLinksHelper.confirmLinkToSite(
+                        { url: data.siteUrl },
+                        this.getDeepLinkSource(data, options?.source),
+                    );
+                }
             }
 
             if (siteIds.length > 1) {
                 // More than one site to treat the URL, let the user choose.
-
-                await modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
-
-                // Ask the user before changing site.
-                const canChange = await CoreContentLinksHelper.confirmSiteChange();
-                if (!canChange) {
-                    return;
-                }
-
                 void CoreContentLinksHelper.goToChooseSite(data.redirect || data.siteUrl);
             } else if (siteIds.length === 1) {
                 // Only one site, handle the link.
@@ -221,7 +350,11 @@ export class CoreCustomURLSchemesProvider {
 
                 if (!data.redirect) {
                     // No redirect, go to the root URL if needed.
-                    await CoreContentLinksHelper.handleRootURL(site, false, true);
+                    await CoreContentLinksHelper.handleRootURL(site, {
+                        checkToken: true,
+                        confirmSiteChange: false,
+                        urlSource: this.getDeepLinkSource(data, options?.source),
+                    });
                 } else {
                     // Handle the redirect link.
                     await modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
@@ -230,7 +363,10 @@ export class CoreCustomURLSchemesProvider {
                        this will make sure that the link is opened with the user the token belongs to. */
                     const username = site.getInfo()?.username || data.username;
 
-                    const treated = await CoreContentLinksHelper.handleLink(data.redirect, username);
+                    const treated = await CoreContentLinksHelper.handleLink(data.redirect, {
+                        username,
+                        confirmSiteChange: false,
+                    });
 
                     if (!treated) {
                         CoreAlerts.showError(Translate.instant('core.contentlinks.errornoactions'));
@@ -241,21 +377,17 @@ export class CoreCustomURLSchemesProvider {
                 // Site not stored. Try to add the site.
                 const result = await CoreSites.checkSite(data.siteUrl, undefined, `URL scheme redirect: ${url}`);
 
-                // Site exists. We'll allow to add it.
-                await modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
-                // Ask the user before changing site.
-                const canChange = await CoreContentLinksHelper.confirmSiteChange();
-                if (!canChange) {
-                    return;
-                }
-
                 await this.goToAddSite(data, result);
             }
 
         } catch (error) {
+            if (CoreErrorHelper.isSilentError(error)) {
+                return;
+            }
+
             if (!error || !CoreErrorHelper.getErrorMessageFromError(error)) {
                 // Use a default error.
-                this.createInvalidSchemeError(url, data);
+                throw this.createInvalidSchemeError(url, data);
             } else {
                 throw new CoreCustomURLSchemesHandleError(error, data);
             }
@@ -312,13 +444,20 @@ export class CoreCustomURLSchemesProvider {
             }
         }
 
+        // Only allow using token authentication for https URLs. Also allow it for Behat tests since they use
+        // deep links to speed up the execution and they use http URLs.
+        const parsedUrl = CoreUrl.parse(url);
+        const isSecureTokenSource = CorePlatform.isAutomated() ?
+            true :
+            parsedUrl?.protocol === 'https' && (!parsedUrl?.port || parsedUrl?.port === '443');
+
         return {
             siteUrl: url,
             username: username,
-            token: params.token,
-            privateToken: params.privateToken || params.privatetoken,
+            token: isSecureTokenSource ? params.token : undefined,
+            privateToken: isSecureTokenSource ? params.privateToken || params.privatetoken : undefined,
             redirect: params.redirect,
-            isAuthenticationURL: !!params.token,
+            isAuthenticationURL: isSecureTokenSource && !!params.token,
         };
     }
 
@@ -583,12 +722,26 @@ export class CoreCustomURLSchemesProvider {
         return !!launchUrl && this.isCustomURLToken(launchUrl);
     }
 
+    /**
+     * Get the "source" of a deep link, e.g. CoreLinkSource.LINK if it's a link clicked by the user.
+     * For deep links launched by an external app we cannot know the source, so assume it's a link.
+     * A subclass might use a different source depending on the data.
+     *
+     * @param data Data obtained from the URL.
+     * @param source Source of the deep link. If not provided, CoreLinkSource.LINK will be used.
+     * @returns Source of the deep link.
+     */
+
+    protected getDeepLinkSource(data: CoreCustomURLSchemesParams, source?: CoreLinkSource): CoreLinkSource {
+        return source ?? CoreLinkSource.LINK;
+    }
+
 }
 
 /**
  * Error returned by handleCustomURL.
  */
-export class CoreCustomURLSchemesHandleError extends CoreError {
+export class CoreCustomURLSchemesHandleError<T extends CoreCustomURLSchemesParams = CoreCustomURLSchemesParams> extends CoreError {
 
     /**
      * Constructor.
@@ -596,7 +749,7 @@ export class CoreCustomURLSchemesHandleError extends CoreError {
      * @param error The error message or object.
      * @param data Data obtained from the URL (if any).
      */
-    constructor(public error: string | CoreError | CoreErrorObject | null, public data?: CoreCustomURLSchemesParams) {
+    constructor(public error: string | CoreError | CoreErrorObject | null, public data?: T) {
         super(CoreErrorHelper.getErrorMessageFromError(error));
     }
 
