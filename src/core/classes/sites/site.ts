@@ -656,8 +656,10 @@ export class CoreSite extends CoreAuthenticatedSite {
     protected triggerSiteEvent<Fallback = unknown, Event extends string = string>(
         eventName: Event,
         data?: CoreEventData<Event, Fallback>,
-    ): void {
+    ): boolean {
         CoreEvents.trigger(eventName, data, this.id);
+
+        return true;
     }
 
     /**
@@ -934,10 +936,6 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @returns List of allowed script URLs.
      */
     getContentAllowedScriptUrls(): string[] {
-        if (!this.isVersionGreaterEqualThan('5.2')) {
-            return [];
-        }
-
         const allowedScriptsConfig = this.getStoredConfig('tool_mobile_scriptallowlist');
         if (!allowedScriptsConfig) {
             return [];

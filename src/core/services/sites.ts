@@ -16,7 +16,7 @@ import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { Md5 } from 'ts-md5';
 import { timeout } from 'rxjs/operators';
 
-import { CoreApp, CoreStoreConfig } from '@services/app';
+import { CoreApp } from '@services/app';
 import { CoreEvents } from '@static/events';
 import { CoreWS } from '@services/ws';
 import { CoreUrl, CoreUrlPartNames } from '@static/url';
@@ -72,6 +72,8 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreOpener } from '@static/opener';
 import { CoreAlerts } from './overlays/alerts';
 import { CoreErrorLogs } from '@static/error-logs';
+import { CoreSilentError } from '@classes/errors/silenterror';
+import { CorePlatform } from './platform';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -363,6 +365,7 @@ export class CoreSitesProvider {
     protected currentSite?: CoreSite;
     protected sites: { [s: string]: CoreSite } = {};
     protected logoutPromise?: CorePromisedValue<void>;
+    protected deleteTokensListeners: CoreSitesDeleteTokensListener[] = [];
 
     protected sitesTable = asyncInstance<CoreDatabaseTable<SiteDBEntry>>();
     protected sitesDB: CoreSitesDB; // To handle sites DB.
@@ -910,15 +913,28 @@ export class CoreSitesProvider {
                 site.setConfig(config);
             }
 
+            const allowedScripts = (config !== undefined
+                ? this.getContentAllowedScriptUrlsFromConfig(config)
+                : site.getContentAllowedScriptUrls());
+
             // Add site to sites list.
             await this.addSite(siteId, siteUrl, token, info, privateToken, config, oauthId);
             this.sites[siteId] = site;
 
             if (login) {
                 this.currentSite = site;
+
+                if (allowedScripts.length > 0) {
+                    await this.deleteTokensFromOtherSites();
+                }
+
                 // Store session.
                 await this.login(siteId);
             } else if (this.currentSite && this.currentSite.getId() === siteId) {
+                if (allowedScripts.length > 0) {
+                    await this.deleteTokensFromOtherSites();
+                }
+
                 // Current site has just been updated, trigger the event.
                 CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);
             }
@@ -1159,19 +1175,71 @@ export class CoreSitesProvider {
      * Check the app for a site and show a download dialogs if necessary.
      *
      * @param config Config object of the site.
+     * @param site The site instance if the check belongs to an existing site, or null if there is no site context.
+     *             It's important to pass the site if it's known, otherwise the app might not log out the user when it should.
      */
-    async checkApplication(config?: CoreSitePublicConfigResponse): Promise<void> {
-        await this.checkRequiredMinimumVersion(config);
+    async checkApplication(config: CoreSitePublicConfigResponse, site: CoreSite | null): Promise<void> {
+        const siteId = this.getCurrentSiteId();
+        const shouldLogout = !!site && site.getId() === siteId;
+
+        try {
+            // Do the checks one by one to avoid showing multiple messages if more than one check fails.
+            await this.checkSiteAppId(config, shouldLogout);
+            await this.checkRequiredMinimumVersion(config, shouldLogout);
+        } catch (error) {
+            if (shouldLogout && siteId) {
+                // Logout the current site and mark it as logged out.
+                this.logout({ forceLogout: true });
+            }
+
+            throw error;
+        }
+    }
+
+    /**
+     * Check the app ID configured in the site is valid for the current app. If it isn't, show dialog and logout.
+     *
+     * @param config Config object of the site.
+     * @param shouldLogout Whether the current site should be logged out if the check fails.
+     */
+    protected async checkSiteAppId(config: CoreSitePublicConfigResponse, shouldLogout: boolean): Promise<void> {
+        if (this.isValidAppId(config)) {
+            return;
+        }
+
+       await this.showDownloadAppAlert(
+            config,
+            shouldLogout,
+            Translate.instant('core.login.connecttoworkplaceapp'),
+            { useSetupLink: false },
+        );
+
+        // Throw a silent error so the caller can stop the flow and optionally logout.
+        throw new CoreSilentError('Site app ID is not valid for the current app.');
+    }
+
+    /**
+     * Check if an app ID from site config is valid for the current app.
+     *
+     * @param config Config object of the site.
+     * @returns Whether it's valid.
+     */
+    protected isValidAppId(config: CoreSitePublicConfigResponse): boolean {
+        // Don't allow accessing site that require the Workplace app, because that means that the site is a Workplace site.
+        // This is the only way to detect if it's WP site before login. After login we'll check again if it's a WP site.
+        return CorePlatform.isIOS() ?
+            config.tool_mobile_iosappid !== '1470929705' :
+            config.tool_mobile_androidappid !== 'com.moodle.workplace';
     }
 
     /**
      * Check the required minimum version of the app for a site and shows a download dialog.
      *
      * @param config Config object of the site.
-     * @returns Resolved if meets the requirements, rejected otherwise.
+     * @param shouldLogout Whether the current site should be logged out if the check fails.
      */
-    protected async checkRequiredMinimumVersion(config?: CoreSitePublicConfigResponse): Promise<void> {
-        if (!config || !config.tool_mobile_minimumversion) {
+    protected async checkRequiredMinimumVersion(config: CoreSitePublicConfigResponse, shouldLogout: boolean): Promise<void> {
+        if (!config.tool_mobile_minimumversion) {
             return;
         }
 
@@ -1179,46 +1247,63 @@ export class CoreSitesProvider {
         const appVersion = this.convertVersionName(CoreConstants.CONFIG.versionname);
 
         if (requiredVersion > appVersion) {
-            const storesConfig: CoreStoreConfig = {
-                android: config.tool_mobile_androidappid,
-                ios: config.tool_mobile_iosappid,
-                mobile: config.tool_mobile_setuplink || 'https://download.moodle.org/mobile/',
-                default: config.tool_mobile_setuplink,
-            };
+            await this.showDownloadAppAlert(
+                config,
+                shouldLogout,
+                Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
+                { title: Translate.instant('core.updaterequired') },
+            );
 
-            const siteId = this.getCurrentSiteId();
-            const downloadUrl = CoreApp.getAppStoreUrl(storesConfig);
-            let promise: Promise<unknown>;
+            // Throw a silent error since this function is already displaying a modal.
+            throw new CoreSilentError('Current app version is lower than required version.');
+        }
+    }
 
-            if (downloadUrl) {
-                // Do not block interface.
-                promise = CoreAlerts.confirm(
-                    Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
+    /**
+     * Show a confirm to download an app. If cannot obtain the download URL, show a simple alert instead.
+     *
+     * @param config Site config.
+     * @param shouldLogout Whether the current site should be logged out.
+     * @param message Message to display in the alert or confirm.
+     * @param options Optional options.
+     * @param options.title Title of the alert or confirm.
+     * @param options.useSetupLink Whether to use the setup link for the mobile URL. Set it to false to only use app store URLs.
+     */
+    protected async showDownloadAppAlert(
+        config: CoreSitePublicConfigResponse,
+        shouldLogout: boolean,
+        message: string,
+        options: { title?: string; useSetupLink?: boolean } = {},
+    ): Promise<void> {
+        const downloadUrl = CoreApp.getAppStoreUrl({
+            android: config.tool_mobile_androidappid,
+            ios: config.tool_mobile_iosappid,
+            mobile: options.useSetupLink ? (config.tool_mobile_setuplink || 'https://download.moodle.org/mobile/') : undefined,
+            default: options.useSetupLink ? config.tool_mobile_setuplink : undefined,
+        });
+
+        if (downloadUrl) {
+            try {
+                await CoreAlerts.confirm(
+                    message,
                     {
-                        header: Translate.instant('core.updaterequired'),
+                        header: options.title,
                         okText: Translate.instant('core.download'),
-                        cancelText: Translate.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel'),
+                        cancelText: Translate.instant(shouldLogout ? 'core.mainmenu.logout' : 'core.cancel'),
                     },
-                ).then(() => CoreOpener.openInBrowser(downloadUrl, { showBrowserWarning: false })).catch(() => {
-                    // Do nothing.
-                });
-            } else {
-                // Do not block interface.
-                promise = CoreAlerts.show({
-                    header: Translate.instant('core.updaterequired'),
-                    message: Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
-                }).then((alert) => alert.onWillDismiss());
-            }
+                );
 
-            promise.finally(() => {
-                if (siteId) {
-                    // Logout the currentSite and expire the token.
-                    this.internalLogout();
-                    this.setSiteLoggedOut(siteId);
-                }
+                CoreOpener.openInBrowser(downloadUrl, { showBrowserWarning: false });
+            } catch {
+                // User canceled.
+            }
+        } else {
+            const alert = await CoreAlerts.show({
+                header: options.title,
+                message,
             });
 
-            throw new CoreError('Current app version is lower than required version.');
+            await alert.onWillDismiss();
         }
     }
 
@@ -1241,6 +1326,21 @@ export class CoreSitesProvider {
         }
 
         return version;
+    }
+
+    /**
+     * Get URLs of scripts that are allowed in the user generated content from a site config.
+     *
+     * @param config Site config.
+     * @returns List of allowed script URLs.
+     */
+    protected getContentAllowedScriptUrlsFromConfig(config?: CoreSiteConfig): string[] {
+        const allowedScriptsConfig = config?.tool_mobile_scriptallowlist;
+        if (!allowedScriptsConfig) {
+            return [];
+        }
+
+        return allowedScriptsConfig.split(/(?:\r\n|\r|\n)/).map((url) => url.trim()).filter(url => !!url);
     }
 
     /**
@@ -1269,6 +1369,10 @@ export class CoreSitesProvider {
             return false;
         }
 
+        if (site.getContentAllowedScriptUrls().length > 0) {
+            await this.deleteTokensFromOtherSites();
+        }
+
         this.login(siteId);
         // Get some data in background, don't block the UI.
         this.getPublicConfigAndCheckApplication(site);
@@ -1288,7 +1392,7 @@ export class CoreSitesProvider {
                 readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             });
 
-            await this.checkApplication(config);
+            await this.checkApplication(config, site);
         } catch {
             // Ignore errors, maybe the user is offline.
         }
@@ -1601,7 +1705,7 @@ export class CoreSitesProvider {
         const formattedSites: CoreSiteBasicInfo[] = [];
 
         await Promise.all(sites.map(async (site) => {
-            if (!ids || ids.indexOf(site.id) > -1) {
+            if (!ids || ids.includes(site.id)) {
                 const siteInfo = site.info ? <CoreSiteInfo> CoreText.parseJSON(site.info) : undefined;
                 const siteInstance = CoreSitesFactory.makeSite(site.id, site.siteUrl, site.token, { info: siteInfo });
 
@@ -1609,7 +1713,7 @@ export class CoreSitesProvider {
 
                 const basicInfo: CoreSiteBasicInfo = {
                     id: site.id,
-                    userId: siteInfo?.userid,
+                    userid: siteInfo?.userid,
                     siteUrl: site.siteUrl,
                     siteUrlWithoutProtocol: site.siteUrl.replace(/^https?:\/\//, '').toLowerCase(),
                     fullname: siteInfo?.fullname,
@@ -1914,6 +2018,50 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Register a listener to be called when deleting tokens of sites that don't match current site URL.
+     *
+     * @param listener Listener.
+     */
+    registerDeleteTokensListener(listener: CoreSitesDeleteTokensListener): void {
+        this.deleteTokensListeners.push(listener);
+    }
+
+    /**
+     * Delete tokens for all sites that don't match current site URL.
+     * If the app is configured to only allow connecting to certain sites, tokens won't be deleted.
+     *
+     * @returns Promise resolved when done.
+     */
+    async deleteTokensFromOtherSites(): Promise<void> {
+        const currentSite = this.currentSite;
+        if (!currentSite) {
+            return;
+        }
+
+        const hasSiteAllowlist = await CoreLoginHelper.hasSiteAllowlist();
+        if (hasSiteAllowlist) {
+            // Sites connected to are trusted, no need to delete tokens from other sites.
+            return;
+        }
+
+        const sites = await this.sitesTable.getMany();
+        const sitesToDeleteTokens = sites.filter(site => currentSite.getURL() !== site.siteUrl);
+
+        await CorePromiseUtils.allPromisesIgnoringErrors([
+            CorePromiseUtils.allPromisesIgnoringErrors(sitesToDeleteTokens.map(async (site) => {
+                const loadedSite = this.sites[site.id];
+                if (loadedSite) {
+                    loadedSite.token = '';
+                    loadedSite.privateToken = '';
+                }
+
+                await CoreNative.plugin('secureStorage')?.deleteCollection(site.id);
+            })),
+            ...this.deleteTokensListeners.map(listener => Promise.resolve(listener())),
+        ]);
+    }
+
+    /**
      * Updates a site's info.
      *
      * @param siteId Site's ID.
@@ -1948,6 +2096,10 @@ export class CoreSitesProvider {
             };
 
             if (config !== undefined) {
+                if (this.isCurrentSite(site) && this.getContentAllowedScriptUrlsFromConfig(config).length > 0) {
+                    await this.deleteTokensFromOtherSites();
+                }
+
                 site.setConfig(config);
                 newValues.config = JSON.stringify(config);
             }
@@ -1996,28 +2148,32 @@ export class CoreSitesProvider {
         const userId = typeof prioritizeOrOptions === 'boolean' ? undefined : prioritizeOrOptions.userId;
         username = typeof prioritizeOrOptions === 'boolean' ? username : prioritizeOrOptions.username;
 
-        // If prioritize is true, check current site first.
-        if (prioritize && this.currentSite?.containsUrl(url)) {
-            if (!username && !userId) {
-                return [this.currentSite.getId()];
-            } else {
-                const info = this.currentSite?.getInfo();
-                if (info?.username === username || info?.userid === userId) {
-                    return [this.currentSite.getId()];
-                }
+        // Check if a certain site matches the different optional parameters.
+        const siteMatchesOptionalParams = (site: CoreSite): boolean => {
+            if (username && site.getInfo()?.username !== username) {
+                return false;
             }
+
+            if (userId && site.getInfo()?.userid !== userId) {
+                return false;
+            }
+
+            return true;
+        };
+
+        // If prioritize is true, check current site first.
+        if (prioritize && this.currentSite?.containsUrl(url) && siteMatchesOptionalParams(this.currentSite)) {
+            return [this.currentSite.getId()];
         }
 
-        // Check if URL has http(s) protocol.
         if (!url.match(/^https?:\/\//i)) {
-            // URL doesn't have http(s) protocol. Check if it has any protocol.
             if (CoreUrl.isAbsoluteURL(url)) {
                 // It has some protocol. Return empty array.
                 return [];
             }
 
             // No protocol, probably a relative URL. Return current site.
-            if (this.currentSite) {
+            if (this.currentSite && siteMatchesOptionalParams(this.currentSite)) {
                 return [this.currentSite.getId()];
             }
 
@@ -2033,16 +2189,8 @@ export class CoreSitesProvider {
 
                 await this.addSiteFromSiteListEntry(site);
 
-                if (this.sites[site.id].containsUrl(url)) {
-                    if (!username && !userId) {
-                        ids.push(site.id);
-                    } else {
-                        const info = this.sites[site.id].getInfo();
-
-                        if (info?.username === username || info?.userid === userId) {
-                            ids.push(site.id);
-                        }
-                    }
+                if (this.sites[site.id].containsUrl(url) && siteMatchesOptionalParams(this.sites[site.id])) {
+                    ids.push(site.id);
                 }
             }));
 
@@ -2481,9 +2629,9 @@ export type CoreSiteCheckResponse = {
     service: string;
 
     /**
-     * Site public config (if available).
+     * Site public config.
      */
-    config?: CoreSitePublicConfigResponse;
+    config: CoreSitePublicConfigResponse;
 };
 
 /**
@@ -2511,7 +2659,7 @@ export type CoreSiteUserTokenResponse = {
  */
 export type CoreSiteBasicInfo = {
     id: string; // Site ID.
-    userId?: number; // User ID.
+    userid?: number; // User ID.
     siteUrl: string; // Site URL.
     siteUrlWithoutProtocol: string; // Site URL without protocol.
     fullname?: string; // User's full name.
@@ -2703,6 +2851,11 @@ export type CoreSitesAfterLoginNavigationProcess = {
     priority: number;
     callback: () => Promise<void>;
 };
+
+/**
+ * Listener called when tokens from other sites need to be deleted.
+ */
+export type CoreSitesDeleteTokensListener = () => Promise<void> | void;
 
 /**
  * Options to get a site from a URL.

@@ -69,6 +69,32 @@ export class CoreViewerService {
     }
 
     /**
+     * View an image HTML element in a modal.
+     *
+     * @param imageHTMLElement Image element of the image.
+     */
+    async viewImageElement(
+        imageHTMLElement: HTMLImageElement | HTMLPictureElement,
+    ): Promise<void> {
+        // Only allow IMG and PICTURE elements to be viewed in the modal.
+        if (!imageHTMLElement || (imageHTMLElement.tagName !== 'IMG' && imageHTMLElement.tagName !== 'PICTURE')) {
+            return;
+        }
+        const { CoreViewerImageComponent } = await import('@features/viewer/components/image/image');
+
+        const clonedElement = imageHTMLElement.cloneNode(true) as HTMLImageElement | HTMLPictureElement;
+
+        await CoreModals.openModal({
+            component: CoreViewerImageComponent,
+            componentProps: {
+                imageHTMLElement: clonedElement,
+            },
+            cssClass: 'core-modal-transparent',
+        });
+
+    }
+
+    /**
      * Shows a text on a new page.
      *
      * @param title Title of the new state.
@@ -105,6 +131,27 @@ export class CoreViewerService {
      */
     async openIframeViewer(title: string, url: string, autoLogin?: boolean): Promise<void> {
         await CoreNavigator.navigateToSitePath('viewer/iframe', { params: { title, url, autoLogin } });
+    }
+
+    /**
+     * Open iframe viewer in a modal.
+     *
+     * @param title Modal title.
+     * @param url Iframe URL.
+     * @param autoLogin Whether to try to use auto-login.
+     */
+    async openIframeViewerModal(title: string, url: string, autoLogin?: boolean): Promise<void> {
+        const { default: CoreViewerIframePage } = await import('@features/viewer/pages/iframe/iframe');
+
+        await CoreModals.openModal({
+            component: CoreViewerIframePage,
+            componentProps: {
+                title,
+                url,
+                autoLogin,
+            },
+            cssClass: 'core-modal-fullscreen',
+        });
     }
 
     /**

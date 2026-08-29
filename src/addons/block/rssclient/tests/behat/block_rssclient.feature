@@ -5,6 +5,8 @@ Feature: Basic tests of rss client block
     Given the Moodle site is compatible with this feature
     And the following config values are set as admin:
       | enablemyhome | 1 |
+      | curlsecurityblockedhosts | |
+      | curlsecurityallowedport  | |
     And the following "users" exist:
       | username | firstname | lastname | email |
       | student1 | Student | 1 | student1@example.com |
@@ -19,16 +21,16 @@ Feature: Basic tests of rss client block
     And "RSS feed" "block" should exist
     And I configure the "RSS feed" block
     And I click on "Add new RSS feed" "radio"
-    And I set the field "config_feedurl" to "https://www.nasa.gov/rss/dyn/breaking_news.rss"
+    And I set the field "config_feedurl" to "#wwwroot#/local/moodleappbehat/fixtures/rssclient_test_feed.xml"
     And I set the field "config_block_rss_client_show_channel_link" to "Yes"
     And I press "Save changes"
-    And I should see "NASA"
+    And I should see "Moodle RSS test file"
 
   Scenario: View the rss client block in site home
     Given I entered the app as "student1"
     When I press "Site home" in the app
     And I press "Open block drawer" in the app
-    Then I should find "Source site..." within "NASA" "ion-card" in the app
+    Then I should find "Source site..." within "Moodle RSS test file" "ion-card" in the app
 
   @disabled_features
   Scenario: Block is included in disabled features
@@ -41,4 +43,4 @@ Feature: Basic tests of rss client block
     And I entered the app as "student1"
     When I press "Site home" in the app
     And I press "Open block drawer" in the app
-    Then I should not find "NASA" in the app
+    Then I should not find "Moodle RSS test file" in the app

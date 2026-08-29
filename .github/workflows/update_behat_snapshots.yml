@@ -25,11 +25,11 @@ jobs:
             tags: ${{ steps.set-tags.outputs.tags }}
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                   path: app
 
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
                   node-version-file: "app/.nvmrc"
 
@@ -56,11 +56,18 @@ jobs:
               id: set-tags
               working-directory: app
               run: |
-                  if [ -z $BEHAT_TAGS ]; then
-                    tags_json=`.github/scripts/print_behat_tags_json.sh snapshots`
-                    echo "tags=$tags_json" >> $GITHUB_OUTPUT;
+                  if [ -z "$BEHAT_TAGS" ]; then
+                    tags_json=$(.github/scripts/print_behat_tags_json.sh snapshots)
+                    printf 'tags=%s\n' "$tags_json" >> "$GITHUB_OUTPUT"
                   else
-                    echo "tags=[\"$BEHAT_TAGS\"]" >> $GITHUB_OUTPUT;
+                    # Validate that BEHAT_TAGS only contains safe characters
+                    # Allow: @ (tag prefix), letters/numbers/_/- (tag names), & and ~ (operators), space (for multiple tags)
+                    if ! echo "$BEHAT_TAGS" | grep -qE '^[@a-zA-Z0-9_&~ -]*$'; then
+                      echo "Error: behat_tags contains invalid characters. Allowed: @, a-z, A-Z, 0-9, _, -, &, ~, space" >&2
+                      exit 1
+                    fi
+                    tags_json=$(jq -cn --arg tag "$BEHAT_TAGS" '[$tag]')
+                    printf 'tags=%s\n' "$tags_json" >> "$GITHUB_OUTPUT"
                   fi
                   for feature in `find src/ -iname *.feature`
                   do
@@ -103,7 +110,7 @@ jobs:
 
         services:
             postgres:
-                image: postgres:16
+                image: postgres:17
                 env:
                     POSTGRES_USER: "postgres"
                     POSTGRES_HOST_AUTH_METHOD: "trust"
@@ -112,11 +119,11 @@ jobs:
                 options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                   path: app
 
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
                   node-version-file: "app/.nvmrc"
 
@@ -126,7 +133,7 @@ jobs:
                   ini-values: max_input_vars=5000
                   coverage: none
 
-            - uses: actions/cache/restore@v4
+            - uses: actions/cache/restore@v5
               with:
                   key: build-${{ github.sha }}
                   path: |
@@ -214,7 +221,7 @@ jobs:
                   path: snapshots
                   merge-multiple: true
 
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                   path: app
 

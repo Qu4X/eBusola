@@ -23,6 +23,7 @@ import { CorePath } from '@static/path';
 import { CoreJsonPatch, JsonPatchOperation } from '@static/json-patch';
 import { CoreUtils } from '@static/utils';
 import { CoreLogger } from '@static/logger';
+import { CoreSiteConfig } from './site';
 
 /**
  * Class that represents a Moodle site where the user still hasn't authenticated.
@@ -187,22 +188,20 @@ export class CoreUnauthenticatedSite {
      * @param config Site public config.
      * @returns Logo URL.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getLogoUrl(config?: CoreSitePublicConfigResponse): string | undefined {
-        config = config ?? this.publicConfig;
-        if (!config || this.forcesLocalLogo()) {
-            return;
-        }
-
-        return config.logourl || config.compactlogourl || undefined;
+        return undefined;
     }
 
     /**
      * Check show top logo mode.
      *
+     * @param config Site config.
      * @returns The top logo mode.
      */
-    getShowTopLogo(): 'online' | 'offline' | 'hidden' {
-        return this.isDemoModeSite() ? 'hidden' : CoreConstants.CONFIG.showTopLogo;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getShowTopLogo(config?: CoreSiteConfig): 'online' | 'offline' | 'hidden' {
+        return 'hidden';
     }
 
     /**
@@ -217,7 +216,8 @@ export class CoreUnauthenticatedSite {
             return;
         }
 
-        return config.logourl || config.compactlogourl || undefined;
+        // Use compact logo if available, otherwise use normal logo.
+        return config.compactlogourl || config.logourl || undefined;
     }
 
     /**
@@ -696,6 +696,8 @@ export type CoreSitePublicConfigResponse = {
     tool_mobile_qrcodetype?: CoreSiteQRCodeType; // eslint-disable-line @typescript-eslint/naming-convention
     warnings?: CoreWSExternalWarning[];
     showloginform?: number; // @since 4.5. Display default login form.
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    tool_mobile_enabledeeplinkautologin?: boolean; // @since 5.3. Whether to allow login automatic if a deep link contains token.
 };
 
 /**

@@ -14,7 +14,7 @@ on:
                 required: true
                 default: "https://github.com/moodle/moodle.git"
     pull_request:
-        branches: [ main, v*.x ]
+        branches: [main, v*.x]
 
 concurrency:
     group: acceptance-${{ github.ref }}
@@ -28,7 +28,7 @@ jobs:
             node-version: ${{ steps.node-version.outputs.version }}
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                   path: app
 
@@ -36,7 +36,7 @@ jobs:
               id: node-version
               run: echo "version=$(cat app/.nvmrc | tr -d '[:space:]')" >> $GITHUB_OUTPUT
 
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
                   node-version-file: "app/.nvmrc"
                   cache: "npm"
@@ -75,12 +75,19 @@ jobs:
               id: set-tags
               working-directory: app
               run: |
-                  if [ -z $BEHAT_TAGS ]; then
-                    tags_json=`.github/scripts/print_behat_tags_json.sh`
+                  if [ -z "$BEHAT_TAGS" ]; then
+                    tags_json=$(.github/scripts/print_behat_tags_json.sh)
                     echo "Generated tags: $tags_json"
-                    echo "tags=$tags_json" >> $GITHUB_OUTPUT;
+                    printf 'tags=%s\n' "$tags_json" >> "$GITHUB_OUTPUT"
                   else
-                    echo "tags=[\"$BEHAT_TAGS\"]" >> $GITHUB_OUTPUT;
+                    # Validate that BEHAT_TAGS only contains safe characters
+                    # Allow: @ (tag prefix), letters/numbers/_/- (tag names), & and ~ (operators), space (for multiple tags)
+                    if ! echo "$BEHAT_TAGS" | grep -qE '^[@a-zA-Z0-9_&~ -]*$'; then
+                      echo "Error: behat_tags contains invalid characters. Allowed: @, a-z, A-Z, 0-9, _, -, &, ~, space" >&2
+                      exit 1
+                    fi
+                    tags_json=$(jq -cn --arg tag "$BEHAT_TAGS" '[$tag]')
+                    printf 'tags=%s\n' "$tags_json" >> "$GITHUB_OUTPUT"
                   fi
               env:
                   BEHAT_TAGS: ${{ github.event.inputs.behat_tags }}
@@ -91,12 +98,12 @@ jobs:
               run: touch logs.txt
 
             - name: Upload build logs
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v7
               with:
                   name: build
                   path: logs.txt
 
-            - uses: actions/cache/save@v4
+            - uses: actions/cache/save@v5
               with:
                   key: build-${{ github.sha }}
                   path: |
@@ -108,15 +115,14 @@ jobs:
     behat:
         runs-on: ubuntu-latest
         needs: build
-        continue-on-error: true
-
         strategy:
+            fail-fast: false
             matrix:
                 tags: ${{ fromJSON(needs.build.outputs.tags) }}
 
         services:
             postgres:
-                image: postgres:16
+                image: postgres:17
                 env:
                     POSTGRES_USER: "postgres"
                     POSTGRES_HOST_AUTH_METHOD: "trust"
@@ -125,7 +131,7 @@ jobs:
                 options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
         steps:
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
                   node-version: ${{ needs.build.outputs.node-version }}
 
@@ -135,7 +141,7 @@ jobs:
                   ini-values: max_input_vars=5000
                   coverage: none
 
-            - uses: actions/cache/restore@v4
+            - uses: actions/cache/restore@v5
               with:
                   key: build-${{ github.sha }}
                   path: |
@@ -183,7 +189,7 @@ jobs:
               env:
                   DB: pgsql
                   MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'main' }}
-                  MOODLE_REPO: ${{ github.event.inputs.moodle_repository || 'https://git.in.moodle.com/moodle/integration.git' }}
+                  MOODLE_REPO: ${{ github.event.inputs.moodle_repository || 'git://git.moodle.org/integration.git' }}
                   MOODLE_BEHAT_IONIC_WWWROOT: https://localhost:8001
                   MOODLE_BEHAT_DEFAULT_BROWSER: chrome
                   MOODLE_BEHAT_CHROME_CAPABILITIES: "['extra_capabilities' => ['chromeOptions' => ['args' => ['--ignore-certificate-errors', '--allow-running-insecure-content'], 'prefs' => ['credentials_enable_service' => false, 'profile.password_manager_enabled' => false, 'profile.password_manager_leak_detection' => false]]]]"
@@ -201,6 +207,7 @@ jobs:
               env:
                   BEHAT_TAGS: ${{ matrix.tags }}
                   MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:latest
+                  PHP_CLI_SERVER_WORKERS: 4
 
             - name: Rename snapshot failure files
               id: filename
@@ -211,7 +218,7 @@ jobs:
                   echo "❌ $PARALLEL_NAME failed" >> $GITHUB_STEP_SUMMARY
 
             - name: Upload Snapshot failures
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v6
               if: ${{ failure() && steps.run-behat-tests.conclusion == 'failure' }}
               env:
                   PARALLEL_NAME: ${{ steps.filename.outputs.PARALLEL_NAME }}
@@ -221,7 +228,7 @@ jobs:
                   if-no-files-found: ignore
 
             - name: Upload Behat failures
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v6
               if: ${{ failure() && steps.run-behat-tests.conclusion == 'failure' }}
               env:
                   PARALLEL_NAME: ${{ steps.filename.outputs.PARALLEL_NAME }}
@@ -237,11 +244,11 @@ jobs:
     complete:
         runs-on: ubuntu-latest
         needs: behat
+        if: always()
 
         steps:
-            - uses: technote-space/workflow-conclusion-action@v3
             - name: Check job status and fail if they are red
-              if: env.WORKFLOW_CONCLUSION == 'failure'
+              if: ${{ needs.behat.result == 'failure' }}
               run: |
                   echo "There were some failures in the previous jobs"
                   echo "### ❌ There were some failures in the previous jobs" >> $GITHUB_STEP_SUMMARY

@@ -412,6 +412,60 @@ class behat_app_helper extends behat_base {
      * @param string $successXPath If a path is declared, the XPath of the element to lookat after redirect.
      */
     protected function open_moodleapp_custom_login_url($username, $path = '', string $successXPath = '') {
+        [$token, $privatetoken] = $this->get_user_tokens($username);
+
+        $url = $this->generate_custom_url([
+            'username' => $username,
+            'token' => $token,
+            'privatetoken' => $privatetoken,
+            'redirect' => $path,
+        ]);
+
+        if (empty($path)) {
+            $successXPath = '//page-core-mainmenu';
+        }
+
+        $this->i_log_out_in_app(false);
+
+        $this->handle_url($url, $successXPath, true);
+    }
+
+    /**
+     * Opens a custom URL on the Moodle App (and waits to finish.)
+     *
+     * @param string $path To navigate.
+     * @param string $successXPath The XPath of the element to lookat after navigation.
+     * @param string $username The username to use.
+     */
+    protected function open_moodleapp_custom_url(
+        string $path,
+        string $successXPath = '',
+        string $username = '',
+        bool $includetoken = false,
+    ) {
+        $urldata = [
+            'username' => $username,
+            'redirect' => $path,
+        ];
+
+        if ($includetoken) {
+            [$token, $privatetoken] = $this->get_user_tokens($username);
+
+            $urldata['token'] = $token;
+            $urldata['privatetoken'] = $privatetoken;
+        }
+
+        $url = $this->generate_custom_url($urldata);
+
+        $this->handle_url($url, $successXPath);
+    }
+
+    /**
+     * Gets user tokens for a certain user. If no tokens exist yet, create them.
+     *
+     * @param string $username The username to get the tokens for.
+     */
+    protected function get_user_tokens(string $username): array {
         global $CFG, $DB;
 
         require_once($CFG->libdir.'/externallib.php');
@@ -441,38 +495,7 @@ class behat_app_helper extends behat_base {
             $privatetoken = $usertoken->privatetoken;
         }
 
-        $url = $this->generate_custom_url([
-            'username' => $username,
-            'token' => $token,
-            'privatetoken' => $privatetoken,
-            'redirect' => $path,
-        ]);
-
-        if (empty($path)) {
-            $successXPath = '//page-core-mainmenu';
-        }
-
-        $this->i_log_out_in_app(false);
-
-        $this->handle_url($url, $successXPath);
-    }
-
-    /**
-     * Opens a custom URL on the Moodle App (and waits to finish.)
-     *
-     * @param string $path To navigate.
-     * @param string $successXPath The XPath of the element to lookat after navigation.
-     * @param string $username The username to use.
-     */
-    protected function open_moodleapp_custom_url(string $path, string $successXPath = '', string $username = '') {
-        global $CFG;
-
-        $url = $this->generate_custom_url([
-            'username' => $username,
-            'redirect' => $path,
-        ]);
-
-        $this->handle_url($url, $successXPath, $username ? 'This link belongs to another site' : '');
+        return [$token, $privatetoken];
     }
 
     /**
@@ -517,15 +540,22 @@ class behat_app_helper extends behat_base {
      *
      * @param string $customurl To navigate.
      * @param string $successXPath The XPath of the element to lookat after navigation.
-     * @param string $texttofind If set, when this text is found the operation is considered finished. This is useful for
-     *                           operations that might expect user input before finishing, like a confirm modal.
+     * @param boolean $confirm Whether to confirm the site change when prompted.
      */
-    protected function handle_url(string $customurl, string $successXPath = '', string $texttofind = '') {
+    protected function handle_url(string $customurl, string $successXPath = '', bool $confirm = false) {
+        $texttofind = 'Only continue if you trust this site.';
         $result = $this->zone_js("customUrlSchemes.handleCustomURL('$customurl')", false, $texttofind);
 
         if ($result !== 'OK') {
             throw new DriverException('Error handling url - ' . $customurl . ' - '.$result);
         }
+
+        // Confirm is not always shown, depends on several factors. If not found, continue without confirming.
+        $shouldclickconfirm = $confirm && $this->runtime_js("find({ text: '$texttofind' })") === 'OK';
+        if ($shouldclickconfirm) {
+            $this->i_press_in_the_app('"Open site"');
+        }
+
         if (!empty($successXPath)) {
             // Wait until the page appears.
             $this->spin(
@@ -540,7 +570,9 @@ class behat_app_helper extends behat_base {
 
         $this->wait_for_pending_js();
 
-        $this->i_wait_the_app_to_restart();
+        if ($shouldclickconfirm) {
+            $this->i_wait_the_app_to_restart();
+        }
     }
 
     /**

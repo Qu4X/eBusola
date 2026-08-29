@@ -47,7 +47,7 @@ import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@featu
 
 // Private constants.
 const VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
-const STATUSES = {
+const STATUSES: Record<string, string> = {
     'passed': 'passed',
     'completed': 'completed',
     'failed': 'failed',
@@ -61,7 +61,7 @@ const STATUSES = {
     'b': 'browsed',
     'n': 'notattempted',
 };
-const STATUS_TO_ICON = {
+const STATUS_TO_ICON: Record<string, string> = {
     asset: '', // Empty to show an space.
     browsed: 'moodle-browsed',
     completed: 'fas-check',
@@ -206,13 +206,13 @@ export class AddonModScormProvider {
             };
         }
 
-        if (mode == AddonModScormMode.BROWSE) {
+        if (mode === AddonModScormMode.BROWSE) {
             if (scorm.hidebrowse) {
                 // Prevent Browse mode if hidebrowse is set.
                 mode = AddonModScormMode.NORMAL;
             } else {
                 // We don't need to check attempts as browse mode is set.
-                if (attempt == 0) {
+                if (attempt === 0) {
                     attempt = 1;
                     newAttempt = true;
                 }
@@ -235,7 +235,7 @@ export class AddonModScormProvider {
         }
 
         // Validate user request to start a new attempt.
-        if (attempt == 0) {
+        if (attempt === 0) {
             newAttempt = true;
         } else if (incomplete) {
             // The option to start a new attempt should never have been presented. Force false.
@@ -286,7 +286,7 @@ export class AddonModScormProvider {
      * @returns Whether the prerequisites are fulfilled.
      */
     evalPrerequisites(prerequisites: string, trackData: Record<string, Record<string, AddonModScormDataValue>>): boolean {
-        const stack: string[] = []; // List of prerequisites.
+        const tokens: string[] = []; // List of tokens of the boolean expression: 'true', 'false', '!', '&&', '||', '(', ')'.
 
         // Expand the amp entities.
         prerequisites = prerequisites.replace(/&amp;/gi, '&');
@@ -299,7 +299,7 @@ export class AddonModScormProvider {
         // Now - grab all the tokens.
         const elements = prerequisites.trim().split('\t');
 
-        // Process each token to build an expression to be evaluated.
+        // Process each token to build the list of boolean tokens to be evaluated.
         elements.forEach((element) => {
             element = element.trim();
             if (!element) {
@@ -323,46 +323,38 @@ export class AddonModScormProvider {
                         setElement = setElement.trim();
 
                         if (trackData[setElement] !== undefined &&
-                                (trackData[setElement].status == 'completed' || trackData[setElement].status == 'passed')) {
+                            (trackData[setElement].status === 'completed' || trackData[setElement].status === 'passed')) {
                             count++;
                         }
                     });
 
-                    if (count >= repeat) {
-                        element = 'true';
-                    } else {
-                        element = 'false';
-                    }
-                } else if (element == '~') {
+                    element = count >= repeat ? 'true' : 'false';
+                } else if (element === '~') {
                     // Not maps ~.
                     element = '!';
                 } else if (reOther.test(element)) {
                     // Other symbols = | <> .
                     const otherMatches = element.match(reOther) ?? [];
-                    element = otherMatches[1]?.trim();
+                    const elementName = otherMatches[1]?.trim() ?? '';
 
-                    if (trackData[element] !== undefined) {
+                    if (trackData[elementName] !== undefined) {
                         let value = otherMatches[3].trim().replace(/('|")/gi, '');
-                        let oper: string;
 
                         if (STATUSES[value] !== undefined) {
                             value = STATUSES[value];
                         }
 
-                        if (otherMatches[2] == '<>') {
-                            oper = '!=';
-                        } else {
-                            oper = '==';
-                        }
+                        const isEqual = trackData[elementName].status === value;
+                        const result = otherMatches[2] === '<>' ? !isEqual : isEqual;
 
-                        element = `('${trackData[element].status}' ${oper} '${value}')`;
+                        element = result ? 'true' : 'false';
                     } else {
                         element = 'false';
                     }
                 } else {
                     // Everything else must be an element defined like S45 ...
                     if (trackData[element] !== undefined &&
-                            (trackData[element].status == 'completed' || trackData[element].status == 'passed')) {
+                        (trackData[element].status === 'completed' || trackData[element].status === 'passed')) {
                         element = 'true';
                     } else {
                         element = 'false';
@@ -370,12 +362,72 @@ export class AddonModScormProvider {
                 }
             }
 
-            // Add the element to the list of prerequisites.
-            stack.push(` ${element} `);
+            tokens.push(element);
         });
 
-        // eslint-disable-next-line no-eval
-        return eval(`${stack.join('')};`);
+        // This code used to do an eval(), but it was changed to a more secure approach.
+        return this.evaluateBooleanTokens(tokens);
+    }
+
+    /**
+     * Evaluates a boolean expression represented as a list of tokens, without using eval.
+     * Supported tokens are 'true', 'false', '!', '&&', '||', '(' and ')', with the usual JS precedence
+     * and short-circuit semantics (unary '!' first, then '&&', then '||').
+     *
+     * @param tokens List of tokens conforming the boolean expression.
+     * @returns Result of evaluating the expression.
+     */
+    protected evaluateBooleanTokens(tokens: string[]): boolean {
+        let position = 0;
+
+        const peek = (): string | undefined => tokens[position];
+        const consume = (): string | undefined => tokens[position++];
+
+        // Handles 'true', 'false', parenthesised expressions and negation.
+        const parseUnary = (): boolean => {
+            const token = consume();
+
+            if (token === '!') {
+                return !parseUnary();
+            }
+
+            if (token === '(') {
+                const value = parseOr();
+                consume(); // Consume the closing ')'.
+
+                return value;
+            }
+
+            return token === 'true';
+        };
+
+        // Handles '&&', binding tighter than '||'.
+        const parseAnd = (): boolean => {
+            let value = parseUnary();
+
+            while (peek() === '&&') {
+                consume();
+                const right = parseUnary();
+                value = value && right;
+            }
+
+            return value;
+        };
+
+        // Handles '||'.
+        const parseOr = (): boolean => {
+            let value = parseAnd();
+
+            while (peek() === '||') {
+                consume();
+                const right = parseAnd();
+                value = value || right;
+            }
+
+            return value;
+        };
+
+        return parseOr();
     }
 
     /**
@@ -414,7 +466,7 @@ export class AddonModScormProvider {
         let formatted: AddonModScormTOCListSco[] = [];
 
         toc.forEach((node) => {
-            const sco = <AddonModScormTOCListSco> node;
+            const sco = <AddonModScormTOCListSco>node;
             sco.level = level;
             formatted.push(sco);
 
@@ -517,7 +569,7 @@ export class AddonModScormProvider {
         // Calculate the total.
         result.offline.forEach((attempt) => {
             // Check if this attempt also exists in online, it might have been copied to local.
-            if (result.online.indexOf(attempt) == -1) {
+            if (!result.online.includes(attempt)) {
                 result.total++;
             }
         });
@@ -599,14 +651,14 @@ export class AddonModScormProvider {
             const sco = data[scoId];
             const userData = sco.userdata;
 
-            if (userData.status == 'completed' || userData.status == 'passed') {
+            if (userData.status === 'completed' || userData.status === 'passed') {
                 attemptScore.scos++;
             }
 
             if (userData.score_raw || (scorm.scormtype !== undefined &&
-                        scorm.scormtype == 'sco' && userData.score_raw !== undefined)) {
+                scorm.scormtype === 'sco' && userData.score_raw !== undefined)) {
 
-                const scoreRaw = parseFloat(<string> userData.score_raw);
+                const scoreRaw = parseFloat(<string>userData.score_raw);
                 attemptScore.values++;
                 attemptScore.sum += scoreRaw;
                 attemptScore.max = Math.max(scoreRaw, attemptScore.max);
@@ -661,7 +713,7 @@ export class AddonModScormProvider {
 
         scos.forEach((sco) => {
             // Is an organization entry?
-            if (sco.organization == '' && sco.parent == '/' && sco.scormtype == '') {
+            if (sco.organization == '' && sco.parent === '/' && sco.scormtype == '') {
                 organizations.push({
                     identifier: sco.identifier,
                     title: sco.title,
@@ -687,7 +739,7 @@ export class AddonModScormProvider {
         options: AddonModScormGetScosWithDataOptions = {},
     ): Promise<AddonModScormTOCTreeSco[]> {
 
-        const scos = <AddonModScormTOCTreeSco[]> await this.getScosWithData(scormId, attempt, options);
+        const scos = <AddonModScormTOCTreeSco[]>await this.getScosWithData(scormId, attempt, options);
 
         const map: Record<string, number> = {};
         const rootScos: AddonModScormTOCTreeSco[] = [];
@@ -809,12 +861,12 @@ export class AddonModScormProvider {
         response.data.forEach((sco) => {
             data[sco.scoid] = {
                 scoid: sco.scoid,
-                defaultdata: <Record<string, AddonModScormDataValue>> CoreObject.toKeyValueMap(
+                defaultdata: <Record<string, AddonModScormDataValue>>CoreObject.toKeyValueMap(
                     sco.defaultdata,
                     'element',
                     'value',
                 ),
-                userdata: <Record<string, AddonModScormDataValue>> CoreObject.toKeyValueMap(sco.userdata, 'element', 'value'),
+                userdata: <Record<string, AddonModScormDataValue>>CoreObject.toKeyValueMap(sco.userdata, 'element', 'value'),
             };
 
         });
@@ -860,7 +912,7 @@ export class AddonModScormProvider {
 
         if (options.organization) {
             // Filter SCOs by organization.
-            return response.scoes.filter((sco) => sco.organization == options.organization);
+            return response.scoes.filter((sco) => sco.organization === options.organization);
         }
 
         return response.scoes;
@@ -915,12 +967,12 @@ export class AddonModScormProvider {
             sco.isvisible = scoData.isvisible === undefined || (!!scoData.isvisible && scoData.isvisible !== 'false');
             // Check pre-requisites status.
             sco.prereq = scoData.prerequisites === undefined ||
-                this.evalPrerequisites(<string> scoData.prerequisites, trackDataBySCO);
+                this.evalPrerequisites(<string>scoData.prerequisites, trackDataBySCO);
             // Add status.
             sco.status = (scoData.status === undefined || scoData.status === '') ? 'notattempted' : <string> scoData.status;
             // Exit var.
-            sco.exitvar = scoData.exitvar === undefined ? 'cmi.core.exit' : <string> scoData.exitvar;
-            sco.exitvalue = <string> scoData[sco.exitvar];
+            sco.exitvar = scoData.exitvar === undefined ? 'cmi.core.exit' : <string>scoData.exitvar;
+            sco.exitvalue = <string>scoData[sco.exitvar];
             // Copy score.
             sco.scoreraw = scoData.score_raw;
         });
@@ -941,12 +993,12 @@ export class AddonModScormProvider {
 
         // Build the launch URL. Moodle web checks SCORM version, we don't need to, it's always SCORM 1.2.
         let launchUrl = sco.launch;
-        const parametersEntry = sco.extradata?.find((entry) => entry.element == 'parameters');
-        let parameters = <string | undefined> parametersEntry?.value;
+        const parametersEntry = sco.extradata?.find((entry) => entry.element === 'parameters');
+        let parameters = <string | undefined>parametersEntry?.value;
 
         if (parameters) {
-            const connector = launchUrl.indexOf('?') > -1 ? '&' : '?';
-            if (parameters.charAt(0) == '?') {
+            const connector = launchUrl.includes('?') ? '&' : '?';
+            if (parameters.charAt(0) === '?') {
                 parameters = parameters.substring(1);
             }
 
@@ -1040,7 +1092,7 @@ export class AddonModScormProvider {
         const status = sco.status || '';
 
         if (sco.isvisible) {
-            if (VALID_STATUSES.indexOf(status) >= 0) {
+            if (VALID_STATUSES.includes(status)) {
                 if (sco.scormtype === 'sco') {
                     imageName = status;
                     descName = status;
@@ -1054,7 +1106,7 @@ export class AddonModScormProvider {
                     incomplete = this.isStatusIncomplete(status);
                 }
 
-                if (incomplete && sco.exitvalue == 'suspend') {
+                if (incomplete && sco.exitvalue === 'suspend') {
                     imageName = 'suspend';
                     suspendedStr = ` - ${Translate.instant('addon.mod_scorm.suspended')}`;
                 }
@@ -1180,7 +1232,7 @@ export class AddonModScormProvider {
      * @returns Grading method.
      */
     getScormGradeMethod(scorm: AddonModScormScorm): string {
-        if (scorm.maxattempt == 1) {
+        if (scorm.maxattempt === 1) {
             switch (scorm.grademethod) {
                 case AddonModScormGradingMethod.GRADEHIGHEST:
                     return Translate.instant('addon.mod_scorm.gradehighest');
@@ -1338,7 +1390,7 @@ export class AddonModScormProvider {
 
         if (link.match(/^https?:\/\//i) && !CoreUrl.isLocalFileUrl(link)) {
             return true;
-        } else if (link.substring(0, 4) == 'www.') {
+        } else if (link.substring(0, 4) === 'www.') {
             return true;
         }
 
@@ -1382,7 +1434,7 @@ export class AddonModScormProvider {
      * @returns Whether the SCORM is valid.
      */
     isScormValidVersion(scorm: AddonModScormScorm): boolean {
-        return scorm.version == 'SCORM_1.2';
+        return scorm.version === 'SCORM_1.2';
     }
 
     /**
@@ -1392,7 +1444,7 @@ export class AddonModScormProvider {
      * @returns Whether it's incomplete.
      */
     isStatusIncomplete(status?: string): boolean {
-        return !status || status == 'notattempted' || status == 'incomplete' || status == 'browsed';
+        return !status || status === 'notattempted' || status === 'incomplete' || status === 'browsed';
     }
 
     /**
@@ -1405,7 +1457,7 @@ export class AddonModScormProvider {
         if (!packageUrl) {
             return false;
         }
-        if (packageUrl.indexOf('imsmanifest.xml') > -1) {
+        if (packageUrl.includes('imsmanifest.xml')) {
             return false;
         }
 
@@ -1645,7 +1697,7 @@ export class AddonModScormProvider {
             }
 
             const isOutdated = data.status === DownloadStatus.OUTDATED ||
-                    (data.status === DownloadStatus.DOWNLOADING && data.previous === DownloadStatus.OUTDATED);
+                (data.status === DownloadStatus.DOWNLOADING && data.previous === DownloadStatus.OUTDATED);
 
             // Package needs to be downloaded if it's not outdated (not downloaded) or if the hash has changed.
             return !isOutdated || data.extra != scorm.sha1hash;
@@ -1688,8 +1740,7 @@ export class AddonModScormProvider {
         }
 
         // Check if we need to update. We only update if we sent some track with a dot notation.
-        const needsUpdate = tracks.some(track => track.element && track.element.indexOf('.') > -1);
-
+        const needsUpdate = tracks.some(track => track.element && track.element.includes('.'));
         if (!needsUpdate) {
             return;
         }
@@ -1800,7 +1851,7 @@ export type AddonModScormUserDataMap = Record<number, AddonModScormScoUserData>;
 /**
  * User data returned mod_scorm_get_scorm_user_data, but formatted.
  */
-export type AddonModScormScoUserData = Omit<AddonModScormWSScoUserData, 'defaultdata'|'userdata'> & {
+export type AddonModScormScoUserData = Omit<AddonModScormWSScoUserData, 'defaultdata' | 'userdata'> & {
     defaultdata: Record<string, AddonModScormDataValue>;
     userdata: Record<string, AddonModScormDataValue>;
 };
