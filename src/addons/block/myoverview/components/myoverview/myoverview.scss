@@ -55,9 +55,13 @@
         }
 
         core-combobox {
-            --core-combobox-border-width: 0px !important;
-            --core-combobox-box-shadow: none !important;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            overflow: hidden;
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.15));
+            background: var(--ion-background-color-step-100, #f1f5f9);
+            box-sizing: border-box;
 
             ::ng-deep ion-select {
                 --padding-start: 14px;
@@ -68,12 +72,11 @@
                 height: 38px;
                 min-height: 38px;
                 margin: 0 !important;
-                border-radius: 9999px !important;
-                border: 1px solid var(--stroke, rgba(0, 0, 0, 0.15)) !important;
-                background: var(--ion-background-color-step-100, #f1f5f9) !important;
+                border: none !important;
+                border-radius: 0 !important;
+                background: transparent !important;
                 color: var(--text-color) !important;
                 box-shadow: none !important;
-                box-sizing: border-box;
 
                 &::part(container) {
                     margin: 0 !important;
@@ -93,31 +96,39 @@
                 }
             }
 
-            &.no-border ::ng-deep ion-select {
-                --padding-start: 10px;
-                --padding-end: 10px;
-                min-width: 38px;
+            &.no-border {
                 width: 38px;
-                display: flex;
-                align-items: center;
+                height: 38px;
+                min-width: 38px;
                 justify-content: center;
 
-                &::part(icon) {
-                    display: none;
-                }
+                ::ng-deep ion-select {
+                    --padding-start: 0;
+                    --padding-end: 0;
+                    width: 38px;
+                    min-width: 38px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
 
-                ion-icon {
-                    margin: 0 auto;
-                    font-size: 16px;
+                    &::part(icon) {
+                        display: none;
+                    }
+
+                    ion-icon {
+                        margin: 0 auto;
+                        font-size: 18px;
+                    }
                 }
             }
         }
 
         :host-context(.dark) core-combobox,
         :host-context(:root.dark) core-combobox {
+            border-color: rgba(255, 255, 255, 0.12) !important;
+            background: var(--ion-background-color-step-100, #14202c) !important;
+
             ::ng-deep ion-select {
-                border-color: rgba(255, 255, 255, 0.12) !important;
-                background: var(--ion-background-color-step-100, #14202c) !important;
                 color: var(--text-color) !important;
             }
         }
@@ -136,7 +147,7 @@
             padding: 0;
 
             ion-icon {
-                font-size: 16px;
+                font-size: 18px;
             }
         }
 

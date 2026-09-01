@@ -31,7 +31,7 @@
             <ion-row class="ion-hide-md-up addon-block-myoverview-filter">
                 <ion-col>
                     <!-- Filter courses. -->
-                    <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
+                    <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)" [searchIcon]="'md-search'"
                         (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
                 </ion-col>
             </ion-row>
@@ -91,13 +91,13 @@
                 }
                 <ion-col>
                     <!-- Filter courses. -->
-                    <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
+                    <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)" [searchIcon]="'md-search'"
                         (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
                 </ion-col>
                 @if (sort.enabled) {
                     <ion-col size="auto">
                         <core-combobox [label]="'core.sortby' | translate" [(selection)]="sort.selected" (selectionChange)="sortCourses()"
-                            icon="fas-arrow-down-short-wide" class="no-border">
+                            icon="md-sort" class="no-border">
                             <ion-select-option class="ion-text-wrap" value="fullname">
                                 {{'addon.block_myoverview.title' | translate}}
                             </ion-select-option>
@@ -117,12 +117,12 @@
                         @if (layout === 'card') {
                             <ion-button fill="outline" (click)="toggleLayout('list')"
                                 [ariaLabel]="'addon.block_myoverview.aria:list' | translate">
-                                <ion-icon slot="icon-only" name="fas-list" aria-hidden="true" />
+                                <ion-icon slot="icon-only" name="md-view-list" aria-hidden="true" />
                             </ion-button>
                         } @else if (layout === 'list') {
                             <ion-button fill="outline" (click)="toggleLayout('card')"
                                 [ariaLabel]="'addon.block_myoverview.aria:card' | translate">
-                                <ion-icon slot="icon-only" name="fas-table-cells-large" aria-hidden="true" />
+                                <ion-icon slot="icon-only" name="md-grid-view" aria-hidden="true" />
                             </ion-button>
                         }
                     </ion-col>

@@ -73,11 +73,8 @@
     }
 
     ion-select {
-        border-color: var(--border-color);
-        border-style: var(--border-style);
-        border-width: var(--border-width);
-        border-radius: var(--core-combobox-radius);
-        margin: 8px;
+        border: none;
+        margin: 0;
         width: auto;
 
         &.combobox-icon-only {
