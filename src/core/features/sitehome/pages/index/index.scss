@@ -1,45 +1,228 @@
-@use "src/theme/helpers/helpers" as *;
-
-ion-item ion-icon {
-    display: inline-block;
-    border-radius: var(--mdl-shape-borderRadius-xs);
-    padding: 4px;
-    color: var(--text-color);
-    line-height: var(--size);
-    --margin-end: 8px;
-    @include margin-horizontal(null, var(--margin-end));
-}
-
-section.core-course-module-list-wrapper {
-    border: var(--ion-card-border-width) solid var(--ion-card-border-color);
-    border-radius: var(--ion-card-radius);
-    margin: 12px;
-
-    ion-card {
-        --ion-card-background: transparent;
-    }
-    ion-item {
-        --background: transparent;
+:host {
+    .md3-home-container {
+        padding: 16px;
+        max-width: 720px;
+        margin: 0 auto;
     }
 
-    ion-item-divider {
-        --background: transparent;
+    // Grid / List of Navigation Cards
+    .md3-home-cards-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
     }
-}
 
-core-course-module.core-sitehome-news {
-    --card-border-width: var(--ion-card-border-width);
-    --card-radius: var(--ion-card-radius);
-    --activity-border: 1px solid var(--stroke);
+    // MD3 Navigation Card
+    .md3-home-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 14px 16px;
+        background: var(--ion-background-color-step-50, #f8fafc);
+        border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+        border-radius: 18px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        cursor: pointer;
+        overflow: hidden;
+        transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 
-    ::ng-deep ion-card {
-        padding-top: 4px !important;
-        --card-padding-bottom: 4px;
-        --horizontal-spacing: 0px;
-        margin-left: 12px;
-        margin-right: 12px;
-        ion-item {
-            --padding-start: 16px;
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: scale(0.99);
+        }
+
+        .md3-card-icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 12px;
+            background: rgba(var(--ion-color-primary-rgb, 21, 25, 93), 0.1);
+            color: var(--ion-color-primary, #15195D);
+            margin-inline-end: 14px;
+
+            ion-icon {
+                font-size: 22px;
+                color: inherit;
+            }
+        }
+
+        .md3-card-text {
+            flex: 1;
+            min-width: 0;
+
+            .md3-card-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--text-color, #0f172a);
+                margin: 0;
+                line-height: 1.3;
+            }
+        }
+
+        .md3-card-chevron {
+            font-size: 18px;
+            color: var(--text-muted, #94a3b8);
+            margin-inline-start: 8px;
+            flex-shrink: 0;
+        }
+
+        &.md3-search-card {
+            .md3-card-icon-container {
+                background: rgba(var(--ion-color-secondary-rgb, 255, 117, 31), 0.12);
+                color: var(--ion-color-secondary, #FF751F);
+            }
+        }
+    }
+
+    // Section Content Card
+    .md3-section-card {
+        background: var(--ion-background-color-step-50, #f8fafc);
+        border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+        border-radius: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        margin-bottom: 20px;
+        overflow: hidden;
+
+        .md3-section-header {
+            padding: 16px 18px 12px;
+            border-bottom: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+
+            .md3-section-title {
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--text-color, #0f172a);
+                margin: 0 0 6px 0;
+                letter-spacing: -0.2px;
+            }
+
+            .md3-status-badge {
+                font-size: 12px;
+                font-weight: 600;
+                border-radius: 9999px;
+                padding: 4px 10px;
+                margin-top: 4px;
+            }
+
+            .md3-availability-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: rgba(var(--ion-color-warning-rgb, 245, 158, 11), 0.12);
+                color: var(--ion-color-warning-shade, #b45309);
+                border-radius: 9999px;
+                padding: 4px 12px;
+                font-size: 12px;
+                font-weight: 600;
+                margin-top: 6px;
+
+                ion-icon {
+                    font-size: 14px;
+                }
+            }
+        }
+
+        .md3-section-summary {
+            padding: 14px 18px;
+            font-size: 14px;
+            color: var(--text-muted, #64748b);
+            line-height: 1.5;
+            border-bottom: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+        }
+
+        .md3-section-modules {
+            padding: 8px 0;
+
+            core-course-module {
+                --card-border-width: 0px;
+                --card-radius: 0px;
+
+                ::ng-deep ion-card {
+                    margin: 0 !important;
+                    box-shadow: none !important;
+                    background: transparent !important;
+                    border-radius: 0 !important;
+                    border: none !important;
+                }
+            }
+        }
+    }
+
+    .md3-news-card {
+        margin-bottom: 12px;
+
+        core-course-module.core-sitehome-news {
+            --card-border-width: 1px;
+            --card-radius: 18px;
+            --activity-border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+
+            ::ng-deep ion-card {
+                background: var(--ion-background-color-step-50, #f8fafc) !important;
+                border-radius: 18px !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+            }
+        }
+    }
+
+    :host-context(.dark) {
+        .md3-home-card {
+            background: var(--ion-background-color-step-100, #14202c);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+
+            &:hover {
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+            }
+
+            .md3-card-icon-container {
+                background: rgba(255, 117, 31, 0.16);
+                color: var(--ion-color-primary, #FF751F);
+            }
+
+            .md3-card-title {
+                color: var(--text-color, #f1f5f9);
+            }
+
+            .md3-card-chevron {
+                color: rgba(255, 255, 255, 0.4);
+            }
+
+            &.md3-search-card .md3-card-icon-container {
+                background: rgba(255, 117, 31, 0.2);
+                color: #FF751F;
+            }
+        }
+
+        .md3-section-card {
+            background: var(--ion-background-color-step-100, #14202c);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+
+            .md3-section-header {
+                border-bottom-color: rgba(255, 255, 255, 0.06);
+
+                .md3-section-title {
+                    color: var(--text-color, #f1f5f9);
+                }
+            }
+
+            .md3-section-summary {
+                color: rgba(255, 255, 255, 0.7);
+                border-bottom-color: rgba(255, 255, 255, 0.06);
+            }
+        }
+
+        .md3-news-card core-course-module.core-sitehome-news ::ng-deep ion-card {
+            background: var(--ion-background-color-step-100, #14202c) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
         }
     }
 }

@@ -44,6 +44,16 @@ import {
     serverOutline,
     chevronForwardOutline,
     chevronForward,
+    searchOutline,
+    search,
+    bookOutline,
+    book,
+    lockClosedOutline,
+    lockClosed,
+    newspaperOutline,
+    newspaper,
+    cubeOutline,
+    cube,
 } from 'ionicons/icons';
 import { CoreIcons } from '@static/icons';
 
@@ -82,6 +92,16 @@ export default function(): void {
         'server-outline': serverOutline,
         'chevron-forward-outline': chevronForwardOutline,
         'chevron-forward': chevronForward,
+        'search-outline': searchOutline,
+        search,
+        'book-outline': bookOutline,
+        book,
+        'lock-closed-outline': lockClosedOutline,
+        'lock-closed': lockClosed,
+        'newspaper-outline': newspaperOutline,
+        newspaper,
+        'cube-outline': cubeOutline,
+        cube,
     });
     CoreIcons.addIconsToIonicons();
 }
