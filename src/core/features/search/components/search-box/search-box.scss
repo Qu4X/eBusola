@@ -11,11 +11,12 @@
         z-index: 4;
         margin: 0;
         border: 1px solid var(--stroke, rgba(0, 0, 0, 0.08));
-        border-radius: 28px;
+        border-radius: 24px;
         background: var(--ion-background-color-step-50, #f1f5f9);
         color: var(--text-color);
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         transition: border-color 200ms ease, box-shadow 200ms ease;
+        overflow: hidden;
 
         &:focus-within {
             border-color: var(--ion-color-primary);
@@ -27,9 +28,21 @@
         ion-input {
             --padding-start: 20px;
             --padding-end: 16px;
-            --border-radius: 28px;
+            --border-radius: 24px;
+            --highlight-color-focused: transparent !important;
+            --inner-border-width: 0px !important;
+            --border-width: 0px !important;
+            --border-color: transparent !important;
+            --box-shadow: none !important;
             min-height: var(--search-height);
             font-size: 15px;
+            border: none !important;
+
+            &::part(native) {
+                border: none !important;
+                outline: none !important;
+                box-shadow: none !important;
+            }
 
             ion-button {
                 --color: var(--ion-color-primary);
@@ -51,15 +64,17 @@
     .core-search-history {
         max-height: calc(-120px + 80vh);
         overflow-y: auto;
-        background: var(--ion-background-color-step-50, #f1f5f9);
-        border-radius: 0 0 20px 20px;
-        border: 1px solid var(--stroke, rgba(0, 0, 0, 0.08));
-        border-top: none;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: transparent;
+        border: none;
+        border-top: 1px solid var(--stroke, rgba(0, 0, 0, 0.08));
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
 
         ion-item {
-            --min-height: 44px;
-            --border-width: 0px;
+            --min-height: 48px;
+            --border-width: 0px !important;
+            --inner-border-width: 0px !important;
             --background: transparent;
 
             ion-icon {

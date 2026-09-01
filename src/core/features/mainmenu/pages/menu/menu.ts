@@ -389,9 +389,10 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
      * @param fallbackIcon Optional fallback icon from handler.
      * @returns Icon name.
      */
-    getTabIcon(page: string, isSelected: boolean, fallbackIcon?: string): string {
         switch (page) {
+            case 'site':
             case 'sitehome':
+            case 'home':
             case 'dashboard':
                 return isSelected ? 'home' : 'home-outline';
             case 'courses':
