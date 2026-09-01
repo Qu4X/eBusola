@@ -99,7 +99,7 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
 
         const { CoreMainMenuUserMenuComponent } = await import('../user-menu/user-menu');
 
-        CoreModals.openSideModal<void>({
+        CoreModals.openModal<void>({
             component: CoreMainMenuUserMenuComponent,
         });
     }

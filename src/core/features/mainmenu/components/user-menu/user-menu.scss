@@ -1,47 +1,155 @@
-@use "src/theme/globals" as *;
-
 :host {
-    .core-user-menu-separator {
-        --inner-border-width: 0;
-        --border-width: 1px 0 0 0;
+    .md3-settings-container {
+        padding: 16px;
+        max-width: 600px;
+        margin: 0 auto;
     }
-}
 
-.core-usermenu-siteinfo {
-    text-align: center;
-    ion-label {
-        margin: 0;
+    .md3-logo-banner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 16px 0 20px;
+        width: 100%;
+
+        core-site-logo {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+
+            .core-logo-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+
+                img.core-logo {
+                    max-width: 220px;
+                    width: 100%;
+                    height: auto;
+                    max-height: 60px;
+                    object-fit: contain;
+                }
+            }
+
+            .core-logo-sitename {
+                display: none !important;
+            }
+        }
     }
-    --padding-top: 10px;
-    --padding-bottom: 10px;
-}
 
-@if ($core-user-hide-siteinfo) {
-    .core-usermenu-siteinfo {
-        display: none;
+    .core-usermenu-siteurl,
+    .core-logo-sitename {
+        display: none !important;
     }
-}
 
-core-site-logo {
-    --core-site-logo-margin: 0px auto 8px auto;
-    --core-site-logo-max-height: 48px;
+    .md3-settings-group {
+        margin-bottom: 20px;
 
-    --core-site-logo-sitename-font: var(--mdl-typography-subtitle-font-lg);
-    --core-site-logo-sitename-margin-bottom: 2px;
-}
+        .md3-group-card {
+            background: var(--ion-background-color-step-50, #f8fafc);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
-@if ($core-user-hide-sitename) {
-    core-site-logo {
-        --core-site-logo-sitename-display: none;
+            ion-item {
+                --background: transparent;
+                --padding-start: 16px;
+                --padding-end: 16px;
+                --inner-padding-end: 8px;
+                --min-height: 58px;
+                --inner-border-width: 0px !important;
+                --border-width: 0px !important;
+                --border-color: transparent !important;
+                margin: 0;
+                border: none !important;
+
+                &::part(native) {
+                    border: none !important;
+                    background: transparent;
+                }
+
+                ion-icon.md3-settings-icon {
+                    width: 24px;
+                    height: 24px;
+                    font-size: 24px;
+                    color: var(--ion-color-primary);
+                    margin-inline-end: 16px;
+                }
+
+                p.item-heading {
+                    font-weight: 500;
+                    font-size: var(--mdl-typography-fontSize-md, 15px);
+                    color: var(--text-color);
+                    margin: 0;
+                }
+
+                &.core-usermenu-profile {
+                    --min-height: 68px;
+
+                    core-user-avatar {
+                        margin-inline-end: 16px;
+                    }
+
+                    .user-fullname {
+                        font-weight: 700;
+                        font-size: 16px;
+                        color: var(--text-color);
+                        margin: 0 0 2px 0;
+                    }
+
+                    .user-subtitle {
+                        font-size: 13px;
+                        color: var(--text-muted, #64748b);
+                        margin: 0;
+                    }
+                }
+            }
+
+            .md3-card-divider {
+                height: 1px;
+                background: var(--stroke, rgba(0, 0, 0, 0.06));
+                margin-inline-start: 56px;
+            }
+        }
     }
-}
 
-@if ($core-user-hide-siteurl) {
-    .core-usermenu-siteurl {
-        display: none;
+    .md3-logout-container {
+        margin-top: 12px;
+        margin-bottom: 24px;
+
+        .md3-logout-button {
+            --border-radius: 9999px;
+            --background: rgba(var(--ion-color-danger-rgb, 239, 68, 68), 0.12);
+            --color: var(--ion-color-danger, #ef4444);
+            --box-shadow: none;
+            height: 48px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+
+            ion-icon {
+                font-size: 18px;
+                margin-inline-end: 8px;
+            }
+        }
     }
-}
 
-ion-footer {
-    background: var(--contrast-background);
+    :host-context(.dark) {
+        .md3-settings-group .md3-group-card {
+            background: var(--ion-background-color-step-100, #14202c);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+
+            .md3-card-divider {
+                background: rgba(255, 255, 255, 0.06);
+            }
+        }
+
+        .md3-logout-container .md3-logout-button {
+            --background: rgba(var(--ion-color-danger-rgb, 239, 68, 68), 0.18);
+            --color: #f87171;
+        }
+    }
 }
