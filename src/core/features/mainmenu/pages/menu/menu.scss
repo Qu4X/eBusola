@@ -93,26 +93,6 @@ ion-tabs {
             z-index: 100;
             border: 1px solid var(--gray-200);
             background: var(--ion-background-color-step-50, #f8fafc);
-            transition: transform 320ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
-                        opacity 240ms ease;
-            will-change: transform, opacity;
-        }
-
-        :host-context(.ion-page-leaving) ion-tab-bar,
-        :host-context(.ion-page-hidden) ion-tab-bar,
-        :host-context([aria-hidden="true"]) ion-tab-bar {
-            transform: translateX(-50%) translateY(calc(100% + 30px + var(--ion-safe-area-bottom, 0px)));
-            opacity: 0;
-            transition: transform 220ms cubic-bezier(0.3, 0, 0.8, 0.15),
-                        opacity 160ms ease;
-            pointer-events: none;
-        }
-
-        :host-context(.ion-page-entering) ion-tab-bar {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-            transition: transform 320ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
-                        opacity 240ms ease;
         }
 
         ::ng-deep ion-content {

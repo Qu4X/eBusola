@@ -62,13 +62,27 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
         rootAnimation.addAnimation(navDecorAnimation);
     }
 
-    if (!contentEl && enteringToolBarEls.length === 0 && headerEls.length === 0) {
+    const enteringTabsOutlet = enteringEl.querySelector(':scope > ion-tabs ion-router-outlet, :scope > ion-tabs .tabs-inner');
+    if (enteringTabsOutlet) {
+        enteringContentAnimation.addElement(enteringTabsOutlet);
+    } else if (!contentEl && enteringToolBarEls.length === 0 && headerEls.length === 0) {
         enteringContentAnimation.addElement(
-            enteringEl.querySelector(':scope > .ion-page, :scope > ion-nav, :scope > ion-tabs .tabs-inner, :scope > ion-tabs') || [],
+            enteringEl.querySelector(':scope > .ion-page, :scope > ion-nav') || enteringEl,
         );
     } else {
         enteringContentAnimation.addElement(contentEl || []);
         enteringContentAnimation.addElement(headerEls);
+    }
+
+    const enteringTabBar = enteringEl.querySelector('ion-tab-bar');
+    if (enteringTabBar) {
+        const enteringTabBarAnim = createAnimation();
+        enteringTabBarAnim
+            .addElement(enteringTabBar)
+            .easing('cubic-bezier(0.05, 0.7, 0.1, 1.0)')
+            .fromTo('transform', 'translateX(-50%) translateY(140%)', 'translateX(-50%) translateY(0)')
+            .fromTo(OPACITY, 0, 1);
+        rootAnimation.addAnimation(enteringTabBarAnim);
     }
 
     rootAnimation.addAnimation(enteringContentAnimation);
@@ -200,13 +214,28 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
         const leavingToolBarEls = leavingEl.querySelectorAll(':scope > ion-header > ion-toolbar');
         const leavingHeaderEls = leavingEl.querySelectorAll(':scope > ion-header > *:not(ion-toolbar), :scope > ion-footer > *');
 
-        if (!leavingContentEl && leavingToolBarEls.length === 0 && leavingHeaderEls.length === 0) {
+        const leavingTabsOutlet = leavingEl.querySelector(':scope > ion-tabs ion-router-outlet, :scope > ion-tabs .tabs-inner');
+        if (leavingTabsOutlet) {
+            leavingContent.addElement(leavingTabsOutlet);
+        } else if (!leavingContentEl && leavingToolBarEls.length === 0 && leavingHeaderEls.length === 0) {
             leavingContent.addElement(
-                leavingEl.querySelector(':scope > .ion-page, :scope > ion-nav, :scope > ion-tabs .tabs-inner, :scope > ion-tabs') || [],
+                leavingEl.querySelector(':scope > .ion-page, :scope > ion-nav') || leavingEl,
             );
         } else {
             leavingContent.addElement(leavingContentEl || []);
             leavingContent.addElement(leavingHeaderEls);
+        }
+
+        const leavingTabBar = leavingEl.querySelector('ion-tab-bar');
+        if (leavingTabBar) {
+            const leavingTabBarAnim = createAnimation();
+            leavingTabBarAnim
+                .addElement(leavingTabBar)
+                .duration(Math.min((opts.duration || DURATION) * 0.65, 260))
+                .easing('cubic-bezier(0.3, 0, 0.8, 0.15)')
+                .fromTo('transform', 'translateX(-50%) translateY(0)', 'translateX(-50%) translateY(140%)')
+                .fromTo(OPACITY, 1, 0);
+            rootAnimation.addAnimation(leavingTabBarAnim);
         }
 
         rootAnimation.addAnimation(leavingContent);
