@@ -13,6 +13,18 @@
         --placeholder-color: var(--text-muted, #64748b);
         padding: 0;
         margin-bottom: 20px;
+
+        .searchbar-search-icon {
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            margin: 0 !important;
+            inset-inline-start: 16px !important;
+        }
+
+        .searchbar-input {
+            padding-inline-start: 48px !important;
+            padding-inline-end: 40px !important;
+        }
     }
 
     .md3-settings-group {

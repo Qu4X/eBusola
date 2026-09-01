@@ -26,10 +26,20 @@ ion-searchbar,
     }
 
     .searchbar-search-icon {
-        @include position(null, null, null, calc(var(--height) / 4) !important);
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        margin: 0 !important;
+        inset-inline-start: 16px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
+    button.searchbar-clear-button,
     button {
-        @include position(null, 0px !important, null, null);
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        margin: 0 !important;
+        inset-inline-end: 8px !important;
     }
 }
