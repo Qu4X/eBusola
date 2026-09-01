@@ -11,36 +11,40 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content class="limited-width">
+<ion-content>
     <ion-refresher [disabled]="!loaded" (ionRefresh)="refreshData($event.target)" slot="fixed">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="128px" [placeholderLimit]="8">
-        <ion-list class="limited-width">
-            <core-sites-list [accountsList]="accountsList">
-                <ng-template #siteLabel let-site="site">
-                    @if (site.spaceUsage !== undefined) {
-                        <ion-badge color="light">{{ site.spaceUsage | coreBytesToSize }}</ion-badge>
-                    }
-                </ng-template>
+        <div class="md3-settings-container">
+            <div class="md3-settings-group">
+                <core-sites-list [accountsList]="accountsList">
+                    <ng-template #siteLabel let-site="site">
+                        @if (site.spaceUsage !== undefined) {
+                            <div class="site-space-badge">
+                                <span class="badge-pill">{{ site.spaceUsage | coreBytesToSize }}</span>
+                            </div>
+                        }
+                    </ng-template>
 
-                <ng-template #siteItem let-site="site">
-                    <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage(site)"
-                        [hidden]="site.spaceUsage <= 0 && !site.hasCacheEntries">
-                        <ion-icon name="fas-trash" slot="icon-only"
-                            [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: site.siteName }" />
-                    </ion-button>
-                </ng-template>
-            </core-sites-list>
+                    <ng-template #siteItem let-site="site">
+                        <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage(site)"
+                            [hidden]="site.spaceUsage <= 0 && !site.hasCacheEntries" class="md3-delete-button">
+                            <ion-icon name="fas-trash" slot="icon-only"
+                                [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: site.siteName }" />
+                        </ion-button>
+                    </ng-template>
+                </core-sites-list>
+            </div>
 
-            <ion-item-divider>
-                <ion-label>
-                    <p class="item-heading">{{ 'core.settings.total' | translate }}</p>
-                </ion-label>
-                <p slot="end" class="ion-margin-end">
-                    {{ totalSpaceUsage | coreBytesToSize }}
-                </p>
-            </ion-item-divider>
-        </ion-list>
+            <!-- Total Space Summary Card -->
+            <div class="md3-total-card">
+                <div class="total-label-group">
+                    <ion-icon name="fas-database" class="total-icon" />
+                    <span class="total-label">{{ 'core.settings.total' | translate }}</span>
+                </div>
+                <span class="total-value">{{ totalSpaceUsage | coreBytesToSize }}</span>
+            </div>
+        </div>
     </core-loading>
 </ion-content>
