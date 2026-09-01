@@ -60,6 +60,15 @@
                     </ion-label>
                 </ion-item>
             }
+            @if (dynamicColorsAvailable) {
+                <ion-item>
+                    <ion-label class="ion-text-wrap">
+                        <p class="item-heading ion-text-wrap">{{ 'core.settings.enabledynamiccolors' | translate }}</p>
+                        <p class="ion-text-wrap">{{ 'core.settings.enabledynamiccolorsdescription' | translate }}</p>
+                    </ion-label>
+                    <ion-toggle [(ngModel)]="dynamicColorsEnabled" (ionChange)="dynamicColorsChanged($event)" slot="end" />
+                </ion-item>
+            }
         }
         <core-dynamic-component [component]="editorSettingsComponentClass" />
         @if (displayIframeHelp) {

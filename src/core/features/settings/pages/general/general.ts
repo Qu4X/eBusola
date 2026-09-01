@@ -55,6 +55,8 @@ export default class CoreSettingsGeneralPage {
     selectedScheme: CoreColorScheme = CoreColorScheme.LIGHT;
     colorSchemeDisabled = false;
     isAndroid = false;
+    dynamicColorsAvailable = false;
+    dynamicColorsEnabled = false;
     displayIframeHelp = false;
 
     protected editorSettingsComponentClass?: Type<unknown>;
@@ -116,6 +118,21 @@ export default class CoreSettingsGeneralPage {
         }
 
         this.displayIframeHelp = CoreIframe.shouldDisplayHelp();
+
+        try {
+            if (this.isAndroid) {
+                const diagnostic = CoreNative.plugin('diagnostic');
+                if (diagnostic) {
+                    const colors = await diagnostic.getSystemColors();
+                    this.dynamicColorsAvailable = !!colors && Object.keys(colors).length > 0;
+                    if (this.dynamicColorsAvailable) {
+                        this.dynamicColorsEnabled = !!(await CoreConfig.get(CoreConfigSettingKey.DYNAMIC_COLOR_ENABLED, 0));
+                    }
+                }
+            }
+        } catch {
+            this.dynamicColorsAvailable = false;
+        }
     }
 
     /**
@@ -236,6 +253,21 @@ export default class CoreSettingsGeneralPage {
 
         CoreSettingsHelper.setColorScheme(this.selectedScheme);
         CoreConfig.set(CoreConfigSettingKey.COLOR_SCHEME, this.selectedScheme);
+    }
+
+    /**
+     * Called when dynamic colors setting is enabled or disabled.
+     *
+     * @param ev Event
+     */
+    async dynamicColorsChanged(ev?: Event): Promise<void> {
+        if (ev) {
+            ev.stopPropagation();
+            ev.preventDefault();
+        }
+
+        await CoreConfig.set(CoreConfigSettingKey.DYNAMIC_COLOR_ENABLED, this.dynamicColorsEnabled ? 1 : 0);
+        await CoreSettingsHelper.applyDynamicColors();
     }
 
     /**

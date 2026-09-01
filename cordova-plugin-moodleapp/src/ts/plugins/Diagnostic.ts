@@ -48,6 +48,23 @@ export class Diagnostic {
     }
 
     /**
+     * Android only. Get system dynamic colors (API 31+).
+     *
+     * @returns Object mapping system color names to hex strings.
+     */
+    getSystemColors(): Promise<Record<string, string>> {
+        return new Promise<Record<string, string>>((resolve, reject) => {
+            if (cordova.platformId !== 'android') {
+                resolve({});
+
+                return;
+            }
+
+            cordova.exec(resolve, reject, 'Diagnostic', 'getSystemColors');
+        });
+    }
+
+    /**
      * Requests access to microphone if authorization was never granted nor denied, will only return access status otherwise.
      *
      * @returns Permission status.

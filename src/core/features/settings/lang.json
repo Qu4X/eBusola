@@ -35,6 +35,8 @@
     "enableanalytics": "Enable analytics",
     "enableanalyticsdescription": "If enabled, the app will collect anonymous data usage.",
     "enabledownloadsection": "Enable download sections",
+    "enabledynamiccolors": "Dynamic color (Material You)",
+    "enabledynamiccolorsdescription": "Match app theme and accent colors to your device wallpaper.",
     "enablepinchtozoom": "Enable pinch-to-zoom",
     "encryptedpushsupported": "Encrypted push notifications supported",
     "entriesincache": "{{$a}} entries in cache",

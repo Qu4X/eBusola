@@ -82,11 +82,18 @@ ion-tab-button {
 
     &.tab-selected {
         color: var(--color-selected);
+        font-weight: 600;
 
         ion-icon.core-tab-icon {
             background-color: var(--ion-color-primary-tint);
             color: var(--ion-color-primary-shade);
+            transform: scale(1.04);
         }
+    }
+
+    :root.dark &.tab-selected ion-icon.core-tab-icon {
+        background-color: rgba(var(--ion-color-primary-rgb), 0.24);
+        color: var(--ion-color-primary);
     }
 
     ion-label {

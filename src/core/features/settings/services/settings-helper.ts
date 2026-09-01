@@ -33,6 +33,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreHTMLClasses } from '@static/html-classes';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Params } from '@angular/router';
+import { CoreNative } from '@features/native/services/native';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -108,6 +109,8 @@ export class CoreSettingsHelperProvider {
         await this.upgradeZoomLevel();
 
         this.initDomSettings();
+
+        await this.applyDynamicColors();
     }
 
     /**
@@ -483,8 +486,204 @@ export class CoreSettingsHelperProvider {
             CoreHTMLClasses.toggleModeClass('dark', enable);
             this.darkModeObservable.next(enable);
 
+            this.applyDynamicColors();
             CoreApp.setSystemUIColors();
         }
+    }
+
+    /**
+     * Applies Material You dynamic colors (Monet) to the document root.
+     */
+    async applyDynamicColors(): Promise<void> {
+        const isEnabled = await CoreConfig.get<number>(CoreConfigSettingKey.DYNAMIC_COLOR_ENABLED, 0);
+        if (!isEnabled) {
+            this.clearDynamicColors();
+
+            return;
+        }
+
+        try {
+            const diagnostic = CoreNative.plugin('diagnostic');
+            if (!diagnostic) {
+                return;
+            }
+
+            const systemColors = await diagnostic.getSystemColors();
+            if (!systemColors || Object.keys(systemColors).length === 0) {
+                return;
+            }
+
+            const isDarkMode = this.isDarkModeEnabled();
+
+            // Pick base colors based on light/dark mode
+            const primary = isDarkMode
+                ? (systemColors.system_accent1_200 || systemColors.system_accent1_300 || '#90CAF9')
+                : (systemColors.system_accent1_600 || systemColors.system_accent1_500 || '#1976D2');
+
+            const secondary = isDarkMode
+                ? (systemColors.system_accent2_200 || systemColors.system_accent2_300 || '#80CBC4')
+                : (systemColors.system_accent2_600 || systemColors.system_accent2_500 || '#00796B');
+
+            const background = isDarkMode
+                ? (systemColors.system_neutral1_900 || '#121212')
+                : (systemColors.system_neutral1_10 || systemColors.system_neutral1_50 || '#FEF7FF');
+
+            const text = isDarkMode
+                ? (systemColors.system_neutral1_50 || '#E6E1E5')
+                : (systemColors.system_neutral1_900 || '#1D1B20');
+
+            const surface = isDarkMode
+                ? (systemColors.system_neutral1_800 || '#1E1E1E')
+                : (systemColors.system_neutral2_50 || '#FFFFFF');
+
+            // Apply base color properties and Ionic variants (shade, tint, contrast, rgb)
+            this.setCSSColorProperty('primary', primary);
+            this.setCSSColorProperty('secondary', secondary);
+
+            const root = document.documentElement.style;
+            root.setProperty('--background-color', background);
+            root.setProperty('--text-color', text);
+            root.setProperty('--ion-item-background', surface);
+            root.setProperty('--stroke', isDarkMode
+                ? (systemColors.system_neutral2_700 || '#49454F')
+                : (systemColors.system_neutral2_300 || '#CAC4D0'));
+
+            // Generate background step-colors and text step-colors
+            for (let i = 50; i <= 950; i += 50) {
+                const percent = i / 1000;
+                const mixedBg = this.mixColors(text, background, percent * 100);
+                const mixedText = this.mixColors(background, text, percent * 100);
+
+                root.setProperty(`--ion-background-color-step-${i}`, mixedBg);
+                root.setProperty(`--ion-text-color-step-${i}`, mixedText);
+            }
+
+            // Harmonize custom gray variables
+            if (systemColors.system_neutral2_100) {
+                root.setProperty('--gray-100', isDarkMode ? systemColors.system_neutral2_800 : systemColors.system_neutral2_100);
+                root.setProperty('--gray-200', isDarkMode ? systemColors.system_neutral2_700 : systemColors.system_neutral2_200);
+                root.setProperty('--gray-300', isDarkMode ? systemColors.system_neutral2_600 : systemColors.system_neutral2_300);
+                root.setProperty('--gray-500', isDarkMode ? systemColors.system_neutral2_400 : systemColors.system_neutral2_500);
+                root.setProperty('--gray-700', isDarkMode ? systemColors.system_neutral2_200 : systemColors.system_neutral2_700);
+                root.setProperty('--gray-900', isDarkMode ? systemColors.system_neutral2_100 : systemColors.system_neutral2_900);
+            }
+
+            CoreApp.setSystemUIColors();
+        } catch (error) {
+            console.error('Failed to apply dynamic colors', error);
+        }
+    }
+
+    /**
+     * Helper to set CSS variables for an Ionic color.
+     */
+    protected setCSSColorProperty(name: string, hex: string): void {
+        const rgb = this.hexToRgb(hex);
+        const contrast = this.getContrastColor(hex);
+        const contrastRgb = this.hexToRgb(contrast);
+        const shade = this.mixColors('#000000', hex, 48); // 48% black
+        const tint = this.mixColors('#ffffff', hex, 80); // 80% white
+
+        const root = document.documentElement.style;
+        root.setProperty(`--${name}`, hex);
+        root.setProperty(`--${name}-shade`, shade);
+        root.setProperty(`--${name}-tint`, tint);
+        root.setProperty(`--${name}-contrast`, contrast);
+
+        root.setProperty(`--ion-color-${name}`, `var(--${name})`);
+        root.setProperty(`--ion-color-${name}-base`, `var(--ion-color-${name})`);
+        root.setProperty(`--ion-color-${name}-rgb`, `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+        root.setProperty(`--ion-color-${name}-contrast`, contrast);
+        root.setProperty(`--ion-color-${name}-contrast-rgb`, `${contrastRgb.r}, ${contrastRgb.g}, ${contrastRgb.b}`);
+        root.setProperty(`--ion-color-${name}-shade`, shade);
+        root.setProperty(`--ion-color-${name}-tint`, tint);
+    }
+
+    /**
+     * Clears dynamically applied CSS custom properties.
+     */
+    clearDynamicColors(): void {
+        const root = document.documentElement.style;
+        const propertiesToRemove = [
+            '--primary', '--primary-shade', '--primary-tint', '--primary-contrast',
+            '--secondary', '--secondary-shade', '--secondary-tint', '--secondary-contrast',
+            '--background-color', '--text-color', '--ion-item-background', '--stroke',
+            '--gray-100', '--gray-200', '--gray-300', '--gray-500', '--gray-700', '--gray-900',
+            '--ion-color-primary', '--ion-color-primary-base', '--ion-color-primary-rgb',
+            '--ion-color-primary-contrast', '--ion-color-primary-contrast-rgb',
+            '--ion-color-primary-shade', '--ion-color-primary-tint',
+            '--ion-color-secondary', '--ion-color-secondary-base', '--ion-color-secondary-rgb',
+            '--ion-color-secondary-contrast', '--ion-color-secondary-contrast-rgb',
+            '--ion-color-secondary-shade', '--ion-color-secondary-tint',
+        ];
+
+        propertiesToRemove.forEach((prop) => root.removeProperty(prop));
+
+        for (let i = 50; i <= 950; i += 50) {
+            root.removeProperty(`--ion-background-color-step-${i}`);
+            root.removeProperty(`--ion-text-color-step-${i}`);
+        }
+
+        CoreApp.setSystemUIColors();
+    }
+
+    /**
+     * Mixes two hex colors by weight percentage.
+     */
+    protected mixColors(color1: string, color2: string, weight: number): string {
+        const c1 = this.hexToRgb(color1);
+        const c2 = this.hexToRgb(color2);
+
+        const w = weight / 100;
+        const r = Math.round(c1.r * w + c2.r * (1 - w));
+        const g = Math.round(c1.g * w + c2.g * (1 - w));
+        const b = Math.round(c1.b * w + c2.b * (1 - w));
+
+        return this.rgbToHex(r, g, b);
+    }
+
+    protected hexToRgb(hex: string): { r: number; g: number; b: number } {
+        const cleanHex = hex.replace('#', '');
+        const num = parseInt(cleanHex.length === 3
+            ? cleanHex.split('').map((c) => c + c).join('')
+            : cleanHex, 16);
+
+        return {
+            r: (num >> 16) & 255,
+            g: (num >> 8) & 255,
+            b: num & 255,
+        };
+    }
+
+    protected rgbToHex(r: number, g: number, b: number): string {
+        const clamp = (v: number) => Math.max(0, Math.min(255, v));
+
+        return '#' + [clamp(r), clamp(g), clamp(b)].map((x) => {
+            const h = x.toString(16);
+
+            return h.length === 1 ? '0' + h : h;
+        }).join('');
+    }
+
+    /**
+     * WCAG contrast color calculation (returns '#ffffff' or '#000000').
+     */
+    protected getContrastColor(hexColor: string): string {
+        const componentLuminance = (val: number) => {
+            const v = val / 255;
+
+            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        };
+        const rgb = this.hexToRgb(hexColor);
+        const r = componentLuminance(rgb.r);
+        const g = componentLuminance(rgb.g);
+        const b = componentLuminance(rgb.b);
+        const luminance = r * 0.2126 + g * 0.7152 + b * 0.0722;
+
+        const whiteContrast = (luminance + 0.05) / 1.05;
+        const blackContrast = 0.05 / (luminance + 0.05);
+
+        return whiteContrast < blackContrast ? '#ffffff' : '#000000';
     }
 
     /**

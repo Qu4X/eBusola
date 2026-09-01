@@ -55,6 +55,7 @@ import android.util.Log;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.provider.Settings;
 
 
@@ -345,6 +346,8 @@ public class Diagnostic extends CordovaPlugin{
                 callbackContext.success(getDeviceOSVersion());
             } else if(action.equals("getBuildOSVersion")) {
                 callbackContext.success(getBuildOSVersion());
+            } else if(action.equals("getSystemColors")) {
+                this.getSystemColors(callbackContext);
             } else {
                 handleError("Invalid action");
                 return false;
@@ -354,6 +357,45 @@ public class Diagnostic extends CordovaPlugin{
             return false;
         }
         return true;
+    }
+
+    public void getSystemColors(CallbackContext callbackContext) {
+        try {
+            JSONObject colors = new JSONObject();
+            if (Build.VERSION.SDK_INT >= 31) { // Android 12 (API 31)
+                String[] colorNames = {
+                    "system_accent1_0", "system_accent1_10", "system_accent1_50", "system_accent1_100",
+                    "system_accent1_200", "system_accent1_300", "system_accent1_400", "system_accent1_500",
+                    "system_accent1_600", "system_accent1_700", "system_accent1_800", "system_accent1_900", "system_accent1_1000",
+                    "system_accent2_0", "system_accent2_10", "system_accent2_50", "system_accent2_100",
+                    "system_accent2_200", "system_accent2_300", "system_accent2_400", "system_accent2_500",
+                    "system_accent2_600", "system_accent2_700", "system_accent2_800", "system_accent2_900", "system_accent2_1000",
+                    "system_accent3_0", "system_accent3_10", "system_accent3_50", "system_accent3_100",
+                    "system_accent3_200", "system_accent3_300", "system_accent3_400", "system_accent3_500",
+                    "system_accent3_600", "system_accent3_700", "system_accent3_800", "system_accent3_900", "system_accent3_1000",
+                    "system_neutral1_0", "system_neutral1_10", "system_neutral1_50", "system_neutral1_100",
+                    "system_neutral1_200", "system_neutral1_300", "system_neutral1_400", "system_neutral1_500",
+                    "system_neutral1_600", "system_neutral1_700", "system_neutral1_800", "system_neutral1_900", "system_neutral1_1000",
+                    "system_neutral2_0", "system_neutral2_10", "system_neutral2_50", "system_neutral2_100",
+                    "system_neutral2_200", "system_neutral2_300", "system_neutral2_400", "system_neutral2_500",
+                    "system_neutral2_600", "system_neutral2_700", "system_neutral2_800", "system_neutral2_900", "system_neutral2_1000"
+                };
+
+                Context context = this.cordova.getActivity().getApplicationContext();
+                Resources res = context.getResources();
+                for (String name : colorNames) {
+                    int resId = res.getIdentifier(name, "color", "android");
+                    if (resId != 0) {
+                        int color = res.getColor(resId, context.getTheme());
+                        String hex = String.format("#%06X", (0xFFFFFF & color));
+                        colors.put(name, hex);
+                    }
+                }
+            }
+            callbackContext.success(colors);
+        } catch (Exception e) {
+            callbackContext.error("Failed to get system colors: " + e.getMessage());
+        }
     }
 
     public void restart(JSONArray args) throws Exception{

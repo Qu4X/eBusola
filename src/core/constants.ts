@@ -155,6 +155,7 @@ export enum CoreConfigSettingKey {
     EXACT_ALARMS_WARNING_DISPLAYED = 'CoreScheduleExactWarningModalDisplayed',
     DONT_SHOW_EXACT_ALARMS_WARNING = 'CoreDontShowScheduleExactWarning',
     DONT_SHOW_NOTIFICATIONS_PERMISSION_WARNING = 'CoreDontShowNotificationsPermissionWarning',
+    DYNAMIC_COLOR_ENABLED = 'CoreSettingsDynamicColorEnabled',
 };
 
 export const LOADING_ICON = 'spinner';
