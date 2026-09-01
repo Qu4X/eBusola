@@ -25,7 +25,7 @@
                             <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage($event)"
                                 [hidden]="spaceUsage.spaceUsage! + spaceUsage.cacheEntries! <= 0"
                                 [attr.aria-label]="'addon.storagemanager.deleteallsitedata' | translate" class="md3-delete-button">
-                                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
+                                <ion-icon name="trash-outline" slot="icon-only" aria-hidden="true" />
                             </ion-button>
                         </ion-item>
                     </div>
@@ -43,14 +43,14 @@
                         <ion-button slot="end" (click)="deleteCompletelyDownloadedCourses($event)"
                             [disabled]="completelyDownloadedCourses.length === 0" color="danger" fill="clear"
                             [attr.aria-label]="'addon.storagemanager.deletecourses' | translate" class="md3-delete-button">
-                            <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
+                            <ion-icon name="trash-outline" slot="icon-only" aria-hidden="true" />
                         </ion-button>
                     </ion-item>
 
                     @for (course of downloadedCourses; track course.id) {
                         <div class="md3-card-divider"></div>
                         <ion-item class="course ion-text-wrap" (click)="openCourse(course.id, course.title)" button
-                            [detail]="true" lines="none">
+                            [detail]="false" lines="none">
                             <ion-label class="ion-text-wrap">
                                 <p class="course-title">
                                     <core-format-text [text]="course.title" contextLevel="course" [contextInstanceId]="course.id"
@@ -65,11 +65,15 @@
                                     {{ course.totalSize | coreBytesToSize }}
                                 </span>
                             </ion-label>
-                            <ion-button slot="end" (click)="deleteCourse($event, course)" [disabled]="course.isDownloading" color="danger"
-                                fill="clear" [ariaLabel]="'addon.storagemanager.deletedatafrom' | translate: { name: course.title }"
-                                class="md3-delete-button">
-                                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
-                            </ion-button>
+                            <div slot="end" class="md3-split-action-container">
+                                <ion-icon name="chevron-forward-outline" class="md3-chevron-icon" aria-hidden="true" />
+                                <div class="md3-vertical-divider"></div>
+                                <ion-button (click)="deleteCourse($event, course)" [disabled]="course.isDownloading" color="danger"
+                                    fill="clear" [ariaLabel]="'addon.storagemanager.deletedatafrom' | translate: { name: course.title }"
+                                    class="md3-delete-button">
+                                    <ion-icon name="trash-outline" slot="icon-only" aria-hidden="true" />
+                                </ion-button>
+                            </div>
                         </ion-item>
                     }
                 </div>

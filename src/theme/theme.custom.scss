@@ -176,9 +176,92 @@ body.dark,
     }
 }
 
+// User Profile Avatar Edit Camera Button
+.avatar-container core-user-avatar .edit-avatar,
+.edit-avatar {
+    position: absolute !important;
+    right: -4px !important;
+    bottom: -4px !important;
+    width: 32px !important;
+    height: 32px !important;
+    --background: var(--ion-color-primary, #FF751F) !important;
+    --background-activated: var(--ion-color-primary-shade, #e06010) !important;
+    --background-focused: var(--ion-color-primary, #FF751F) !important;
+    --background-hover: var(--ion-color-primary, #FF751F) !important;
+    --color: #ffffff !important;
+    --border-radius: 50% !important;
+    --padding-start: 0 !important;
+    --padding-end: 0 !important;
+    --padding-top: 0 !important;
+    --padding-bottom: 0 !important;
+    background: var(--ion-color-primary, #FF751F) !important;
+    color: #ffffff !important;
+    border-radius: 50% !important;
+    border: 2px solid #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+    z-index: 10 !important;
+
+    &::part(native) {
+        background: var(--ion-color-primary, #FF751F) !important;
+        color: #ffffff !important;
+        border-radius: 50% !important;
+    }
+
+    ion-icon {
+        color: #ffffff !important;
+        font-size: 16px !important;
+        --color: #ffffff !important;
+    }
+}
+
+// MD3 Split Action Container (e.g. Navigation Chevron + Divider + Delete Button)
+.md3-split-action-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .md3-chevron-icon {
+        font-size: 18px;
+        color: var(--text-muted, #94a3b8);
+        transition: transform 150ms ease;
+    }
+
+    .md3-vertical-divider {
+        width: 1px;
+        height: 24px;
+        background: var(--stroke, rgba(0, 0, 0, 0.1));
+        margin: 0 4px;
+    }
+
+    .md3-delete-button {
+        --color: var(--ion-color-danger, #ef4444);
+        --padding-start: 6px;
+        --padding-end: 6px;
+        height: 36px;
+        width: 36px;
+        min-width: 36px;
+        border-radius: 50%;
+        margin: 0;
+
+        ion-icon {
+            font-size: 18px;
+        }
+    }
+}
+
 body.dark,
 .dark,
 [data-theme="dark"] {
+    .avatar-container core-user-avatar .edit-avatar,
+    .edit-avatar {
+        border: 2px solid #14202c !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    .md3-split-action-container .md3-vertical-divider {
+        background: rgba(255, 255, 255, 0.12) !important;
+    }
+
     .md3-settings-group .md3-group-card {
         background: #14202c !important;
         border-color: rgba(255, 255, 255, 0.08) !important;

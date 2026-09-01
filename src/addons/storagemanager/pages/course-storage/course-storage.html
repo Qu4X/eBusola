@@ -48,7 +48,7 @@
                         }
                         <ion-button [disabled]="calculatingSize || totalSize <= 0" (click)="deleteForCourse($event)" expand="block" color="danger"
                             class="md3-action-button danger">
-                            <ion-icon name="fas-trash" slot="start" [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
+                            <ion-icon name="trash-outline" slot="start" [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
                                 { name: title }" />
                             {{ 'addon.storagemanager.deleteall' | translate }}
                         </ion-button>
@@ -119,7 +119,7 @@
                             }
                             @if (!section.calculatingSize && section.totalSize > 0) {
                                 <ion-button (click)="deleteForSection($event, section)" color="danger" fill="clear">
-                                    <ion-icon name="fas-trash" slot="icon-only"
+                                    <ion-icon name="trash-outline" slot="icon-only"
                                         [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: section.name }" />
                                 </ion-button>
                             }
@@ -178,7 +178,7 @@
                                         }
                                         @if (!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0) {
                                             <ion-button fill="clear" (click)="deleteForModule($event, modOrSubsection)" color="danger">
-                                                <ion-icon name="fas-trash" slot="icon-only" [attr.aria-label]="
+                                                <ion-icon name="trash-outline" slot="icon-only" [attr.aria-label]="
                                                 'addon.storagemanager.deletedatafrom' | translate: { name: modOrSubsection.name }" />
                                             </ion-button>
                                         }

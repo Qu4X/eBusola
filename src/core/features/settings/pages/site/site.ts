@@ -159,6 +159,31 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
     }
 
     /**
+     * Normalize settings handler icon to MD3 icon.
+     *
+     * @param icon Handler icon name.
+     * @returns Normalized icon.
+     */
+    getSettingsIcon(icon?: string): string {
+        if (!icon) {
+            return 'settings-outline';
+        }
+
+        switch (icon) {
+            case 'fas-comments':
+                return 'chatbubbles-outline';
+            case 'fas-bell':
+                return 'notifications-outline';
+            case 'fas-box-archive':
+                return 'archive-outline';
+            case 'fas-folder':
+                return 'folder-outline';
+            default:
+                return icon;
+        }
+    }
+
+    /**
      * @inheritdoc
      */
     ngOnDestroy(): void {

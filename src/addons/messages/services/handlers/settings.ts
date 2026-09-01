@@ -43,7 +43,7 @@ export class AddonMessagesSettingsHandlerService implements CoreSettingsHandler 
      */
     getDisplayData(): CoreSettingsHandlerData {
         return {
-            icon: 'fas-comments',
+            icon: 'chatbubbles-outline',
             title: 'addon.messages.messages',
             page: ADDON_MESSAGES_SETTINGS_PAGE_NAME,
             class: 'addon-messages-settings-handler',

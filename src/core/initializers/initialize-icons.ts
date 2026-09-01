@@ -42,6 +42,8 @@ import {
     informationCircleOutline,
     buildOutline,
     serverOutline,
+    chevronForwardOutline,
+    chevronForward,
 } from 'ionicons/icons';
 import { CoreIcons } from '@static/icons';
 
@@ -78,6 +80,8 @@ export default function(): void {
         'information-circle-outline': informationCircleOutline,
         'build-outline': buildOutline,
         'server-outline': serverOutline,
+        'chevron-forward-outline': chevronForwardOutline,
+        'chevron-forward': chevronForward,
     });
     CoreIcons.addIconsToIonicons();
 }
