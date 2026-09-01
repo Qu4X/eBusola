@@ -33,6 +33,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-app-settings-synchronization',
     templateUrl: 'synchronization.html',
+    styleUrl: 'synchronization.scss',
     imports: [
         CoreSharedModule,
     ],

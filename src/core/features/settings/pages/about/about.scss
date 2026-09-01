@@ -1,3 +1,53 @@
+:host {
+    ion-list {
+        padding: 12px 16px;
+        background: transparent;
+    }
+
+    ion-item {
+        --background: var(--ion-background-color-step-50, #f8fafc);
+        --border-radius: 16px;
+        --padding-start: 14px;
+        --padding-end: 14px;
+        --inner-padding-end: 8px;
+        --min-height: 58px;
+        --inner-border-width: 0px;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+        ion-icon[slot="start"] {
+            width: 22px;
+            height: 22px;
+            font-size: 20px;
+            padding: 8px;
+            border-radius: 12px;
+            background: var(--ion-color-primary-tint);
+            color: var(--ion-color-primary-shade);
+            margin-inline-end: 14px;
+        }
+
+        ion-label {
+            font-weight: 500;
+            font-size: var(--mdl-typography-fontSize-md, 15px);
+        }
+    }
+
+    :host-context(.dark) ion-item,
+    :host-context(:root.dark) ion-item {
+        --background: var(--ion-background-color-step-100, #14202c);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+
+        ion-icon[slot="start"] {
+            background: rgba(var(--ion-color-primary-rgb), 0.18);
+            color: var(--ion-color-primary);
+        }
+    }
+}
+
 .core-about-deviceinfo {
-    --background: transparent;
+    --background: transparent !important;
+    text-align: center;
+    opacity: 0.7;
+    font-size: 13px;
+    margin-bottom: 8px;
 }

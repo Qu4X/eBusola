@@ -29,6 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-app-settings-space-usage',
     templateUrl: 'space-usage.html',
+    styleUrl: 'space-usage.scss',
     imports: [
         CoreSharedModule,
     ],
