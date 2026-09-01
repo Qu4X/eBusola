@@ -1,9 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-button fill="clear" (click)="close($event)" [ariaLabel]="'core.close' | translate">
-                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
-            </ion-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'core.user.useraccount' | translate }}</h1>
@@ -17,11 +15,14 @@
     <core-loading [hideUntil]="handlersLoaded" placeholderType="column" placeholderHeight="48px">
         <div class="md3-settings-container">
             <!-- Site Logo Banner -->
-            @if (siteInfo) {
-                <div class="md3-logo-banner">
-                    <core-site-logo [hideOnError]="true" logoType="top" />
+            <div class="md3-logo-banner">
+                <div class="core-logo-container">
+                    <img src="assets/img/login_logo.png" class="core-logo light-logo" alt="Busola E-Learning">
+                    <img src="assets/img/busola_el_logo_dark.png" class="core-logo dark-logo" alt="Busola E-Learning">
                 </div>
+            </div>
 
+            @if (siteInfo) {
                 <!-- Active User Profile Card -->
                 <div class="md3-settings-group">
                     <div class="md3-group-card">

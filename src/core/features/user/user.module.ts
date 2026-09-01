@@ -91,6 +91,10 @@ const routes: Routes = [
                 pathMatch: 'full',
             },
             {
+                path: 'account',
+                loadComponent: () => import('@features/mainmenu/components/user-menu/user-menu'),
+            },
+            {
                 path: 'profile',
                 loadComponent: () => import('@features/user/pages/profile/profile'),
             },

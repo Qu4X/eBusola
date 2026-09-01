@@ -209,7 +209,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                 userId: this.siteInfo.userid,
             },
         });
-        ModalController.dismiss();
     }
 
     /**
@@ -219,7 +218,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      */
     async openPreferences(event: Event): Promise<void> {
         CoreNavigator.navigateToSitePath(CORE_SETTINGS_PREFERENCES_PAGE_NAME);
-        ModalController.dismiss();
     }
 
     /**
@@ -234,7 +232,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         }
 
         handler.action(event, this.user, CoreUserDelegateContext.USER_MENU);
-        ModalController.dismiss();
     }
 
     /**
@@ -244,7 +241,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      */
     async contactSupport(event: Event): Promise<void> {
         await CoreUserSupport.contact();
-        ModalController.dismiss();
     }
 
     /**
@@ -267,8 +263,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
             }
         }
 
-        await this.close(event);
-
         await CoreSites.logout({
             forceLogout: true,
             removeAccount: this.removeAccountOnLogout,
@@ -281,20 +275,14 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async switchAccounts(event: Event): Promise<void> {
-        const thisModal = await ModalController.getTop();
-
         event.preventDefault();
         event.stopPropagation();
 
         const { CoreLoginSitesModalComponent } = await import('@features/login/components/sites-modal/sites-modal');
 
-        const closeAll = await CoreModals.openModal<boolean>({
+        await CoreModals.openModal<boolean>({
             component: CoreLoginSitesModalComponent,
         });
-
-        if (thisModal && closeAll) {
-            await ModalController.dismiss(undefined, undefined, thisModal.id);
-        }
     }
 
     /**
@@ -303,9 +291,9 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async addAccount(event: Event): Promise<void> {
-        await this.close(event);
+        const { CoreLoginHelper } = await import('@features/login/services/login-helper');
 
-        await CoreLoginHelper.goToAddSite(true, true);
+        await CoreLoginHelper.goToAddSite();
     }
 
     /**
@@ -319,15 +307,19 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Close modal.
+     * Close modal or navigate back.
      *
      * @param event Event.
      */
-    async close(event: Event): Promise<void> {
-        event.preventDefault();
-        event.stopPropagation();
+    async close(event?: Event): Promise<void> {
+        event?.preventDefault();
+        event?.stopPropagation();
 
-        await ModalController.dismiss();
+        try {
+            await ModalController.dismiss();
+        } catch {
+            await CoreNavigator.back();
+        }
     }
 
     /**
@@ -340,3 +332,5 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 }
 
 type HandlerData = CoreUserProfileListHandlerData & { name: string };
+
+export default CoreMainMenuUserMenuComponent;

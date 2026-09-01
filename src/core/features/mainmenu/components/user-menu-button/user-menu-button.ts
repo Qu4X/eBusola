@@ -22,6 +22,8 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuPlacement } from '@features/mainmenu/constants';
 
+import { CoreNavigator } from '@services/navigator';
+
 /**
  * Component to display an avatar on the header to open user menu.
  *
@@ -93,15 +95,11 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
      *
      * @param event Click event.
      */
-    async openUserMenu(event: Event): Promise<void> {
+    openUserMenu(event: Event): void {
         event.preventDefault();
         event.stopPropagation();
 
-        const { CoreMainMenuUserMenuComponent } = await import('../user-menu/user-menu');
-
-        CoreModals.openModal<void>({
-            component: CoreMainMenuUserMenuComponent,
-        });
+        CoreNavigator.navigateToSitePath('user/account');
     }
 
 }
