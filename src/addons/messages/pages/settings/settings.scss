@@ -25,7 +25,8 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
             ion-item {
-                --background: transparent;
+                --background: transparent !important;
+                background: transparent !important;
                 --padding-start: 16px;
                 --padding-end: 16px;
                 --inner-padding-end: 8px;
@@ -38,7 +39,12 @@
 
                 &::part(native) {
                     border: none !important;
-                    background: transparent;
+                    background: transparent !important;
+                }
+
+                ion-radio {
+                    --color: var(--text-muted, #64748b);
+                    --color-checked: var(--ion-color-primary);
                 }
 
                 p.item-heading {

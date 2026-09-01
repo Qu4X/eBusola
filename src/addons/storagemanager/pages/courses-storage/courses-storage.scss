@@ -1,6 +1,112 @@
-ion-item.courses,
-ion-item.total {
-    .item-heading {
-        font-weight: bold;
+:host {
+    .md3-settings-container {
+        padding: 16px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .md3-settings-group {
+        margin-bottom: 24px;
+
+        .md3-group-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ion-color-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 0 8px 8px;
+        }
+
+        .md3-group-card {
+            background: var(--ion-background-color-step-50, #f8fafc);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+            ion-item {
+                --background: transparent;
+                --padding-start: 16px;
+                --padding-end: 12px;
+                --inner-padding-end: 4px;
+                --min-height: 58px;
+                --inner-border-width: 0px !important;
+                --border-width: 0px !important;
+                --border-color: transparent !important;
+                margin: 0;
+                border: none !important;
+
+                &::part(native) {
+                    border: none !important;
+                    background: transparent;
+                }
+
+                p.item-heading {
+                    font-weight: 600;
+                    font-size: 15px;
+                    color: var(--text-color);
+                    margin: 0 0 4px 0;
+                }
+
+                p.course-title {
+                    font-weight: 600;
+                    font-size: 15px;
+                    color: var(--text-color);
+                    margin: 0 0 4px 0;
+                }
+
+                p.downloading-status {
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--ion-color-primary);
+                    margin: 0 0 4px 0;
+                }
+
+                .md3-size-chip {
+                    display: inline-block;
+                    padding: 2px 10px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    border-radius: 9999px;
+                    background: rgba(100, 116, 139, 0.12);
+                    color: var(--text-muted, #64748b);
+                }
+
+                .md3-delete-button {
+                    --color: var(--ion-color-danger, #ef4444);
+                    --padding-start: 8px;
+                    --padding-end: 8px;
+                    height: 40px;
+
+                    ion-icon {
+                        font-size: 18px;
+                    }
+                }
+            }
+
+            .md3-card-divider {
+                height: 1px;
+                background: var(--stroke, rgba(0, 0, 0, 0.06));
+                margin-inline-start: 16px;
+                margin-inline-end: 16px;
+            }
+        }
+    }
+
+    :host-context(.dark) {
+        .md3-settings-group .md3-group-card {
+            background: var(--ion-background-color-step-100, #14202c);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+
+            .md3-card-divider {
+                background: rgba(255, 255, 255, 0.06);
+            }
+
+            ion-item .md3-size-chip {
+                background: rgba(255, 255, 255, 0.08);
+                color: var(--text-color);
+            }
+        }
     }
 }

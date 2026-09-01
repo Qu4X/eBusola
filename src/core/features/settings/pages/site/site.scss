@@ -16,7 +16,8 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
             ion-item {
-                --background: transparent;
+                --background: transparent !important;
+                background: transparent !important;
                 --padding-start: 16px;
                 --padding-end: 16px;
                 --inner-padding-end: 8px;
@@ -29,14 +30,15 @@
 
                 &::part(native) {
                     border: none !important;
-                    background: transparent;
+                    background: transparent !important;
                 }
 
                 ion-icon.md3-settings-icon {
                     width: 24px;
                     height: 24px;
                     font-size: 24px;
-                    color: var(--ion-color-primary);
+                    color: var(--ion-color-primary) !important;
+                    --color: var(--ion-color-primary) !important;
                     margin-inline-end: 16px;
                 }
 
