@@ -1,29 +1,29 @@
 @use "src/theme/globals" as *;
 
 :host {
-    --avatar-radius: var(--core-courseimage-radius);
-    --avatar-size: 60px;
-    --avatar-margin: 16px;
+    --avatar-radius: 14px;
+    --avatar-size: 64px;
+    --avatar-margin: 14px;
 
     --card-vertical-margin: 8px;
-    --card-radius: 12px;
+    --card-radius: 18px;
 
     --shortname-size: 12px;
 
-    --button-size: 44px;
-    --button-padding: 10px;
+    --button-size: 40px;
+    --button-padding: 8px;
     --button-radius: 50%;
-    --button-background: rgb(255 255 255 / 50%);
+    --button-background: rgba(var(--ion-color-primary-rgb), 0.1);
 
     @include media-breakpoint-down(md) {
-        --avatar-size: 48px;
+        --avatar-size: 52px;
         --avatar-margin: 12px;
     }
 }
 
 
 :host-context(:root.dark) {
-    --button-background: rgb(0 0 0 / 30%);
+    --button-background: rgba(255, 255, 255, 0.1);
 }
 
 // Common styles.
@@ -38,10 +38,29 @@ button {
 
 ion-card {
     --border-radius: var(--card-radius);
+    border-radius: var(--card-radius);
+    background: var(--ion-background-color-step-50, #f8fafc);
+    border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    margin: 8px 0;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+
+    ion-item {
+        --background: transparent !important;
+        background: transparent !important;
+        --inner-border-width: 0px !important;
+        --border-width: 0px !important;
+    }
 
     ion-ripple-effect {
         z-index: 1;
     }
+}
+
+:host-context(.dark) ion-card {
+    background: #14202c !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
 .core-button-spinner {

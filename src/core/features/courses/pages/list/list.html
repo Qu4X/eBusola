@@ -22,36 +22,38 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
-    @if (searchEnabled) {
-        <core-search-box (searchTextChange)="search($event)" [placeholder]="'core.courses.search' | translate"
-            [searchLabel]="'core.courses.search' | translate" [autoFocus]="searchMode && !searchText" searchArea="CoreCoursesSearch"
-            [searchText]="searchText" />
-    }
-    <ion-item class="ion-text-wrap" lines="none">
-        <ion-toggle [(ngModel)]="showOnlyEnrolled" (ionChange)="toggleEnrolled()">
-            {{ 'core.courses.showonlyenrolled' | translate }}
-        </ion-toggle>
-    </ion-item>
+    <div class="md3-courses-search-header">
+        @if (searchEnabled) {
+            <core-search-box (searchTextChange)="search($event)" [placeholder]="'core.courses.search' | translate"
+                [searchLabel]="'core.courses.search' | translate" [autoFocus]="searchMode && !searchText" searchArea="CoreCoursesSearch"
+                [searchText]="searchText" />
+        }
+        <div class="md3-search-toggle-card">
+            <ion-item class="ion-text-wrap" lines="none">
+                <ion-toggle [(ngModel)]="showOnlyEnrolled" (ionChange)="toggleEnrolled()">
+                    <span class="toggle-text">{{ 'core.courses.showonlyenrolled' | translate }}</span>
+                </ion-toggle>
+            </ion-item>
+        </div>
+    </div>
 
     <core-loading [hideUntil]="loaded" [message]="loadingMessage" placeholderType="column" placeholderHeight="108px">
         @if (searchMode && searchTotal > 0) {
-
-            <ion-item-divider>
-                <ion-label>
-                    <h2 role="status">{{ 'core.courses.totalcoursesearchresults' | translate:{$a: searchTotal} }}</h2>
-                </ion-label>
-            </ion-item-divider>
-
+            <div class="md3-search-results-chip-container">
+                <span class="md3-results-chip" role="status">
+                    <ion-icon name="fas-magnifying-glass" aria-hidden="true" />
+                    {{ 'core.courses.totalcoursesearchresults' | translate:{$a: searchTotal} }}
+                </span>
+            </div>
         }
 
-        <ion-list class="list-item-limited-width core-course-list">
+        <div class="md3-course-grid">
             @for (course of courses; track course.id) {
                 <core-courses-course-list-item [course]="course" [showDownload]="downloadEnabled" />
             }
-        </ion-list>
+        </div>
 
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreCourses($event)" [error]="loadMoreError" />
-
 
         @if (searchMode && !courses.length) {
             <core-empty-box icon="fas-magnifying-glass" [message]="'core.courses.nosearchresults' | translate" role="alert" />
