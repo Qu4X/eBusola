@@ -21,10 +21,10 @@
                     <div class="avatar-container">
                         <core-user-avatar [user]="userInfo" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
                             @if (canChangeProfilePicture) {
-                                <ion-button class="edit-avatar" (click)="changeProfilePicture()"
-                                    [ariaLabel]="'core.user.newpicture' | translate" fill="clear">
-                                    <ion-icon slot="icon-only" name="camera" aria-hidden="true" />
-                                </ion-button>
+                                <button type="button" class="edit-avatar" (click)="changeProfilePicture()"
+                                    [attr.aria-label]="'core.user.newpicture' | translate">
+                                    <ion-icon name="camera" aria-hidden="true" />
+                                </button>
                             }
                         </core-user-avatar>
                     </div>

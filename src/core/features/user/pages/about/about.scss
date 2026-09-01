@@ -22,32 +22,31 @@
                 --margin-end-on-item: 0px;
                 --margin-vertical-on-item: 0px;
 
-                ::ng-deep .edit-avatar {
+                button.edit-avatar,
+                .edit-avatar {
                     position: absolute !important;
                     right: -4px !important;
                     bottom: -4px !important;
                     width: 32px !important;
                     height: 32px !important;
-                    --padding-start: 0 !important;
-                    --padding-end: 0 !important;
-                    --background: var(--ion-color-primary) !important;
-                    --color: #ffffff !important;
-                    background: var(--ion-color-primary) !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    background: #15195D !important;
                     color: #ffffff !important;
                     border-radius: 50% !important;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
                     border: 2px solid #ffffff !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22) !important;
+                    cursor: pointer !important;
+                    outline: none !important;
                     z-index: 10 !important;
 
-                    &::part(native) {
-                        border-radius: 50% !important;
-                        background: var(--ion-color-primary) !important;
-                        color: #ffffff !important;
-                    }
-
                     ion-icon {
-                        font-size: 14px !important;
+                        font-size: 16px !important;
                         color: #ffffff !important;
+                        --color: #ffffff !important;
                     }
                 }
             }
@@ -174,7 +173,9 @@
     }
 
     :host-context(.dark) {
-        .md3-profile-hero .avatar-container core-user-avatar ::ng-deep .edit-avatar {
+        .md3-profile-hero .avatar-container core-user-avatar button.edit-avatar,
+        .md3-profile-hero .avatar-container core-user-avatar .edit-avatar {
+            background: #FF751F !important;
             border: 2px solid #14202c !important;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7) !important;
         }
