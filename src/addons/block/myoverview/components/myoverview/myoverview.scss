@@ -10,20 +10,16 @@
         top: 0;
         z-index: 100;
         background: var(--background-color, #ffffff);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        padding: 6px 12px 8px;
+        padding: 8px 12px 10px;
         margin: 0;
-        border-bottom: 1px solid var(--gray-200);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border-bottom: 1px solid var(--stroke, var(--gray-200));
         transition: background 200ms ease, border-color 200ms ease;
     }
 
     :host-context(.dark) .addon-block-myoverview-filters-sticky,
     :host-context(:root.dark) .addon-block-myoverview-filters-sticky {
-        background: rgba(16, 24, 36, 0.92);
+        background: var(--background-color, #0b1d28);
         border-bottom-color: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     }
 
     ion-row.addon-block-myoverview-filter {
@@ -34,57 +30,8 @@
             padding: 0;
             margin-right: 3px;
             margin-left: 3px;
-        }
-
-        ion-button {
-            --border-width: 0;
-            --border-radius: 9999px;
-            height: 38px;
-            margin: 0;
-
-            ion-icon {
-                font-size: var(--mdl-typography-icon-fontSize-md);
-            }
-        }
-
-        core-combobox {
-            display: inline-block;
-
-            ::ng-deep ion-select {
-                --padding-start: 12px;
-                --padding-end: 28px;
-                --padding-top: 0px;
-                --padding-bottom: 0px;
-                --a11y-sizing-minTargetSize: 38px;
-                height: 38px;
-                min-height: 38px;
-                margin: 0;
-                border-radius: 9999px !important;
-                border: 1px solid var(--gray-300, rgba(0, 0, 0, 0.18)) !important;
-                background: var(--ion-background-color-step-100, #f1f5f9) !important;
-                box-shadow: none !important;
-                box-sizing: border-box;
-
-                &::part(container) {
-                    margin: 0;
-                    font-size: 13px;
-                    font-weight: 500;
-                    white-space: nowrap;
-                }
-
-                &::part(icon) {
-                    right: 8px;
-                    font-size: 16px;
-                }
-            }
-        }
-
-        :host-context(.dark) core-combobox,
-        :host-context(:root.dark) core-combobox {
-            ::ng-deep ion-select {
-                border-color: rgba(255, 255, 255, 0.15) !important;
-                background: var(--ion-background-color-step-150, #1e2c3a) !important;
-            }
+            display: flex;
+            align-items: center;
         }
 
         ion-searchbar {
@@ -93,11 +40,111 @@
             --border-radius: 9999px;
             --background: var(--ion-background-color-step-100, #f1f5f9);
             --box-shadow: none;
+            --color: var(--text-color);
+            --placeholder-color: var(--text-muted, #94a3b8);
+            --icon-color: var(--text-muted, #94a3b8);
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.15));
+            border-radius: 9999px;
+            width: 100%;
         }
 
         :host-context(.dark) ion-searchbar,
         :host-context(:root.dark) ion-searchbar {
-            --background: var(--ion-background-color-step-150, #1e2c3a);
+            --background: var(--ion-background-color-step-100, #14202c);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        core-combobox {
+            --core-combobox-border-width: 0px !important;
+            --core-combobox-box-shadow: none !important;
+            display: inline-block;
+
+            ::ng-deep ion-select {
+                --padding-start: 14px;
+                --padding-end: 28px;
+                --padding-top: 0px;
+                --padding-bottom: 0px;
+                --a11y-sizing-minTargetSize: 38px;
+                height: 38px;
+                min-height: 38px;
+                margin: 0 !important;
+                border-radius: 9999px !important;
+                border: 1px solid var(--stroke, rgba(0, 0, 0, 0.15)) !important;
+                background: var(--ion-background-color-step-100, #f1f5f9) !important;
+                color: var(--text-color) !important;
+                box-shadow: none !important;
+                box-sizing: border-box;
+
+                &::part(container) {
+                    margin: 0 !important;
+                    font-size: 13px;
+                    font-weight: 500;
+                    white-space: nowrap;
+                    color: inherit;
+                }
+
+                &::part(icon) {
+                    position: absolute;
+                    right: 8px;
+                    margin: 0;
+                    color: inherit;
+                    opacity: 0.7;
+                    font-size: 16px;
+                }
+            }
+
+            &.no-border ::ng-deep ion-select {
+                --padding-start: 10px;
+                --padding-end: 10px;
+                min-width: 38px;
+                width: 38px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &::part(icon) {
+                    display: none;
+                }
+
+                ion-icon {
+                    margin: 0 auto;
+                    font-size: 16px;
+                }
+            }
+        }
+
+        :host-context(.dark) core-combobox,
+        :host-context(:root.dark) core-combobox {
+            ::ng-deep ion-select {
+                border-color: rgba(255, 255, 255, 0.12) !important;
+                background: var(--ion-background-color-step-100, #14202c) !important;
+                color: var(--text-color) !important;
+            }
+        }
+
+        ion-button {
+            --border-width: 1px !important;
+            --border-color: var(--stroke, rgba(0, 0, 0, 0.15)) !important;
+            --border-style: solid !important;
+            --border-radius: 9999px !important;
+            --background: var(--ion-background-color-step-100, #f1f5f9) !important;
+            --color: var(--text-color) !important;
+            height: 38px;
+            width: 38px;
+            min-width: 38px;
+            margin: 0;
+            padding: 0;
+
+            ion-icon {
+                font-size: 16px;
+            }
+        }
+
+        :host-context(.dark) ion-button,
+        :host-context(:root.dark) ion-button {
+            --border-color: rgba(255, 255, 255, 0.12) !important;
+            --background: var(--ion-background-color-step-100, #14202c) !important;
+            --color: var(--text-color) !important;
         }
     }
 
