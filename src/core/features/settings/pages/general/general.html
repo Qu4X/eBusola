@@ -43,7 +43,7 @@
         <!-- Appearance Group -->
         @if (colorSchemes.length > 0) {
             <div class="md3-settings-group">
-                <div class="md3-group-title">{{ 'core.settings.colorscheme' | translate }}</div>
+                <div class="md3-group-title">{{ 'core.settings.appearance' | translate }}</div>
                 <div class="md3-group-card">
                     <ion-item lines="none" class="core-settings-general-color-scheme">
                         <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged($event)" interface="popover"
