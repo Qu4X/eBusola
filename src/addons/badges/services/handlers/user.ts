@@ -82,7 +82,7 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
      */
     getDisplayData(): CoreUserProfileListHandlerData {
         return {
-            icon: 'fas-trophy',
+            icon: 'trophy-outline',
             title: 'addon.badges.badges',
             action: (event, user, context, contextId): void => {
                 event.preventDefault();

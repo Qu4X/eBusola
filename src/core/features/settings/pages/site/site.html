@@ -67,7 +67,7 @@
                             <core-button-with-spinner [loading]="isSynchronizing()" slot="end">
                                 <ion-button fill="clear" (click)="synchronize()" [ariaLabel]="'core.settings.synchronizenow' | translate"
                                     [disabled]="!isOnline() || (dataSaver && limitedConnection())" class="md3-sync-button">
-                                    <ion-icon name="fas-rotate" slot="icon-only" aria-hidden="true" />
+                                    <ion-icon name="sync-outline" slot="icon-only" aria-hidden="true" />
                                 </ion-button>
                             </core-button-with-spinner>
                         </ion-item>
@@ -76,7 +76,7 @@
                         @if (!online || (dataSaver && limitedConnection())) {
                             <div class="md3-card-divider"></div>
                             <ion-item class="core-warning-item ion-text-wrap" lines="none">
-                                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" class="warning-icon" />
+                                <ion-icon name="alert-circle-outline" slot="start" aria-hidden="true" class="warning-icon" />
                                 <ion-label>
                                     <p class="warning-text">
                                         @if (online && dataSaver && limitedConnection()) {

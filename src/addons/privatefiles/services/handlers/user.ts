@@ -57,7 +57,7 @@ export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandl
      */
     getDisplayData(): CoreUserProfileListHandlerData {
         return {
-            icon: 'fas-folder',
+            icon: 'folder-outline',
             title: 'addon.privatefiles.files',
             class: 'addon-privatefiles-handler',
             action: (event): void => {

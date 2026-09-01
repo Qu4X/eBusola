@@ -43,7 +43,7 @@ export class AddonNotificationsSettingsHandlerService implements CoreSettingsHan
      */
     getDisplayData(): CoreSettingsHandlerData {
         return {
-            icon: 'fas-bell',
+            icon: 'notifications-outline',
             title: 'addon.notifications.notifications',
             page: ADDONS_NOTIFICATIONS_SETTINGS_PAGE_NAME,
             class: 'addon-notifications-settings-handler',

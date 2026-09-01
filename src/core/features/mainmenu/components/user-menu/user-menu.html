@@ -61,7 +61,7 @@
 
                     <ion-item button (click)="openPreferences($event)" [attr.aria-label]="'core.settings.preferences' | translate" [detail]="true"
                         class="core-user-menu-preferences" lines="none">
-                        <ion-icon name="fas-gear" slot="start" aria-hidden="true" class="md3-settings-icon" />
+                        <ion-icon name="settings-outline" slot="start" aria-hidden="true" class="md3-settings-icon" />
                         <ion-label>
                             <p class="item-heading">{{ 'core.settings.preferences' | translate }}</p>
                         </ion-label>
@@ -71,7 +71,7 @@
                         <div class="md3-card-divider"></div>
                         <ion-item button (click)="contactSupport($event)" [attr.aria-label]="'core.user.support' | translate" [detail]="true"
                             detailIcon="open-outline" class="core-user-menu-support" lines="none">
-                            <ion-icon name="fas-envelope" slot="start" aria-hidden="true" class="md3-settings-icon" />
+                            <ion-icon name="mail-outline" slot="start" aria-hidden="true" class="md3-settings-icon" />
                             <ion-label>
                                 <p class="item-heading">{{ 'core.user.support' | translate }}</p>
                             </ion-label>
@@ -85,7 +85,7 @@
                 <div class="md3-settings-group">
                     <div class="md3-group-card">
                         <ion-item button lines="none" (click)="switchAccounts($event)" [detail]="true" class="ion-text-wrap">
-                            <ion-icon name="fas-right-left" slot="start" aria-hidden="true" class="md3-settings-icon" />
+                            <ion-icon name="swap-horizontal-outline" slot="start" aria-hidden="true" class="md3-settings-icon" />
                             <ion-label>
                                 <p class="item-heading">{{ 'core.mainmenu.switchaccount' | translate }}</p>
                             </ion-label>
@@ -99,10 +99,10 @@
                 <ion-button (click)="logout($event)" expand="block" color="danger" [ariaLabel]="'core.mainmenu.logout' | translate"
                     class="md3-logout-button">
                     @if (!removeAccountOnLogout) {
-                        <ion-icon name="fas-right-from-bracket" slot="start" aria-hidden="true" />
+                        <ion-icon name="log-out-outline" slot="start" aria-hidden="true" />
                         <span>{{ 'core.mainmenu.logout' | translate }}</span>
                     } @else {
-                        <ion-icon name="fas-trash" slot="start" aria-hidden="true" />
+                        <ion-icon name="trash-outline" slot="start" aria-hidden="true" />
                         <span>{{ 'core.login.removeaccount' | translate }}</span>
                     }
                 </ion-button>
