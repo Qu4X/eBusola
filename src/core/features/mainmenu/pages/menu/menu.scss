@@ -45,9 +45,14 @@ ion-tab-bar {
     --background: var(--core-bottom-tabs-background);
     --color: var(--core-bottom-tabs-color);
     --color-selected: var(--core-bottom-tabs-color-selected);
-    --background-selected: var(--core-bottom-tabs-background-selected);
+    --background-selected: transparent;
 
     height: var(--menutabbar-size);
+    border-top: 1px solid var(--gray-200);
+}
+
+:root.dark ion-tab-bar {
+    border-top-color: var(--gray-800);
 }
 
 core-user-menu-button {
@@ -58,17 +63,36 @@ core-user-menu-button {
 
 ion-tab-button {
     color: var(--color);
-
-    &.tab-selected {
-        color: var(--color-selected);
-        background: var(--background-selected);
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 6px;
+    padding-bottom: 6px;
 
     ion-icon.core-tab-icon {
         text-overflow: unset;
         overflow: visible;
         text-align: center;
-        font-size: var(--mdl-typography-icon-fontSize-lg);
+        font-size: var(--mdl-typography-icon-fontSize-md);
+        padding: 4px 18px;
+        border-radius: 16px;
+        transition: background-color 200ms ease, color 200ms ease, transform 200ms ease;
+    }
+
+    &.tab-selected {
+        color: var(--color-selected);
+
+        ion-icon.core-tab-icon {
+            background-color: var(--ion-color-primary-tint);
+            color: var(--ion-color-primary-shade);
+        }
+    }
+
+    ion-label {
+        margin-top: 2px;
+        font-size: var(--mdl-typography-label-fontSize-sm);
+        letter-spacing: 0.2px;
     }
 
     ion-badge.core-tab-badge {
@@ -91,7 +115,7 @@ ion-tab-button {
         box-sizing: border-box;
         position: absolute;
         z-index: 1;
-        @include position(8px, null, null, calc(50% + 6px));
+        @include position(6px, null, null, calc(50% + 14px));
     }
 }
 
@@ -116,21 +140,16 @@ ion-tabs {
         }
 
         ion-tab-button {
-            border-top: 4px solid transparent;
-            border-bottom: 4px solid transparent;
-
-            &.tab-selected {
-                border-top-color: var(--core-bottom-tabs-border-color-active);
-            }
+            border: none;
 
             ion-icon.core-tab-icon {
                 margin-bottom: var(--network-margin-bottom);
-                transition: margin 500ms ease-in-out, transform 300ms ease-in-out;
+                transition: margin 500ms ease-in-out, transform 300ms ease-in-out, background-color 200ms ease, color 200ms ease;
             }
 
             ion-icon.core-tab-badge,
             ion-badge.core-tab-badge {
-                top: 8px;
+                top: 6px;
             }
         }
 

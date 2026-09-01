@@ -3,7 +3,7 @@ ion-searchbar,
     --background: var(--ion-searchbar-background);
     --border-color: var(--ion-searchbar-border-color);
     --color: var(--ion-searchbar-color);
-    --border-radius: var(--mdl-shape-borderRadius-xs);
+    --border-radius: var(--ion-searchbar-border-radius);
     --icon-color: var(--ion-searchbar-icon-color);
     --height: var(--ion-searchbar-height);
 
@@ -15,7 +15,7 @@ ion-searchbar,
     }
 
     .searchbar-input {
-        --border-radius: var(--mdl-shape-borderRadius-xs);
+        --border-radius: var(--ion-searchbar-border-radius);
 
         height: var(--height) !important;
         border: 1px solid var(--border-color) !important;

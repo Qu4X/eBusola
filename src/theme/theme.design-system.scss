@@ -125,7 +125,8 @@
     --mdl-shape-borderRadius-sm: 8px;
     --mdl-shape-borderRadius-md: 12px;
     --mdl-shape-borderRadius-lg: 16px;
-    --mdl-shape-borderRadius-xl: 24px;
+    --mdl-shape-borderRadius-xl: 28px;
+    --mdl-shape-borderRadius-pill: 9999px;
     --mdl-shape-borderRadius-round: 50%;
 
     // ***** SHADOW category ***** //
@@ -160,12 +161,12 @@
     // @TODO ***** VARIABLES TO BE REVIEWED, RENAMED AND TIDIED ***** //
     --text-size: var(--mdl-typography-body-fontSize-md);
 
-    --core-input-radius: var(--mdl-shape-borderRadius-xs);
+    --core-input-radius: var(--mdl-shape-borderRadius-md);
     --core-input-border-width: 1px;
 
     --list-item-max-width: 768px;
 
-    --modal-radius: var(--mdl-shape-borderRadius-md);
+    --modal-radius: var(--mdl-shape-borderRadius-xl);
     --modal-lateral-max-width: 320px;
     --modal-lateral-margin: 56px;
 
@@ -180,22 +181,22 @@
     --ion-card-vertical-margin: 12px;
     --ion-card-horizontal-margin: 12px;
     --ion-card-radius: var(--mdl-shape-borderRadius-lg);
-    --ion-card-border-width: 1px;
+    --ion-card-border-width: 0px;
 
-    --bottom-tabs-size: 56px;
-    --side-tabs-size: 64px;
+    --bottom-tabs-size: 76px;
+    --side-tabs-size: 80px;
 
     --core-header-toolbar-button-image-size: var(--a11y-sizing-minTargetSize);
     --core-header-toolbar-border-width: 0px;
-    --core-header-toolbar-height: 48px;
+    --core-header-toolbar-height: 56px;
     --core-header-shadow: none;
 
-    --ion-searchbar-height: var(--a11y-sizing-minTargetSize);
-    --ion-searchbar-border-radius: var(--core-input-radius);
+    --ion-searchbar-height: 48px;
+    --ion-searchbar-border-radius: var(--mdl-shape-borderRadius-xl);
 
-    --core-search-box-border-radius: var(--core-input-radius);
+    --core-search-box-border-radius: var(--mdl-shape-borderRadius-xl);
 
-    --core-combobox-radius: var(--core-input-radius);
+    --core-combobox-radius: var(--mdl-shape-borderRadius-md);
     --core-combobox-border-width: var(--core-input-border-width);
     --core-combobox-box-shadow: none;
 

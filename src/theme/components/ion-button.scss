@@ -79,7 +79,9 @@ ion-button {
 
     &.button.button-solid,
     &.button.button-outline {
-        --border-radius: var(--core-input-radius);
+        --border-radius: var(--mdl-shape-borderRadius-pill);
+        font-weight: 500;
+        letter-spacing: 0.1px;
     }
 
     .select-icon {
