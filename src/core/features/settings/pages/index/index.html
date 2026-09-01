@@ -11,14 +11,22 @@
 </ion-header>
 <ion-content>
     <core-split-view>
-        <ion-list>
-            <ion-item *ngFor="let section of sections.items" [attr.aria-current]="sections.getItemAriaCurrent(section)" button
-                [detail]="true" (click)="sections.select(section)">
-                <ion-icon [name]="section.icon" slot="start" aria-hidden="true" />
-                <ion-label class="ion-text-wrap">
-                    <p class="item-heading">{{ section.name | translate }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-list>
+        <div class="md3-settings-container">
+            <div class="md3-settings-group">
+                <div class="md3-group-title">{{ 'core.settings.general' | translate }}</div>
+                <div class="md3-group-card">
+                    <ng-container *ngFor="let section of sections.items; let last = last">
+                        <ion-item [attr.aria-current]="sections.getItemAriaCurrent(section)" button
+                            [detail]="false" (click)="sections.select(section)" lines="none">
+                            <ion-icon [name]="section.icon" slot="start" aria-hidden="true" class="md3-settings-icon" />
+                            <ion-label class="ion-text-wrap">
+                                <p class="item-heading">{{ section.name | translate }}</p>
+                            </ion-label>
+                        </ion-item>
+                        <div *ngIf="!last" class="md3-card-divider"></div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
     </core-split-view>
 </ion-content>

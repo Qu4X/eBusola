@@ -10,92 +10,117 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-list class="list-item-limited-width" lines="none">
-        <ion-item class="ion-text-wrap" lines="none">
-            <ion-select [(ngModel)]="selectedLanguage" (ionChange)="languageChanged($event)" interface="popover"
-                [interfaceOptions]="{side: 'bottom', alignment: 'end', arrow: false, cssClass: 'core-combobox-select'}">
-                <div slot="label" class="item-heading ion-text-wrap">{{ 'core.settings.language' | translate }}</div>
-                <ion-select-option *ngFor="let entry of languages" [value]="entry.code">{{ entry.name }}</ion-select-option>
-            </ion-select>
-        </ion-item>
-        <ion-item class="ion-text-wrap core-settings-general-font-size item-interactive" lines="none">
-            <ion-label>
-                <p class="item-heading ion-text-wrap">{{ 'core.settings.fontsize' | translate }}</p>
-            </ion-label>
-            <ion-segment [(ngModel)]="selectedZoomLevel" color="primary">
-                <ion-segment-button *ngFor=" let zoomLevel of zoomLevels" [value]="zoomLevel.value"
-                    [style.font-size.px]="zoomLevel.style" (click)="zoomLevelChanged($event, zoomLevel.value)">
-                    <ion-label>
-                        {{ 'core.settings.fontsizecharacter' | translate }}
-                        <!-- Empty element styled with the largest font size, so all buttons share a common baseline. -->
-                        <span [style.font-size.px]="zoomLevels[zoomLevels.length - 1].style"></span>
-                    </ion-label>
-                </ion-segment-button>
-            </ion-segment>
-        </ion-item>
-        <ion-item lines="none">
-            <ion-toggle [(ngModel)]="pinchToZoom" (ionChange)="pinchToZoomChanged($event)">
-                <p class="item-heading ion-text-wrap">{{ 'core.settings.enablepinchtozoom' | translate }}</p>
-            </ion-toggle>
-        </ion-item>
-        @if (colorSchemes.length > 0) {
-            <ion-item class="ion-text-wrap core-settings-general-color-scheme" lines="none">
-                <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged($event)" interface="popover"
-                    [disabled]="colorSchemeDisabled"
-                    [interfaceOptions]="{side: 'bottom', alignment: 'end', arrow: false, cssClass: 'core-combobox-select'}">
-                    <div slot="label">
-                        <p class="item-heading ion-text-wrap">{{ 'core.settings.colorscheme' | translate }}</p>
-                        @if (colorSchemeDisabled) {
-                            <p class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
-                        }
+    <div class="md3-settings-container">
+        <!-- Display & Typography Group -->
+        <div class="md3-settings-group">
+            <div class="md3-group-title">{{ 'core.settings.general' | translate }}</div>
+            <div class="md3-group-card">
+                <ion-item lines="none">
+                    <ion-select [(ngModel)]="selectedLanguage" (ionChange)="languageChanged($event)" interface="popover"
+                        [interfaceOptions]="{side: 'bottom', alignment: 'end', arrow: false, cssClass: 'core-combobox-select'}">
+                        <div slot="label" class="item-heading">{{ 'core.settings.language' | translate }}</div>
+                        <ion-select-option *ngFor="let entry of languages" [value]="entry.code">{{ entry.name }}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+
+                <div class="md3-card-divider"></div>
+
+                <div class="md3-font-size-card-item">
+                    <div class="font-size-header">
+                        <span class="item-heading">{{ 'core.settings.fontsize' | translate }}</span>
                     </div>
-                    <ion-select-option *ngFor="let scheme of colorSchemes" [value]="scheme">
-                        {{ 'core.settings.colorscheme-' + scheme | translate }}</ion-select-option>
-                </ion-select>
-            </ion-item>
-            @if (selectedScheme === 'system' && isAndroid) {
-                <ion-item lines="none">
-                    <ion-label class="ion-text-wrap">
-                        <p class="ion-text-wrap">{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
-                    </ion-label>
-                </ion-item>
-            }
-            @if (dynamicColorsAvailable) {
-                <ion-item lines="none">
-                    <ion-label class="ion-text-wrap">
-                        <p class="item-heading ion-text-wrap">{{ 'core.settings.enabledynamiccolors' | translate }}</p>
-                        <p class="ion-text-wrap">{{ 'core.settings.enabledynamiccolorsdescription' | translate }}</p>
-                    </ion-label>
-                    <ion-toggle [(ngModel)]="dynamicColorsEnabled" (ionChange)="dynamicColorsChanged($event)" slot="end" />
-                </ion-item>
-            }
+                    <div class="md3-segment-container">
+                        <button *ngFor="let zoomLevel of zoomLevels" type="button" class="md3-segment-chip"
+                            [class.active]="selectedZoomLevel === zoomLevel.value"
+                            (click)="zoomLevelChanged($event, zoomLevel.value)">
+                            <span [style.font-size.px]="zoomLevel.style">{{ 'core.settings.fontsizecharacter' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appearance Group -->
+        @if (colorSchemes.length > 0) {
+            <div class="md3-settings-group">
+                <div class="md3-group-title">{{ 'core.settings.colorscheme' | translate }}</div>
+                <div class="md3-group-card">
+                    <ion-item lines="none" class="core-settings-general-color-scheme">
+                        <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged($event)" interface="popover"
+                            [disabled]="colorSchemeDisabled"
+                            [interfaceOptions]="{side: 'bottom', alignment: 'end', arrow: false, cssClass: 'core-combobox-select'}">
+                            <div slot="label">
+                                <p class="item-heading">{{ 'core.settings.colorscheme' | translate }}</p>
+                                @if (colorSchemeDisabled) {
+                                    <p class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
+                                }
+                            </div>
+                            <ion-select-option *ngFor="let scheme of colorSchemes" [value]="scheme">
+                                {{ 'core.settings.colorscheme-' + scheme | translate }}
+                            </ion-select-option>
+                        </ion-select>
+                    </ion-item>
+
+                    @if (dynamicColorsAvailable) {
+                        <div class="md3-card-divider"></div>
+                        <ion-item lines="none">
+                            <ion-label class="ion-text-wrap">
+                                <p class="item-heading">{{ 'core.settings.enabledynamiccolors' | translate }}</p>
+                                <p class="subdued">{{ 'core.settings.enabledynamiccolorsdescription' | translate }}</p>
+                            </ion-label>
+                            <ion-toggle [(ngModel)]="dynamicColorsEnabled" (ionChange)="dynamicColorsChanged($event)" slot="end" />
+                        </ion-item>
+                    }
+                </div>
+                @if (selectedScheme === 'system' && isAndroid) {
+                    <p class="md3-group-footer-note">{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
+                }
+            </div>
         }
+
+        <!-- Interaction & Advanced Group -->
+        <div class="md3-settings-group">
+            <div class="md3-group-title">{{ 'core.settings.advanced' | translate }}</div>
+            <div class="md3-group-card">
+                <ion-item lines="none">
+                    <ion-toggle [(ngModel)]="pinchToZoom" (ionChange)="pinchToZoomChanged($event)">
+                        <p class="item-heading">{{ 'core.settings.enablepinchtozoom' | translate }}</p>
+                    </ion-toggle>
+                </ion-item>
+
+                <div class="md3-card-divider"></div>
+
+                <ion-item lines="none">
+                    <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged($event)">
+                        <p class="item-heading">{{ 'core.settings.debugdisplay' | translate }}</p>
+                        <p class="subdued">{{ 'core.settings.debugdisplaydescription' | translate }}</p>
+                    </ion-toggle>
+                </ion-item>
+
+                @if (analyticsAvailable) {
+                    <div class="md3-card-divider"></div>
+                    <ion-item lines="none">
+                        <ion-label class="ion-text-wrap">
+                            <p class="item-heading">{{ 'core.settings.enableanalytics' | translate }}</p>
+                            <p class="subdued">{{ 'core.settings.enableanalyticsdescription' | translate }}</p>
+                        </ion-label>
+                        <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)" slot="end" />
+                    </ion-item>
+                }
+            </div>
+        </div>
+
         <core-dynamic-component [component]="editorSettingsComponentClass" />
         @if (displayIframeHelp) {
-            <ion-item lines="none">
-                <ion-label>
-                    <p class="item-heading ion-text-wrap">{{ 'core.settings.ioscookies' | translate }}</p>
-                    <p class="ion-text-wrap">{{ 'core.settings.ioscookiesdescription' | translate }}</p>
-                    <ion-button expand="block" (click)="openNativeSettings($event)">
+            <div class="md3-settings-group">
+                <div class="md3-group-card" style="padding: 16px;">
+                    <p class="item-heading">{{ 'core.settings.ioscookies' | translate }}</p>
+                    <p class="subdued">{{ 'core.settings.ioscookiesdescription' | translate }}</p>
+                    <ion-button expand="block" (click)="openNativeSettings($event)" style="margin-top: 12px;">
                         {{ 'core.opensettings' | translate }}
                     </ion-button>
-                </ion-label>
-            </ion-item>
+                </div>
+            </div>
         }
-        <ion-item lines="none">
-            <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged($event)">
-                <p class="item-heading ion-text-wrap">{{ 'core.settings.debugdisplay' | translate }}</p>
-                <p class="ion-text-wrap">{{ 'core.settings.debugdisplaydescription' | translate }}</p>
-            </ion-toggle>
-        </ion-item>
-        @if (analyticsAvailable) {
-            <ion-item lines="none">
-                <ion-label>
-                    <p class="item-heading ion-text-wrap">{{ 'core.settings.enableanalytics' | translate }}</p>
-                    <p class="ion-text-wrap">{{ 'core.settings.enableanalyticsdescription' | translate }}</p>
-                </ion-label>
-                <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)" slot="end" />
-            </ion-item>
-        }
-    </ion-list>
+    </div>
 </ion-content>
