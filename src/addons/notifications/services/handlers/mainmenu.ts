@@ -40,7 +40,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
     priority = 600;
 
     protected handlerData: CoreMainMenuPageNavHandlerData = {
-        icon: 'fas-bell',
+        icon: 'md-notifications',
         title: 'addon.notifications.notifications',
         page: ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME,
         class: 'addon-notifications-handler',

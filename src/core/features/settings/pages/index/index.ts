@@ -23,6 +23,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-settings-index',
     templateUrl: 'index.html',
+    styleUrl: 'index.scss',
     imports: [
         CoreSharedModule,
     ],

@@ -133,6 +133,12 @@
                 "fas"
             ]
         },
+        "material": {
+            "rounded": [
+                "md",
+                "mat"
+            ]
+        },
         "moodle": {
             "font-awesome": [
                 "fam"

@@ -75,13 +75,15 @@ ion-tabs {
         ion-tab-bar {
             position: absolute;
             bottom: calc(14px + var(--ion-safe-area-bottom, 0px));
-            left: 14px;
-            right: 14px;
-            max-width: 480px;
+            left: 0;
+            right: 0;
+            width: fit-content;
+            min-width: 260px;
+            max-width: 320px;
             margin: 0 auto;
-            height: 62px;
+            height: 58px;
             border-radius: 9999px;
-            padding: 5px 6px;
+            padding: 4px 8px;
             display: flex;
             align-items: center;
             justify-content: space-around;
@@ -109,52 +111,42 @@ ion-tabs {
         ion-tab-button {
             border: none;
             border-radius: 9999px;
-            height: 48px;
-            padding: 0 14px;
+            height: 46px;
+            min-width: 48px;
+            padding: 0 12px;
             margin: 0 2px;
             display: flex;
-            flex-direction: row;
             align-items: center;
             justify-content: center;
-            gap: 6px;
             background: transparent;
             color: var(--text-color);
-            transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
 
             ion-icon.core-tab-icon {
-                font-size: 20px;
+                font-size: 24px;
                 padding: 0;
                 margin: 0;
                 border-radius: 0;
                 background: transparent !important;
                 color: inherit;
+                transition: transform 200ms ease;
             }
 
             ion-label {
-                display: block !important;
-                font-size: 13px;
-                font-weight: 500;
-                margin: 0;
-                color: inherit;
-                white-space: nowrap;
-                letter-spacing: 0.1px;
+                display: none !important;
             }
 
             &.tab-selected {
                 background-color: var(--ion-color-primary) !important;
                 color: var(--ion-color-primary-contrast, #ffffff) !important;
-                font-weight: 600;
-                padding: 0 18px;
+                min-width: 58px;
+                padding: 0 16px;
                 box-shadow: 0 2px 10px rgba(var(--ion-color-primary-rgb), 0.35);
 
                 ion-icon.core-tab-icon {
                     color: var(--ion-color-primary-contrast, #ffffff) !important;
-                }
-
-                ion-label {
-                    color: var(--ion-color-primary-contrast, #ffffff) !important;
-                    font-weight: 600;
+                    transform: scale(1.08);
                 }
             }
 

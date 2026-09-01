@@ -41,7 +41,7 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
      */
     getDisplayData(): CoreMainMenuPageNavHandlerData {
         return {
-            icon: 'fas-gauge-high',
+            icon: 'md-home',
             title: 'core.mainmenu.home',
             page: MAIN_MENU_HOME_PAGE_NAME,
             class: 'core-home-handler',

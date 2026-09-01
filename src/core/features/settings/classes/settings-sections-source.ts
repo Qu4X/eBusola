@@ -37,17 +37,17 @@ export class CoreSettingsSectionsSource extends CoreRoutedItemsManagerSource<Cor
             {
                 name: 'core.settings.general',
                 path: CORE_SETTINGS_GENERAL_PAGE_NAME,
-                icon: 'fas-wrench',
+                icon: 'md-build',
             },
             {
                 name: 'core.settings.spaceusage',
                 path: CORE_SETTINGS_SPACE_USAGE_PAGE_NAME,
-                icon: 'fas-list-check',
+                icon: 'md-storage',
             },
             {
                 name: 'core.settings.synchronization',
                 path: CORE_SETTINGS_SYNC_PAGE_NAME,
-                icon: CoreSyncIcon.SYNC,
+                icon: 'md-sync',
             },
         ];
 
@@ -63,7 +63,7 @@ export class CoreSettingsSectionsSource extends CoreRoutedItemsManagerSource<Cor
         sections.push({
             name: 'core.settings.about',
             path: CORE_SETTINGS_ABOUT_PAGE_NAME,
-            icon: 'fas-id-card',
+            icon: 'md-info',
         });
 
         return { items: sections };
