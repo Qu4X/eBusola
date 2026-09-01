@@ -45,8 +45,11 @@
             --color: var(--text-color);
             --placeholder-color: var(--text-muted, #94a3b8);
             --icon-color: var(--text-muted, #94a3b8);
-            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.15));
+            --highlight-color-focused: transparent !important;
+            --inner-border-width: 0px !important;
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.1));
             border-radius: 9999px;
+            overflow: hidden;
             width: 100%;
         }
 
@@ -61,7 +64,7 @@
             align-items: center;
             border-radius: 9999px;
             overflow: hidden;
-            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.15));
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.12));
             background: var(--ion-background-color-step-100, #f1f5f9);
             box-sizing: border-box;
 
@@ -83,7 +86,7 @@
                 &::part(container) {
                     margin: 0 !important;
                     font-size: 13px;
-                    font-weight: 500;
+                    font-weight: 600;
                     white-space: nowrap;
                     color: inherit;
                 }
@@ -106,7 +109,7 @@
                 max-width: 38px !important;
                 max-height: 38px !important;
                 border-radius: 50% !important;
-                border: 1px solid var(--stroke, rgba(0, 0, 0, 0.15)) !important;
+                border: 1px solid var(--stroke, rgba(0, 0, 0, 0.12)) !important;
                 background: var(--ion-background-color-step-100, #f1f5f9) !important;
                 display: inline-flex !important;
                 align-items: center !important;
@@ -192,7 +195,7 @@
 
         ion-button {
             --border-width: 1px !important;
-            --border-color: var(--stroke, rgba(0, 0, 0, 0.15)) !important;
+            --border-color: var(--stroke, rgba(0, 0, 0, 0.12)) !important;
             --border-style: solid !important;
             --border-radius: 50% !important;
             --background: var(--ion-background-color-step-100, #f1f5f9) !important;
@@ -227,15 +230,39 @@
         }
     }
 
+    .core-course-list {
+        padding: 8px 12px 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+
+        ion-row {
+            margin: 0 -6px;
+
+            ion-col {
+                padding: 0 6px;
+            }
+        }
+    }
+
     core-empty-box {
         .item-heading {
-            font-size: 1rem;
-            font-weight: bold;
-            margin-bottom: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-color);
         }
 
         .subdued {
-            color: var(--subdued-text-color);
+            color: var(--text-muted, #64748b);
+            font-size: 0.9rem;
+        }
+
+        ion-button {
+            --border-radius: 9999px;
+            --border-color: var(--ion-color-primary);
+            --color: var(--ion-color-primary);
+            font-weight: 600;
+            margin-top: 16px;
         }
     }
 
