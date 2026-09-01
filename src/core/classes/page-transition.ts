@@ -62,9 +62,15 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
         rootAnimation.addAnimation(navDecorAnimation);
     }
 
-    const enteringTabsOutlet = enteringEl.querySelector(':scope > ion-tabs ion-router-outlet, :scope > ion-tabs .tabs-inner');
-    if (enteringTabsOutlet) {
-        enteringContentAnimation.addElement(enteringTabsOutlet);
+    const tabsEl = enteringEl.querySelector(':scope > ion-tabs');
+    if (tabsEl) {
+        const activeTabContent = tabsEl.querySelectorAll('.ion-page:not([aria-hidden="true"]) ion-content, .ion-page:not([aria-hidden="true"]) ion-header, .tabs-inner');
+        if (activeTabContent.length > 0) {
+            enteringContentAnimation.addElement(Array.from(activeTabContent));
+        } else {
+            const innerPages = tabsEl.querySelectorAll('.ion-page:not([aria-hidden="true"])');
+            enteringContentAnimation.addElement(innerPages.length > 0 ? Array.from(innerPages) : [tabsEl]);
+        }
     } else if (!contentEl && enteringToolBarEls.length === 0 && headerEls.length === 0) {
         enteringContentAnimation.addElement(
             enteringEl.querySelector(':scope > .ion-page, :scope > ion-nav') || enteringEl,
@@ -214,9 +220,15 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
         const leavingToolBarEls = leavingEl.querySelectorAll(':scope > ion-header > ion-toolbar');
         const leavingHeaderEls = leavingEl.querySelectorAll(':scope > ion-header > *:not(ion-toolbar), :scope > ion-footer > *');
 
-        const leavingTabsOutlet = leavingEl.querySelector(':scope > ion-tabs ion-router-outlet, :scope > ion-tabs .tabs-inner');
-        if (leavingTabsOutlet) {
-            leavingContent.addElement(leavingTabsOutlet);
+        const leavingTabsEl = leavingEl.querySelector(':scope > ion-tabs');
+        if (leavingTabsEl) {
+            const activeTabContent = leavingTabsEl.querySelectorAll('.ion-page:not([aria-hidden="true"]) ion-content, .ion-page:not([aria-hidden="true"]) ion-header, .tabs-inner');
+            if (activeTabContent.length > 0) {
+                leavingContent.addElement(Array.from(activeTabContent));
+            } else {
+                const innerPages = leavingTabsEl.querySelectorAll('.ion-page:not([aria-hidden="true"])');
+                leavingContent.addElement(innerPages.length > 0 ? Array.from(innerPages) : [leavingTabsEl]);
+            }
         } else if (!leavingContentEl && leavingToolBarEls.length === 0 && leavingHeaderEls.length === 0) {
             leavingContent.addElement(
                 leavingEl.querySelector(':scope > .ion-page, :scope > ion-nav') || leavingEl,
