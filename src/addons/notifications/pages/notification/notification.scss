@@ -4,86 +4,147 @@
     --icon-size: 44px;
     --extra-icon-size: 16px;
 
+    .md3-notification-detail-container {
+        padding: 16px;
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .md3-notification-detail-card {
+        background: var(--ion-background-color-step-50, #f8fafc);
+        border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+        border-radius: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+        padding: 8px 4px 16px;
+    }
+
+    .md3-notification-divider {
+        height: 1px;
+        background: var(--stroke, rgba(0, 0, 0, 0.06));
+        margin: 4px 16px 12px;
+    }
+
     .core-notification-title {
+        --background: transparent;
+        --inner-border-width: 0px !important;
+        --border-width: 0px !important;
+
         [slot=start] {
-            align-self: start;
-            margin-top: 16px;
+            align-self: center;
+            margin-top: 0;
+            margin-inline-end: 14px;
         }
+
+        .md3-tonal-notification-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 12px;
+            background: rgba(var(--ion-color-primary-rgb, 21, 25, 93), 0.1);
+            color: var(--ion-color-primary, #15195D);
+
+            ion-icon {
+                font-size: 24px;
+                color: inherit;
+            }
+        }
+
+        core-user-avatar {
+            --core-avatar-size: 44px;
+        }
+
+        .core-notification-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
         p.item-heading {
-            font: var(--mdl-typography-body-font-lg);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-color, #0f172a);
+            line-height: 1.35;
+            margin: 0 0 4px 0;
         }
-        p {
-            font: var(--mdl-typography-body-font-sm);
+
+        .notification-meta {
+            font-size: 13px;
+            color: var(--text-muted, #64748b);
+            margin: 0;
+
+            .notification-sender {
+                font-weight: 600;
+            }
         }
     }
 
     .core-notification-body {
+        --background: transparent;
+        --inner-border-width: 0px !important;
+        --border-width: 0px !important;
+
         core-format-text {
-            font-size: var(--text-size);
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-color, #1e293b);
         }
 
         h2 {
             font-weight: bold;
         }
+    }
 
-        core-format-text ::ng-deep {
-            .forumpost {
-                border: 1px solid var(--gray-200);
-                width: 100%;
-                margin: 0 0 1em 0;
+    .adaptable-buttons-row {
+        padding: 12px 16px;
+        max-width: 720px;
+        margin: 0 auto;
 
-                td {
-                    padding: 10px;
-                }
+        ion-button {
+            --border-radius: 14px;
+            --background: var(--ion-color-primary, #15195D);
+            font-weight: 600;
+            height: 46px;
+        }
+    }
 
-                .header {
-                    background-color: var(--light);
+    :host-context(.dark) {
+        .md3-notification-detail-card {
+            background: #14202c;
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        }
 
-                    .picture {
-                        width: 48px;
-                        text-align: center;
-                        @include padding-horizontal(4px, 0px);
-                        padding-top: 8px;
+        .md3-notification-divider {
+            background: rgba(255, 255, 255, 0.06);
+        }
 
-                        img {
-                            width: 44px !important;
-                        }
-                    }
-                }
-
-                .subject {
-                    font-weight: 700;
-                    margin-bottom: 1rem;
-                }
+        .core-notification-title {
+            .md3-tonal-notification-icon {
+                background: rgba(255, 117, 31, 0.16);
+                color: var(--ion-color-primary, #FF751F);
             }
 
-            a {
-                text-decoration: none;
+            p.item-heading {
+                color: var(--text-color, #f1f5f9);
             }
 
-            .userpicture {
-                border-radius: 50%;
+            .notification-meta {
+                color: rgba(255, 255, 255, 0.6);
             }
+        }
 
-            .mdl-right {
-                text-align: end;
-                a {
-                    display: none;
-                }
-                font {
-                    font-size: 0.9em;
-                }
-            }
+        .core-notification-body core-format-text {
+            color: var(--text-color, #e2e8f0);
+        }
 
-            .commands {
-                display: none;
-            }
-
-            hr {
-                margin-top: 1.5rem;
-                margin-bottom: 1.5rem;
-                background-color: var(--gray-200);
-            }
+        .adaptable-buttons-row ion-button {
+            --background: #FF751F;
+            --color: #ffffff;
         }
     }
 }

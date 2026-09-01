@@ -58,6 +58,9 @@ import {
     starOutline,
     ellipsisVertical,
     ellipsisVerticalOutline,
+    checkmarkDone,
+    checkmarkDoneOutline,
+    ellipse,
 } from 'ionicons/icons';
 import { CoreIcons } from '@static/icons';
 
@@ -110,6 +113,9 @@ export default function(): void {
         'star-outline': starOutline,
         'ellipsis-vertical': ellipsisVertical,
         'ellipsis-vertical-outline': ellipsisVerticalOutline,
+        'checkmark-done': checkmarkDone,
+        'checkmark-done-outline': checkmarkDoneOutline,
+        ellipse,
     });
     CoreIcons.addIconsToIonicons();
 }

@@ -1,58 +1,198 @@
-@use "src/theme/globals" as *;
+:host {
+    .md3-notifications-container {
+        padding: 12px 16px 80px;
+        max-width: 720px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
 
-ion-item.addon-notification-item {
+    ion-item.addon-notification-item {
+        --background: var(--ion-background-color-step-50, #f8fafc);
+        --padding-start: 14px;
+        --padding-end: 14px;
+        --padding-top: 10px;
+        --padding-bottom: 10px;
+        --inner-padding-end: 0px;
+        --inner-border-width: 0px !important;
+        --border-width: 0px !important;
+        border-radius: 18px;
+        border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        margin: 0;
+        overflow: hidden;
+        transition: transform 150ms ease, box-shadow 150ms ease;
 
-    ion-label {
-        margin-top: 8px;
-        margin-bottom: 8px;
-        p {
-            font: var(--mdl-typography-body-font-sm);
-            &.item-heading {
-                font-size: var(--text-size);
-                @include ellipsis(3);
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        &::part(native) {
+            border-radius: 18px;
+            background: transparent;
+            border: none !important;
+        }
+
+        &.is-unread {
+            border-inline-start: 4px solid var(--ion-color-primary, #FF751F);
+        }
+
+        [slot=start] {
+            align-self: center;
+            margin-top: 0;
+            margin-inline-end: 14px;
+        }
+
+        .md3-tonal-notification-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 12px;
+            background: rgba(var(--ion-color-primary-rgb, 21, 25, 93), 0.1);
+            color: var(--ion-color-primary, #15195D);
+
+            ion-icon {
+                font-size: 22px;
+                color: inherit;
+            }
+        }
+
+        core-user-avatar {
+            --core-avatar-size: 42px;
+        }
+
+        .core-notification-img {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        ion-label {
+            margin: 4px 0;
+
+            .item-heading {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--text-color, #0f172a);
+                line-height: 1.35;
+                margin: 0 0 4px 0;
+            }
+
+            .notification-meta {
+                font-size: 12px;
+                color: var(--text-muted, #64748b);
+                margin: 0;
+
+                .notification-sender {
+                    font-weight: 500;
+                }
+            }
+        }
+
+        .md3-unread-indicator {
+            width: 8px;
+            height: 8px;
+            min-width: 8px;
+            border-radius: 50%;
+            background: var(--ion-color-primary, #FF751F);
+            box-shadow: 0 0 6px rgba(var(--ion-color-primary-rgb), 0.5);
+            margin-inline-start: 8px;
+            flex-shrink: 0;
+        }
+    }
+
+    // Extended FAB "Mark all as read"
+    .mark-all-as-read {
+        padding-bottom: 24px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        background: transparent;
+        box-shadow: none;
+        pointer-events: none;
+        z-index: 10;
+
+        .md3-extended-fab {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            height: 44px;
+            border-radius: 9999px;
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.1));
+            background: var(--ion-color-primary, #15195D);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            pointer-events: auto;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 150ms ease, box-shadow 150ms ease;
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            }
+
+            &:active {
+                transform: scale(0.97);
+            }
+
+            ion-icon {
+                font-size: 18px;
+                color: #ffffff;
+            }
+
+            ion-spinner {
+                width: 18px;
+                height: 18px;
+                --color: #ffffff;
             }
         }
     }
 
-    ion-note {
-        margin: 0;
-        @include padding-horizontal(8px, 0);
-        padding-top: 12px;
+    :host-context(.dark) {
+        ion-item.addon-notification-item {
+            --background: #14202c;
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 
-        ion-icon {
-            font-size: #{dynamic-font(6px)};
-            vertical-align: middle;
+            &:hover {
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+            }
+
+            .md3-tonal-notification-icon {
+                background: rgba(255, 117, 31, 0.16);
+                color: var(--ion-color-primary, #FF751F);
+            }
+
+            ion-label {
+                .item-heading {
+                    color: var(--text-color, #f1f5f9);
+                }
+
+                .notification-meta {
+                    color: rgba(255, 255, 255, 0.6);
+                }
+            }
+
+            &.is-unread {
+                border-inline-start: 4px solid #FF751F;
+            }
+        }
+
+        .mark-all-as-read .md3-extended-fab {
+            background: #FF751F;
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 20px rgba(255, 117, 31, 0.35);
         }
     }
-
-    [slot=start] {
-        align-self: start;
-        margin-top: 16px;
-    }
-}
-
-.mark-all-as-read {
-    padding-bottom: 16px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    background: transparent;
-    box-shadow: none;
-    pointer-events: none;
-
-    ion-chip.ion-color {
-        margin: 0 auto;
-
-        ion-spinner {
-            width: 16px;
-            height: 16px;
-            @include margin-horizontal(0, 8px);
-        }
-    }
-}
-
-
-ion-content::part(scroll) {
-    padding-bottom: 44px;
 }
