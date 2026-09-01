@@ -64,12 +64,12 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
 
     const tabsEl = enteringEl.querySelector(':scope > ion-tabs');
     if (tabsEl) {
-        const activeTabContent = tabsEl.querySelectorAll('.ion-page:not([aria-hidden="true"]) ion-content, .ion-page:not([aria-hidden="true"]) ion-header, .tabs-inner');
-        if (activeTabContent.length > 0) {
-            enteringContentAnimation.addElement(Array.from(activeTabContent));
+        const tabPages = tabsEl.querySelectorAll('.ion-page');
+        if (tabPages.length > 0) {
+            enteringContentAnimation.addElement(Array.from(tabPages));
         } else {
-            const innerPages = tabsEl.querySelectorAll('.ion-page:not([aria-hidden="true"])');
-            enteringContentAnimation.addElement(innerPages.length > 0 ? Array.from(innerPages) : [tabsEl]);
+            const contents = tabsEl.querySelectorAll('ion-content, ion-header');
+            enteringContentAnimation.addElement(Array.from(contents));
         }
     } else if (!contentEl && enteringToolBarEls.length === 0 && headerEls.length === 0) {
         enteringContentAnimation.addElement(
@@ -222,12 +222,12 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
 
         const leavingTabsEl = leavingEl.querySelector(':scope > ion-tabs');
         if (leavingTabsEl) {
-            const activeTabContent = leavingTabsEl.querySelectorAll('.ion-page:not([aria-hidden="true"]) ion-content, .ion-page:not([aria-hidden="true"]) ion-header, .tabs-inner');
-            if (activeTabContent.length > 0) {
-                leavingContent.addElement(Array.from(activeTabContent));
+            const tabPages = leavingTabsEl.querySelectorAll('.ion-page');
+            if (tabPages.length > 0) {
+                leavingContent.addElement(Array.from(tabPages));
             } else {
-                const innerPages = leavingTabsEl.querySelectorAll('.ion-page:not([aria-hidden="true"])');
-                leavingContent.addElement(innerPages.length > 0 ? Array.from(innerPages) : [leavingTabsEl]);
+                const contents = leavingTabsEl.querySelectorAll('ion-content, ion-header');
+                leavingContent.addElement(Array.from(contents));
             }
         } else if (!leavingContentEl && leavingToolBarEls.length === 0 && leavingHeaderEls.length === 0) {
             leavingContent.addElement(
