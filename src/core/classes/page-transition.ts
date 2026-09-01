@@ -80,17 +80,6 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
         enteringContentAnimation.addElement(headerEls);
     }
 
-    const enteringTabBar = enteringEl.querySelector('ion-tab-bar');
-    if (enteringTabBar) {
-        const enteringTabBarAnim = createAnimation();
-        enteringTabBarAnim
-            .addElement(enteringTabBar)
-            .easing('cubic-bezier(0.05, 0.7, 0.1, 1.0)')
-            .fromTo('transform', 'translateX(-50%) translateY(140%)', 'translateX(-50%) translateY(0)')
-            .fromTo(OPACITY, 0, 1);
-        rootAnimation.addAnimation(enteringTabBarAnim);
-    }
-
     rootAnimation.addAnimation(enteringContentAnimation);
     enteringContentAnimation.beforeAddClass('animating').afterRemoveClass('animating');
 
@@ -236,18 +225,6 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
         } else {
             leavingContent.addElement(leavingContentEl || []);
             leavingContent.addElement(leavingHeaderEls);
-        }
-
-        const leavingTabBar = leavingEl.querySelector('ion-tab-bar');
-        if (leavingTabBar) {
-            const leavingTabBarAnim = createAnimation();
-            leavingTabBarAnim
-                .addElement(leavingTabBar)
-                .duration(Math.min((opts.duration || DURATION) * 0.65, 260))
-                .easing('cubic-bezier(0.3, 0, 0.8, 0.15)')
-                .fromTo('transform', 'translateX(-50%) translateY(0)', 'translateX(-50%) translateY(140%)')
-                .fromTo(OPACITY, 1, 0);
-            rootAnimation.addAnimation(leavingTabBarAnim);
         }
 
         rootAnimation.addAnimation(leavingContent);
