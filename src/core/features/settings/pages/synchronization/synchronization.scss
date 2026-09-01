@@ -1,68 +1,162 @@
 :host {
-    ion-list {
-        padding: 12px 16px;
-        background: transparent;
+    .md3-settings-container {
+        padding: 16px;
+        max-width: 600px;
+        margin: 0 auto;
     }
 
-    ion-item-divider {
-        --background: transparent;
-        --color: var(--ion-color-primary);
-        --padding-start: 4px;
-        --padding-end: 4px;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-        margin-top: 12px;
-        margin-bottom: 6px;
+    .md3-settings-group {
+        margin-bottom: 24px;
 
-        h2 {
+        .md3-group-title {
             font-size: 13px;
             font-weight: 700;
-            text-transform: uppercase;
             color: var(--ion-color-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 0 8px 8px;
         }
-    }
 
-    ion-item {
-        --background: var(--ion-background-color-step-50, #f8fafc);
-        --border-radius: 16px;
-        --padding-start: 16px;
-        --padding-end: 16px;
-        --inner-padding-end: 8px;
-        --min-height: 60px;
-        --inner-border-width: 0px;
-        margin-bottom: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        .md3-group-card {
+            background: var(--ion-background-color-step-50, #f8fafc);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
-        ion-toggle {
-            font-weight: 500;
-            --padding-start: 0;
-            --padding-end: 0;
+            ion-item {
+                --background: transparent;
+                --padding-start: 16px;
+                --padding-end: 16px;
+                --inner-padding-end: 4px;
+                --min-height: 56px;
+                --inner-border-width: 0px !important;
+                --border-width: 0px !important;
+                --border-color: transparent !important;
+                margin: 0;
+                border: none !important;
+
+                &::part(native) {
+                    border: none !important;
+                    background: transparent;
+                }
+
+                p.item-heading {
+                    font-weight: 500;
+                    font-size: var(--mdl-typography-fontSize-md, 15px);
+                    color: var(--text-color);
+                    margin: 0;
+                }
+
+                ion-toggle {
+                    --padding-start: 0;
+                    --padding-end: 0;
+                    font-weight: 500;
+                }
+            }
         }
     }
 
     core-sites-list {
-        ion-item {
-            --background: var(--ion-background-color-step-50, #f8fafc);
-            --border-radius: 16px;
-            --padding-start: 14px;
-            --padding-end: 14px;
-            --inner-padding-end: 8px;
-            --min-height: 60px;
-            --inner-border-width: 0px;
-            margin-bottom: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        ion-list.core-sites-list {
+            padding: 0;
+            background: transparent;
+        }
 
-            ion-button {
+        ion-card {
+            margin: 0 0 20px 0;
+            border-radius: 20px;
+            background: var(--ion-background-color-step-50, #f8fafc);
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+
+            .core-sites-list-sitename {
+                --background: transparent;
                 --color: var(--ion-color-primary);
+                --padding-start: 16px;
+                --padding-end: 16px;
+                --padding-top: 14px;
+                --padding-bottom: 10px;
+                border: none !important;
+                border-bottom: 1px solid var(--stroke, rgba(0, 0, 0, 0.06)) !important;
+
+                h2 {
+                    font-size: 15px;
+                    font-weight: 700;
+                    color: var(--text-color);
+                    margin: 0;
+                }
+
+                p a {
+                    font-size: 13px;
+                    color: var(--ion-color-primary);
+                    text-decoration: none;
+                    font-weight: 500;
+                }
+            }
+
+            ion-item {
+                --background: transparent;
+                --padding-start: 16px;
+                --padding-end: 12px;
+                --inner-padding-end: 4px;
+                --min-height: 64px;
+                --inner-border-width: 0px !important;
+                --border-width: 0px !important;
+                --border-color: transparent !important;
+                border: none !important;
+                border-left: none !important;
+
+                &.item-current {
+                    border-left: none !important;
+                    background: rgba(var(--ion-color-primary-rgb), 0.04);
+                }
+
+                &::part(native) {
+                    border: none !important;
+                    background: transparent;
+                }
+
+                core-user-avatar {
+                    margin-inline-end: 14px;
+                }
+
+                p.item-heading {
+                    font-weight: 600;
+                    font-size: 15px;
+                    color: var(--text-color);
+                    margin: 0;
+                }
+
+                .md3-sync-button {
+                    --padding-start: 8px;
+                    --padding-end: 8px;
+                    height: 40px;
+                    --color: var(--ion-color-primary);
+
+                    ion-icon {
+                        font-size: 18px;
+                    }
+                }
             }
         }
     }
 
     :host-context(.dark) {
-        ion-item,
-        core-sites-list ion-item {
-            --background: var(--ion-background-color-step-100, #14202c);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        .md3-settings-group .md3-group-card,
+        core-sites-list ion-card {
+            background: var(--ion-background-color-step-100, #14202c);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+
+            .core-sites-list-sitename {
+                border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+            }
+
+            ion-item.item-current {
+                background: rgba(var(--ion-color-primary-rgb), 0.08);
+            }
         }
     }
 }

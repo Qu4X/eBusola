@@ -41,6 +41,7 @@ export type CoreSettingsLicense = {
 @Component({
     selector: 'page-core-app-settings-licenses',
     templateUrl: 'licenses.html',
+    styleUrl: 'licenses.scss',
     imports: [
         CoreSharedModule,
     ],

@@ -1,53 +1,97 @@
 :host {
-    ion-list {
-        padding: 12px 16px;
-        background: transparent;
+    .md3-settings-container {
+        padding: 16px;
+        max-width: 600px;
+        margin: 0 auto;
     }
 
-    ion-item {
-        --background: var(--ion-background-color-step-50, #f8fafc);
-        --border-radius: 16px;
-        --padding-start: 14px;
-        --padding-end: 14px;
-        --inner-padding-end: 8px;
-        --min-height: 58px;
-        --inner-border-width: 0px;
-        margin-bottom: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    .md3-settings-group {
+        margin-bottom: 24px;
 
-        ion-icon[slot="start"] {
-            width: 22px;
-            height: 22px;
-            font-size: 20px;
-            padding: 8px;
-            border-radius: 12px;
-            background: var(--ion-color-primary-tint);
-            color: var(--ion-color-primary-shade);
-            margin-inline-end: 14px;
+        .md3-group-card {
+            background: var(--ion-background-color-step-50, #f8fafc);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+            ion-item {
+                --background: transparent;
+                --padding-start: 16px;
+                --padding-end: 16px;
+                --inner-padding-end: 8px;
+                --min-height: 58px;
+                --inner-border-width: 0px !important;
+                --border-width: 0px !important;
+                --border-color: transparent !important;
+                margin: 0;
+                border: none !important;
+
+                &::part(native) {
+                    border: none !important;
+                    background: transparent;
+                }
+
+                ion-icon.md3-settings-icon {
+                    width: 24px;
+                    height: 24px;
+                    font-size: 24px;
+                    color: var(--ion-color-primary);
+                    margin-inline-end: 16px;
+                }
+
+                .item-label {
+                    font-weight: 500;
+                    font-size: var(--mdl-typography-fontSize-md, 15px);
+                    color: var(--text-color);
+                }
+            }
+
+            .md3-card-divider {
+                height: 1px;
+                background: var(--stroke, rgba(0, 0, 0, 0.06));
+                margin-inline-start: 56px;
+            }
         }
+    }
 
-        ion-label {
+    .md3-about-version {
+        display: flex;
+        justify-content: center;
+        margin-top: 24px;
+        cursor: pointer;
+
+        .version-chip {
+            display: inline-block;
+            padding: 6px 14px;
+            font-size: 13px;
             font-weight: 500;
-            font-size: var(--mdl-typography-fontSize-md, 15px);
+            color: var(--text-muted, #64748b);
+            background: rgba(var(--ion-text-color-rgb), 0.05);
+            border-radius: 9999px;
+            letter-spacing: 0.2px;
+            transition: background 150ms ease;
+
+            &:active {
+                background: rgba(var(--ion-text-color-rgb), 0.1);
+            }
         }
     }
 
-    :host-context(.dark) ion-item,
-    :host-context(:root.dark) ion-item {
-        --background: var(--ion-background-color-step-100, #14202c);
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    :host-context(.dark) {
+        .md3-settings-group .md3-group-card {
+            background: var(--ion-background-color-step-100, #14202c);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 
-        ion-icon[slot="start"] {
-            background: rgba(var(--ion-color-primary-rgb), 0.18);
-            color: var(--ion-color-primary);
+            .md3-card-divider {
+                background: rgba(255, 255, 255, 0.06);
+            }
+        }
+
+        .md3-about-version .version-chip {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.7);
         }
     }
-}
-
-.core-about-deviceinfo {
-    --background: transparent !important;
-    text-align: center;
-    opacity: 0.7;
-    font-size: 13px;
-    margin-bottom: 8px;
 }

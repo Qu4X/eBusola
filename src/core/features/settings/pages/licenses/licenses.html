@@ -9,56 +9,79 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content class="limited-width">
+<ion-content>
     <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="48px">
-        <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterChanged($event.target)" (ionCancel)="filterChanged($event.target)"
-            [placeholder]="'core.filter' | translate" class="ion-margin-vertical" />
-        <ion-list>
+        <div class="md3-settings-container">
+            <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterChanged($event.target)" (ionCancel)="filterChanged($event.target)"
+                [placeholder]="'core.filter' | translate" class="md3-searchbar" />
+
             @if (error) {
-                <ion-item button class="ion-text-wrap" [href]="licensesUrl" core-link [autoLogin]="false" [detail]="false">
-                    <ion-label>
-                        {{ 'core.settings.opensourcelicenses' | translate }}
-                    </ion-label>
-                    <ion-button [href]="licensesUrl" target="_blank" fill="clear" slot="end" core-link [autoLogin]="false">
-                        {{ 'core.view' | translate }}</ion-button>
-                </ion-item>
+                <div class="md3-settings-group">
+                    <div class="md3-group-card">
+                        <ion-item button class="ion-text-wrap" [href]="licensesUrl" core-link [autoLogin]="false" [detail]="false" lines="none">
+                            <ion-label>
+                                {{ 'core.settings.opensourcelicenses' | translate }}
+                            </ion-label>
+                            <ion-button [href]="licensesUrl" target="_blank" fill="clear" slot="end" core-link [autoLogin]="false">
+                                {{ 'core.view' | translate }}
+                            </ion-button>
+                        </ion-item>
+                    </div>
+                </div>
             } @else {
+                <div class="md3-settings-group">
+                    <div class="md3-group-card">
+                        <ng-container *ngFor="let license of licenses; let last = last">
+                            <ion-item class="ion-text-wrap md3-license-item" lines="none">
+                                <ion-label>
+                                    <div class="license-title-row">
+                                        <span class="package-name">
+                                            @if (license.repository) {
+                                                <a [href]="license.repository" core-link [autoLogin]="false">{{ license.name }}</a>
+                                            } @else {
+                                                {{ license.name }}
+                                            }
+                                        </span>
+                                        <span class="package-version">{{ license.version }}</span>
+                                    </div>
 
-                <ion-item *ngFor="let license of licenses" class="ion-text-wrap" lines="inset">
-                    <ion-label>
-                        <p class="item-heading">
-                            @if (license.repository) {
-                                <a [href]="license.repository" core-link [autoLogin]="false">{{ license.name }}</a>
-                            } @else {
-                                {{ license.name }}
-                            } - {{ license.version }}
-                        </p>
-                        @if (license.publisher) {
-                            <p>
-                                {{ 'core.settings.publisher' | translate }}{{ 'core.labelsep' | translate }} {{ license.publisher }}
-                            </p>
-                        }
-                        <p>{{ 'core.settings.license' | translate }}{{ 'core.labelsep' | translate }} {{ license.licenses }}</p>
-                        <p>@if (license.url) {
-                                <a [href]="license.url" core-link [autoLogin]="false">{{ license.url }}</a>
-                            }
-                        </p>
-                        <p>@if (license.email) {
-                                <a [href]="'mailto:' + license.email" core-link [autoLogin]="false"
-                                    [showBrowserWarning]="false">{{ license.email }}</a>
-                            }
-                        </p>
-                    </ion-label>
-                    @if (license.licenseUrl) {
-                        <ion-button [href]="license.licenseUrl" target="_blank" fill="clear" slot="end" core-link [autoLogin]="false"
-                            [ariaLabel]="'core.view' | translate">
-                            <ion-icon slot="icon-only" name="fas-up-right-from-square" aria-hidden="true" />
-                        </ion-button>
-                    }
-                </ion-item>
+                                    @if (license.publisher) {
+                                        <p class="license-publisher">
+                                            {{ 'core.settings.publisher' | translate }}{{ 'core.labelsep' | translate }} {{ license.publisher }}
+                                        </p>
+                                    }
 
+                                    <div class="license-badge-row">
+                                        <span class="badge-chip">{{ license.licenses }}</span>
+                                    </div>
+
+                                    @if (license.url) {
+                                        <p class="license-link">
+                                            <a [href]="license.url" core-link [autoLogin]="false">{{ license.url }}</a>
+                                        </p>
+                                    }
+
+                                    @if (license.email) {
+                                        <p class="license-link">
+                                            <a [href]="'mailto:' + license.email" core-link [autoLogin]="false"
+                                                [showBrowserWarning]="false">{{ license.email }}</a>
+                                        </p>
+                                    }
+                                </ion-label>
+
+                                @if (license.licenseUrl) {
+                                    <ion-button [href]="license.licenseUrl" target="_blank" fill="clear" slot="end" core-link [autoLogin]="false"
+                                        [ariaLabel]="'core.view' | translate" class="md3-link-button">
+                                        <ion-icon slot="icon-only" name="fas-up-right-from-square" aria-hidden="true" />
+                                    </ion-button>
+                                }
+                            </ion-item>
+                            <div *ngIf="!last" class="md3-card-divider"></div>
+                        </ng-container>
+                    </div>
+                </div>
             }
             <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" />
-        </ion-list>
+        </div>
     </core-loading>
 </ion-content>

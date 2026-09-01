@@ -35,6 +35,10 @@ ion-toggle {
             border-color: var(--ion-color-primary, #ea580c);
             background: var(--ion-color-primary, #ea580c);
         }
+
+        &::part(handle) {
+            background: var(--ion-color-primary-contrast, #ffffff) !important;
+        }
     }
 }
 
@@ -53,6 +57,10 @@ ion-toggle {
         &::part(track) {
             border-color: var(--ion-color-primary, #ea580c);
             background: var(--ion-color-primary, #ea580c);
+        }
+
+        &::part(handle) {
+            background: var(--ion-color-primary-contrast, #ffffff) !important;
         }
     }
 }
