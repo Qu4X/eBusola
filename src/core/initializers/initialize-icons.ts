@@ -12,11 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { addIcons } from 'ionicons';
+import {
+    home,
+    homeOutline,
+    school,
+    schoolOutline,
+    chatbubbles,
+    chatbubblesOutline,
+    notifications,
+    notificationsOutline,
+    ellipsisHorizontal,
+    ellipsisHorizontalOutline,
+    grid,
+    gridOutline,
+} from 'ionicons/icons';
 import { CoreIcons } from '@static/icons';
 
 /**
  * Add custom icons to Ionicons.
  */
 export default function(): void {
+    addIcons({
+        home,
+        'home-outline': homeOutline,
+        school,
+        'school-outline': schoolOutline,
+        chatbubbles,
+        'chatbubbles-outline': chatbubblesOutline,
+        notifications,
+        'notifications-outline': notificationsOutline,
+        'ellipsis-horizontal': ellipsisHorizontal,
+        'ellipsis-horizontal-outline': ellipsisHorizontalOutline,
+        grid,
+        'grid-outline': gridOutline,
+    });
     CoreIcons.addIconsToIonicons();
 }

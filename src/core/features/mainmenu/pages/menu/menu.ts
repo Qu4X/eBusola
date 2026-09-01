@@ -381,6 +381,42 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         return !!CoreNavigator.getCurrentRoute({ routeData: { mainMenuTabRoot: CoreNavigator.getCurrentMainMenuTab() } });
     }
 
+    /**
+     * Get tab icon depending on whether it is selected.
+     *
+     * @param page Page name.
+     * @param isSelected Whether the tab is selected.
+     * @param fallbackIcon Optional fallback icon from handler.
+     * @returns Icon name.
+     */
+    getTabIcon(page: string, isSelected: boolean, fallbackIcon?: string): string {
+        switch (page) {
+            case 'sitehome':
+            case 'dashboard':
+                return isSelected ? 'home' : 'home-outline';
+            case 'courses':
+            case 'mycourses':
+                return isSelected ? 'school' : 'school-outline';
+            case 'messages':
+                return isSelected ? 'chatbubbles' : 'chatbubbles-outline';
+            case 'notifications':
+                return isSelected ? 'notifications' : 'notifications-outline';
+            case 'more':
+            case MAIN_MENU_MORE_PAGE_NAME:
+                return isSelected ? 'ellipsis-horizontal' : 'ellipsis-horizontal-outline';
+            default:
+                if (fallbackIcon) {
+                    if (isSelected) {
+                        return fallbackIcon.replace(/^far-/, 'fas-').replace(/-outline$/, '');
+                    } else {
+                        return fallbackIcon.replace(/^fas-/, 'far-');
+                    }
+                }
+
+                return isSelected ? 'grid' : 'grid-outline';
+        }
+    }
+
 }
 
 /**
