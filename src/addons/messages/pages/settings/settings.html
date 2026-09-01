@@ -13,90 +13,83 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="preferencesLoaded">
-        <!-- General settings. -->
-        <ion-card>
-            <ion-list>
-                <ion-item-divider class="ion-text-wrap">
-                    <ion-label>
-                        <h2>{{ 'core.settings.general' | translate }}</h2>
-                    </ion-label>
-                </ion-item-divider>
-                <ion-item class="ion-text-wrap">
-                    <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()">
-                        {{ 'addon.messages.useentertosend' | translate }}
-                    </ion-toggle>
-                </ion-item>
-            </ion-list>
-        </ion-card>
+        <div class="md3-settings-container">
+            <!-- General settings. -->
+            <div class="md3-settings-group">
+                <div class="md3-group-title">{{ 'core.settings.general' | translate }}</div>
+                <div class="md3-group-card">
+                    <ion-item class="ion-text-wrap" lines="none">
+                        <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()">
+                            <p class="item-heading">{{ 'addon.messages.useentertosend' | translate }}</p>
+                        </ion-toggle>
+                    </ion-item>
+                </div>
+            </div>
 
-        @if (warningMessage()) {
-            <core-alert-card type="warning" [message]="warningMessage()"/>
-        } @else {
-            <!-- Contactable privacy. -->
-            <ion-card>
-                <ion-list>
-                    <ion-radio-group [(ngModel)]="contactablePrivacy" (ionChange)="saveContactablePrivacy(contactablePrivacy)">
-                        <ion-item-divider>
-                            <ion-label>
-                                <h2>{{ 'addon.messages.contactableprivacy' | translate }}</h2>
-                            </ion-label>
-                        </ion-item-divider>
-                        <ion-item class="ion-text-wrap">
-                            <ion-radio labelPlacement="end" justify="start" [value]="onlyContactsValue">
-                                {{ 'addon.messages.contactableprivacy_onlycontacts' | translate }}
-                            </ion-radio>
-                        </ion-item>
-                        <ion-item class="ion-text-wrap">
-                            <ion-radio labelPlacement="end" justify="start" [value]="courseMemberValue">
-                                {{ 'addon.messages.contactableprivacy_coursemember' | translate }}
-                            </ion-radio>
-                        </ion-item>
-                        @if (allowSiteMessaging) {
-                            <ion-item class="ion-text-wrap">
-                                <ion-radio labelPlacement="end" justify="start" [value]="siteValue">
-                                    {{ 'addon.messages.contactableprivacy_site' | translate }}
+            @if (warningMessage()) {
+                <core-alert-card type="warning" [message]="warningMessage()"/>
+            } @else {
+                <!-- Contactable privacy. -->
+                <div class="md3-settings-group">
+                    <div class="md3-group-title">{{ 'addon.messages.contactableprivacy' | translate }}</div>
+                    <div class="md3-group-card">
+                        <ion-radio-group [(ngModel)]="contactablePrivacy" (ionChange)="saveContactablePrivacy(contactablePrivacy)">
+                            <ion-item class="ion-text-wrap" lines="none">
+                                <ion-radio labelPlacement="end" justify="start" [value]="onlyContactsValue">
+                                    <p class="radio-label">{{ 'addon.messages.contactableprivacy_onlycontacts' | translate }}</p>
                                 </ion-radio>
                             </ion-item>
-                        }
-                    </ion-radio-group>
-                </ion-list>
-            </ion-card>
-
-            <!-- Notifications. -->
-            @if (preferences) {
-                <ng-container *ngFor="let component of preferences.components">
-                    <ion-card *ngFor="let notification of component.notifications">
-                        <ion-item-divider class="ion-text-wrap">
-                            <ion-label>
-                                <h2>{{ 'addon.notifications.notificationpreferences' | translate }}</h2>
-                            </ion-label>
-                        </ion-item-divider>
-                        <ng-container *ngFor="let processor of notification.processors">
-                            <!-- If group messaging is enabled, display a simplified view. -->
+                            <div class="md3-card-divider"></div>
                             <ion-item class="ion-text-wrap" lines="none">
-                                <ion-label>
-                                    <p>{{ processor.displayname }}</p>
-                                </ion-label>
-                                @if (!preferences.disableall) {
-                                    <!-- If notifications enabled, show toggle. -->
-                                    @if (!processor.locked) {
-                                        <core-button-with-spinner [loading]="notification.updating" slot="end">
-                                            <ion-toggle [(ngModel)]="processor.enabled"
-                                                (ngModelChange)="changePreference(notification, processor)" />
-                                        </core-button-with-spinner>
-                                    } @else {
-                                        <span class="text-gray" slot="end">
-                                            {{ processor.lockedmessage }}
-                                        </span>
-                                    }
-                                } @else {
-                                    <span class="text-gray" slot="end">{{ 'core.settings.disabled' | translate }}</span>
-                                }
+                                <ion-radio labelPlacement="end" justify="start" [value]="courseMemberValue">
+                                    <p class="radio-label">{{ 'addon.messages.contactableprivacy_coursemember' | translate }}</p>
+                                </ion-radio>
                             </ion-item>
-                        </ng-container>
-                    </ion-card>
-                </ng-container>
+                            @if (allowSiteMessaging) {
+                                <div class="md3-card-divider"></div>
+                                <ion-item class="ion-text-wrap" lines="none">
+                                    <ion-radio labelPlacement="end" justify="start" [value]="siteValue">
+                                        <p class="radio-label">{{ 'addon.messages.contactableprivacy_site' | translate }}</p>
+                                    </ion-radio>
+                                </ion-item>
+                            }
+                        </ion-radio-group>
+                    </div>
+                </div>
+
+                <!-- Notifications. -->
+                @if (preferences) {
+                    <ng-container *ngFor="let component of preferences.components">
+                        <div *ngFor="let notification of component.notifications" class="md3-settings-group">
+                            <div class="md3-group-title">{{ 'addon.notifications.notificationpreferences' | translate }}</div>
+                            <div class="md3-group-card">
+                                <ng-container *ngFor="let processor of notification.processors; let last = last">
+                                    <ion-item class="ion-text-wrap" lines="none">
+                                        <ion-label>
+                                            <p class="item-heading">{{ processor.displayname }}</p>
+                                        </ion-label>
+                                        @if (!preferences.disableall) {
+                                            @if (!processor.locked) {
+                                                <core-button-with-spinner [loading]="notification.updating" slot="end">
+                                                    <ion-toggle [(ngModel)]="processor.enabled"
+                                                        (ngModelChange)="changePreference(notification, processor)" />
+                                                </core-button-with-spinner>
+                                            } @else {
+                                                <span class="status-badge forced" slot="end">
+                                                    {{ processor.lockedmessage }}
+                                                </span>
+                                            }
+                                        } @else {
+                                            <span class="status-badge disabled" slot="end">{{ 'core.settings.disabled' | translate }}</span>
+                                        }
+                                    </ion-item>
+                                    <div *ngIf="!last" class="md3-card-divider"></div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </ng-container>
+                }
             }
-        }
+        </div>
     </core-loading>
 </ion-content>

@@ -1,60 +1,184 @@
 :host {
-    .core-user-profile-maininfo {
-        padding-top: 16px;
-        ion-label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 0px;
+    .md3-settings-container {
+        padding: 16px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
 
-            h2 {
-                margin-top: 10px;
+    .md3-profile-hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 16px 0 24px;
+
+        .avatar-container {
+            position: relative;
+            margin-bottom: 12px;
+
+            core-user-avatar {
+                --core-avatar-size: 88px;
+                --contact-status-size: 24px;
+                --margin-end-on-item: 0px;
+                --margin-vertical-on-item: 0px;
+
+                .edit-avatar {
+                    position: absolute;
+                    right: -6px;
+                    bottom: -6px;
+                    width: 34px;
+                    height: 34px;
+                    --padding-start: 0;
+                    --padding-end: 0;
+
+                    &::part(native) {
+                        border-radius: 50%;
+                        background: var(--ion-color-primary);
+                        color: #ffffff;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+                    }
+
+                    ion-icon {
+                        font-size: 15px;
+                    }
+                }
+            }
+        }
+
+        .profile-fullname {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0 0 6px 0;
+        }
+
+        .profile-description {
+            font-size: 14px;
+            color: var(--text-muted, #64748b);
+            max-width: 440px;
+            line-height: 1.4;
+        }
+    }
+
+    .md3-settings-group {
+        margin-bottom: 24px;
+
+        .md3-group-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ion-color-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 0 8px 8px;
+        }
+
+        .md3-group-card {
+            background: var(--ion-background-color-step-50, #f8fafc);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+            ion-item {
+                --background: transparent;
+                --padding-start: 16px;
+                --padding-end: 16px;
+                --inner-padding-end: 8px;
+                --min-height: 56px;
+                --inner-border-width: 0px !important;
+                --border-width: 0px !important;
+                --border-color: transparent !important;
+                margin: 0;
+                border: none !important;
+
+                &::part(native) {
+                    border: none !important;
+                    background: transparent;
+                    padding-top: 8px;
+                    padding-bottom: 8px;
+                }
+
+                ion-icon.md3-settings-icon {
+                    width: 22px;
+                    height: 22px;
+                    font-size: 22px;
+                    color: var(--ion-color-primary);
+                    margin-inline-end: 16px;
+                }
+
+                .field-label {
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--text-muted, #64748b);
+                    text-transform: uppercase;
+                    letter-spacing: 0.3px;
+                    margin: 0 0 2px 0;
+                }
+
+                .field-value {
+                    font-size: 15px;
+                    font-weight: 500;
+                    color: var(--text-color);
+                    margin: 0;
+
+                    a {
+                        color: var(--ion-color-primary);
+                        text-decoration: none;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+
+                &.core-user-profile-interests {
+                    .interests-container {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 6px;
+                        margin-top: 6px;
+
+                        .badge-chip {
+                            display: inline-block;
+                            padding: 4px 12px;
+                            font-size: 12px;
+                            font-weight: 600;
+                            border-radius: 9999px;
+                            background: rgba(var(--ion-color-primary-rgb), 0.12);
+                            color: var(--ion-color-primary);
+                            cursor: pointer;
+                            transition: background 150ms ease;
+
+                            &:active {
+                                background: rgba(var(--ion-color-primary-rgb), 0.25);
+                            }
+                        }
+                    }
+                }
+            }
+
+            .md3-card-divider {
+                height: 1px;
+                background: var(--stroke, rgba(0, 0, 0, 0.06));
+                margin-inline-start: 54px;
             }
         }
     }
-    core-user-avatar {
-        --core-avatar-size: var(--core-large-avatar-size);
-        --contact-status-size: 24px;
-        --margin-end-on-item: 0px;
-        --margin-vertical-on-item: 0px;
 
-        .contact-status {
-            right: calc(50% - 12px - var(--core-avatar-size) / 2) !important;
-        }
+    :host-context(.dark) {
+        .md3-settings-group .md3-group-card {
+            background: var(--ion-background-color-step-100, #14202c);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 
-        .edit-avatar {
-            position: absolute;
-            right: calc(50% - 24px - var(--core-avatar-size) / 2);
-            bottom: -12px;
-
-            :host-context([dir="rtl"]) & {
-                left: 0;
-                right: unset;
+            .md3-card-divider {
+                background: rgba(255, 255, 255, 0.06);
             }
-            &::part(native) {
-                border-radius: 50%;
-                background: var(--ion-item-background);
+
+            ion-item.core-user-profile-interests .interests-container .badge-chip {
+                background: rgba(var(--ion-color-primary-rgb), 0.2);
+                color: var(--ion-color-primary-tint, #ff8c42);
             }
         }
     }
-
-    h2 {
-        font: var(--mdl-typography-heading2-font);
-    }
-    h3 {
-        font: var(--mdl-typography-heading4-font);
-    }
-    .core-user-profile-interests {
-        ion-badge {
-            cursor: pointer;
-            margin-left: 4px;
-            margin-right: 4px;
-        }
-    }
-
-}
-
-:host-context([dir="rtl"]) core-user-avatar .edit-avatar {
-    left: -24px;
-    right: unset;
 }

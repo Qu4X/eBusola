@@ -22,38 +22,45 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="preferencesLoaded" placeholderType="column" placeholderHeight="48px">
-        @if (warningMessage()) {
-            <core-alert-card type="warning" [message]="warningMessage()"/>
-        } @else {
-            <ion-card>
-                @if (preferences) {
-                    <ion-item class="ion-text-wrap">
-                        <ion-toggle [(ngModel)]="preferences.enableall" (ngModelChange)="enableAll(preferences.enableall)">
-                            <p class="item-heading">{{ 'addon.notifications.allownotifications' | translate }}</p>
-                        </ion-toggle>
-                    </ion-item>
-                }
-                @if (canChangeSound) {
-                    <ion-item class="ion-text-wrap">
-                        <ion-toggle [(ngModel)]="notificationSound" (ngModelChange)="changeNotificationSound(notificationSound)">
-                            <p class="item-heading">{{ 'addon.notifications.playsound' | translate }}</p>
-                        </ion-toggle>
-                    </ion-item>
-                }
-            </ion-card>
+        <div class="md3-settings-container">
+            @if (warningMessage()) {
+                <core-alert-card type="warning" [message]="warningMessage()"/>
+            } @else {
+                <div class="md3-settings-group">
+                    <div class="md3-group-card">
+                        @if (preferences) {
+                            <ion-item class="ion-text-wrap" lines="none">
+                                <ion-toggle [(ngModel)]="preferences.enableall" (ngModelChange)="enableAll(preferences.enableall)">
+                                    <p class="item-heading">{{ 'addon.notifications.allownotifications' | translate }}</p>
+                                </ion-toggle>
+                            </ion-item>
+                        }
+                        @if (canChangeSound) {
+                            <div *ngIf="preferences" class="md3-card-divider"></div>
+                            <ion-item class="ion-text-wrap" lines="none">
+                                <ion-toggle [(ngModel)]="notificationSound" (ngModelChange)="changeNotificationSound(notificationSound)">
+                                    <p class="item-heading">{{ 'addon.notifications.playsound' | translate }}</p>
+                                </ion-toggle>
+                            </ion-item>
+                        }
+                    </div>
+                </div>
 
-            <ion-card>
                 @if (preferences?.processors?.length) {
-                    <ion-item class="ion-text-wrap addon-notification-type-form">
-                        <!-- Show processor selector. -->
-                        <ion-select [(ngModel)]="currentProcessorName" (ionChange)="changeProcessor($event)" interface="popover">
-                            <p class="item-heading" slot="label">{{ 'addon.notifications.typeofnotification' | translate }}</p>
-                            <ion-select-option class="ion-text-wrap" *ngFor="let processor of preferences?.processors"
-                                [value]="processor.name">
-                                {{ processor.displayname }}
-                            </ion-select-option>
-                        </ion-select>
-                    </ion-item>
+                    <div class="md3-settings-group">
+                        <div class="md3-group-title">{{ 'addon.notifications.typeofnotification' | translate }}</div>
+                        <div class="md3-group-card">
+                            <ion-item class="ion-text-wrap md3-select-item" lines="none">
+                                <ion-select [(ngModel)]="currentProcessorName" (ionChange)="changeProcessor($event)" interface="popover"
+                                    class="md3-popover-select" [interfaceOptions]="{ cssClass: 'md3-popover-menu' }">
+                                    <ion-select-option class="ion-text-wrap" *ngFor="let processor of preferences?.processors"
+                                        [value]="processor.name">
+                                        {{ processor.displayname }}
+                                    </ion-select-option>
+                                </ion-select>
+                            </ion-item>
+                        </div>
+                    </div>
                 }
 
                 @if (loggedInOffLegacyMode) {
@@ -61,10 +68,9 @@
                 } @else {
                     <ng-container *ngTemplateOutlet="settings; context: {preferences: preferences}" />
                 }
-            </ion-card>
-        }
+            }
+        </div>
     </core-loading>
-
 </ion-content>
 
 
@@ -167,43 +173,42 @@
 
 <!-- 4.0 onwards version -->
 <ng-template #settings let-preferences="preferences">
-    <ng-container *ngFor="let component of components" class="ion-margin-top">
-        <ion-item-divider class="ion-text-wrap">
-            <ion-label>
-                <p class="item-heading">{{ component.displayname }}</p>
-            </ion-label>
-        </ion-item-divider>
-        <ng-container *ngFor="let notification of component.notifications">
-            <!-- If notifications enabled, show toggles. If disabled, show "Disabled" instead of toggle. -->
-            <ion-item class="ion-text-wrap" lines="none">
-                <ion-label>
-                    <p>{{ notification.displayname }}</p>
-                </ion-label>
+    <div *ngFor="let component of components" class="md3-settings-group">
+        <div class="md3-group-title">{{ component.displayname }}</div>
+        <div class="md3-group-card">
+            <ng-container *ngFor="let notification of component.notifications; let last = last">
+                <!-- If notifications enabled, show toggles. If disabled, show "Disabled" instead of toggle. -->
+                <ion-item class="ion-text-wrap" lines="none">
+                    <ion-label>
+                        <p class="notification-title">{{ notification.displayname }}</p>
+                    </ion-label>
 
-                @if (preferences!.enableall) {
-                    <div slot="end">
-                        @if (!notification.processorsByName[currentProcessorName].locked) {
-                            <core-button-with-spinner [loading]="notification.processorsByName[currentProcessorName].updating">
-                                @if (!notification.processorsByName[currentProcessorName].locked) {
-                                    <ion-toggle [(ngModel)]="notification.processorsByName[currentProcessorName].enabled"
-                                        (ngModelChange)="changePreference(notification)" />
-                                }
-                            </core-button-with-spinner>
-                        } @else if (notification.processorsByName[currentProcessorName].enabled) {
-                            <span class="text-gray">
-                                {{'core.settings.forced' | translate }}
-                            </span>
-                        } @else {
-                            <span class="text-gray">
-                                {{'core.settings.disallowed' | translate }}
-                            </span>
-                        }
-                    </div>
-                }
-                @if (!preferences!.enableall) {
-                    <span class="text-gray" slot="end">{{ 'core.settings.disabled' | translate }}</span>
-                }
-            </ion-item>
-        </ng-container>
-    </ng-container>
+                    @if (preferences!.enableall) {
+                        <div slot="end">
+                            @if (!notification.processorsByName[currentProcessorName].locked) {
+                                <core-button-with-spinner [loading]="notification.processorsByName[currentProcessorName].updating">
+                                    @if (!notification.processorsByName[currentProcessorName].locked) {
+                                        <ion-toggle [(ngModel)]="notification.processorsByName[currentProcessorName].enabled"
+                                            (ngModelChange)="changePreference(notification)" />
+                                    }
+                                </core-button-with-spinner>
+                            } @else if (notification.processorsByName[currentProcessorName].enabled) {
+                                <span class="status-badge forced">
+                                    {{'core.settings.forced' | translate }}
+                                </span>
+                            } @else {
+                                <span class="status-badge disallowed">
+                                    {{'core.settings.disallowed' | translate }}
+                                </span>
+                            }
+                        </div>
+                    }
+                    @if (!preferences!.enableall) {
+                        <span class="status-badge disabled" slot="end">{{ 'core.settings.disabled' | translate }}</span>
+                    }
+                </ion-item>
+                <div *ngIf="!last" class="md3-card-divider"></div>
+            </ng-container>
+        </div>
+    </div>
 </ng-template>

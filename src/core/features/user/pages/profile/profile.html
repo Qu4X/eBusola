@@ -10,7 +10,7 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content [core-swipe-navigation]="users()" class="limited-width">
+<ion-content [core-swipe-navigation]="users()">
     <ion-refresher slot="fixed" [disabled]="!userLoaded()" (ionRefresh)="refreshUser($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
@@ -41,109 +41,97 @@
                     <ion-skeleton-text [animated]="true" style="width: 100%; height: 44px;" class="ion-margin" />
                 </ion-label>
             </ion-item>
-            @for (i of 15 | coreTimes; track i) {
-                <ion-item>
-                    <ion-label>
-                        <h3>
-                            <ion-skeleton-text [animated]="true" style="width: 100%;" />
-                        </h3>
-                        <p>
-                            <ion-skeleton-text [animated]="true" style="width: 60%;" />
-                        </p>
-                    </ion-label>
-                </ion-item>
-            }
         </ion-list>
         @if (userInfo && !isDeleted() && isEnrolled()) {
-            <ion-list>
-                <ion-item class="core-user-profile-maininfo ion-text-wrap" collapsible>
-                    <core-user-avatar [user]="userInfo" [linkProfile]="false" [checkOnline]="true" slot="start" />
-                    <ion-label>
-                        <h1>{{ userInfo.fullname }}</h1>
-                        @if (rolesFormatted()) {
-                            <p>
-                                <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
-                                {{ rolesFormatted() }}
-                            </p>
-                        }
-                        @if (userInfo.lastaccess !== undefined) {
-                            <p>
-                                <strong>{{ 'core.lastaccess' | translate }}: </strong>
-                                @if (userInfo.lastaccess) {
-                                    <span>{{ userInfo.lastaccess | coreTimeAgo }}</span>
-                                } @else {
-                                    {{ 'core.never' | translate }}
+            <div class="md3-settings-container">
+                <!-- User Profile Card -->
+                <div class="md3-settings-group">
+                    <div class="md3-group-card md3-profile-card">
+                        <ion-item class="core-user-profile-maininfo ion-text-wrap" lines="none">
+                            <core-user-avatar [user]="userInfo" [linkProfile]="false" [checkOnline]="true" slot="start" />
+                            <ion-label>
+                                <h2>{{ userInfo.fullname }}</h2>
+                                @if (rolesFormatted()) {
+                                    <p class="user-role">
+                                        {{ rolesFormatted() }}
+                                    </p>
                                 }
-                            </p>
-                        }
-                    </ion-label>
-                </ion-item>
+                                @if (userInfo.lastaccess !== undefined) {
+                                    <p class="user-lastaccess">
+                                        {{ 'core.lastaccess' | translate }}:
+                                        @if (userInfo.lastaccess) {
+                                            <span>{{ userInfo.lastaccess | coreTimeAgo }}</span>
+                                        } @else {
+                                            {{ 'core.never' | translate }}
+                                        }
+                                    </p>
+                                }
+                            </ion-label>
+                        </ion-item>
 
-                @let bHandlers = buttonHandlers();
-                @if (bHandlers.length || isLoadingHandlers()) {
-                    <div class="core-user-communication-handlers">
+                        @let bHandlers = buttonHandlers();
                         @if (bHandlers.length) {
-                            <ion-item>
-                                <ion-label>
-                                    @for (handler of bHandlers; track handler.name) {
-                                        <ion-button expand="block" size="default"
-                                            [class]="['core-user-profile-handler', handler.class]"
-                                            (click)="handlerClicked($event, handler)"
-                                            [attr.aria-label]="handler.title | translate">
-                                            @if (handler.icon) {
-                                                <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
-                                            }
-                                            {{ handler.title | translate }}
-                                        </ion-button>
-                                    }
-                                </ion-label>
-                            </ion-item>
-                        } @else {
-                            <div class="ion-text-center core-loading-handlers">
-                                <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                            <div class="core-user-communication-handlers">
+                                @for (handler of bHandlers; track handler.name) {
+                                    <ion-button size="default"
+                                        [class]="['core-user-profile-handler', 'md3-tonal-button', handler.class]"
+                                        (click)="handlerClicked($event, handler)"
+                                        [attr.aria-label]="handler.title | translate">
+                                        @if (handler.icon) {
+                                            <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
+                                        }
+                                        {{ handler.title | translate }}
+                                    </ion-button>
+                                }
                             </div>
                         }
                     </div>
-                }
+                </div>
 
                 @if (isLoadingHandlers()) {
-                    <ion-item class="ion-text-center core-loading-handlers">
-                        <ion-label>
-                            <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-                        </ion-label>
-                    </ion-item>
+                    <div class="ion-text-center core-loading-handlers">
+                        <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                    </div>
                 }
 
-                @for (handler of listItemHandlers(); track handler.name) {
-                    @if ('component' in handler) {
-                        <core-dynamic-component [component]="handler.component" [data]="handler.componentData" />
-                    } @else {
-                        <ion-item button (click)="handlerClicked($event, handler)"
-                            [class]="['ion-text-wrap', 'core-user-profile-handler', handler.class]" [hidden]="handler.hidden"
-                            [attr.aria-label]="handler.title | translate" [detail]="true">
-                            @if (handler.icon) {
-                                <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
-                            }
-                            <ion-label>
-                                <p class="item-heading">{{ handler.title | translate }}</p>
-                            </ion-label>
-                            @if (handler.showBadge) {
-                                <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
-                                    {{handler.badge}}
-                                </ion-badge>
-                                @if (handler.badge && handler.badgeA11yText) {
-                                    <span class="sr-only">
-                                        {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                                    </span>
+                @let lHandlers = listItemHandlers();
+                @if (lHandlers.length) {
+                    <div class="md3-settings-group">
+                        <div class="md3-group-card">
+                            <ng-container *ngFor="let handler of lHandlers; let last = last">
+                                @if ('component' in handler) {
+                                    <core-dynamic-component [component]="handler.component" [data]="handler.componentData" />
+                                } @else {
+                                    <ion-item button (click)="handlerClicked($event, handler)"
+                                        [class]="['ion-text-wrap', 'core-user-profile-handler', handler.class]" [hidden]="handler.hidden"
+                                        [attr.aria-label]="handler.title | translate" [detail]="true" lines="none">
+                                        @if (handler.icon) {
+                                            <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" class="md3-settings-icon" />
+                                        }
+                                        <ion-label>
+                                            <p class="item-heading">{{ handler.title | translate }}</p>
+                                        </ion-label>
+                                        @if (handler.showBadge) {
+                                            <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
+                                                {{handler.badge}}
+                                            </ion-badge>
+                                            @if (handler.badge && handler.badgeA11yText) {
+                                                <span class="sr-only">
+                                                    {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                                                </span>
+                                            }
+                                            @if (handler.loading) {
+                                                <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                                            }
+                                        }
+                                    </ion-item>
                                 }
-                                @if (handler.loading) {
-                                    <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
-                                }
-                            }
-                        </ion-item>
-                    }
+                                <div *ngIf="!last" class="md3-card-divider"></div>
+                            </ng-container>
+                        </div>
+                    </div>
                 }
-            </ion-list>
+            </div>
         }
 
         @if (!userInfo && !isDeleted() && isEnrolled() && !cannotViewProfile()) {

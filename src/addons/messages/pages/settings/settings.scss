@@ -41,12 +41,18 @@
                     background: transparent;
                 }
 
-                p.item-heading,
-                p.notification-title {
+                p.item-heading {
                     font-weight: 500;
                     font-size: var(--mdl-typography-fontSize-md, 15px);
                     color: var(--text-color);
                     margin: 0;
+                }
+
+                p.radio-label {
+                    font-size: 15px;
+                    color: var(--text-color);
+                    margin: 0;
+                    padding-inline-start: 8px;
                 }
 
                 .status-badge {
@@ -60,7 +66,6 @@
                         color: var(--ion-color-success, #16a34a);
                     }
 
-                    &.disallowed,
                     &.disabled {
                         background: rgba(100, 116, 139, 0.12);
                         color: var(--text-muted, #64748b);
