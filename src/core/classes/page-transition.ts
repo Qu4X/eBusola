@@ -64,7 +64,7 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
 
     if (!contentEl && enteringToolBarEls.length === 0 && headerEls.length === 0) {
         enteringContentAnimation.addElement(
-            enteringEl.querySelector(':scope > .ion-page, :scope > ion-nav, :scope > ion-tabs') || [],
+            enteringEl.querySelector(':scope > .ion-page, :scope > ion-nav, :scope > ion-tabs .tabs-inner, :scope > ion-tabs') || [],
         );
     } else {
         enteringContentAnimation.addElement(contentEl || []);
@@ -202,7 +202,7 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
 
         if (!leavingContentEl && leavingToolBarEls.length === 0 && leavingHeaderEls.length === 0) {
             leavingContent.addElement(
-                leavingEl.querySelector(':scope > .ion-page, :scope > ion-nav, :scope > ion-tabs') || [],
+                leavingEl.querySelector(':scope > .ion-page, :scope > ion-nav, :scope > ion-tabs .tabs-inner, :scope > ion-tabs') || [],
             );
         } else {
             leavingContent.addElement(leavingContentEl || []);
