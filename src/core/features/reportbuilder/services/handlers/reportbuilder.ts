@@ -39,19 +39,14 @@ export class CoreReportBuilderHandlerService implements CoreUserProfileHandler {
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return await CoreReportBuilder.isEnabled();
+        return false;
     }
 
     /**
      * @inheritdoc
      */
-    async isEnabledForContext(context: CoreUserDelegateContext): Promise<boolean> {
-        // Custom reports only available in user menu.
-        if (context !== CoreUserDelegateContext.USER_MENU) {
-            return false;
-        }
-
-        return this.isEnabled();
+    async isEnabledForContext(): Promise<boolean> {
+        return false;
     }
 
     /**

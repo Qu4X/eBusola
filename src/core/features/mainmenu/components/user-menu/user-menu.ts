@@ -51,7 +51,6 @@ import { CORE_SETTINGS_PREFERENCES_PAGE_NAME } from '@features/settings/constant
     styleUrl: 'user-menu.scss',
     imports: [
         CoreSharedModule,
-        CoreSiteLogoComponent,
         CoreCustomMenuItemComponent,
     ],
 })
