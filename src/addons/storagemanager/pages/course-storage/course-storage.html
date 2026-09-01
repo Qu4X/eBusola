@@ -8,59 +8,58 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content class="limited-width">
+<ion-content>
     <core-loading [hideUntil]="loaded">
-        @if (downloadCourseEnabled) {
-            <ion-item class="ion-text-wrap">
-                <ion-label>
+        <div class="md3-settings-container">
+            @if (downloadCourseEnabled) {
+                <div class="md3-course-info-banner">
                     <p>{{ 'addon.storagemanager.courseinfo' | translate }}</p>
-                </ion-label>
-            </ion-item>
-        }
+                </div>
+            }
 
-        <ion-card class="wholecourse">
-            <ion-card-header>
-                <ion-card-title>
+            <div class="md3-settings-group">
+                <div class="md3-group-title">
                     <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="courseId" [adaptImg]="false" />
-                </ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-                <ion-item class="size ion-text-wrap ion-no-padding">
-                    <ion-label>
-                        <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totaldownloads' | translate }}</p>
-                    </ion-label>
-                    <ion-badge color="light" slot="end">
-                        @if (!calculatingSize) {
-                            {{ totalSize | coreBytesToSize }}
-                        } @else {
-                            {{ 'core.calculating' | translate }}
+                </div>
+                <div class="md3-group-card">
+                    <ion-item class="size ion-text-wrap" lines="none">
+                        <ion-label>
+                            <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totaldownloads' | translate }}</p>
+                        </ion-label>
+                        <span class="md3-size-chip" slot="end">
+                            @if (!calculatingSize) {
+                                {{ totalSize | coreBytesToSize }}
+                            } @else {
+                                {{ 'core.calculating' | translate }}
+                            }
+                        </span>
+                    </ion-item>
+                    <div class="md3-card-action-bar">
+                        @if (downloadCourseEnabled) {
+                            <ion-button (click)="prefetchCourse($event)" expand="block" fill="outline" class="md3-action-button"
+                                [disabled]="prefetchCourseData.loading">
+                                @if (!prefetchCourseData.loading) {
+                                    <ion-icon [name]="prefetchCourseData.icon" slot="start" aria-hidden="true" />
+                                } @else {
+                                    <ion-spinner slot="start" />
+                                }
+                                {{ prefetchCourseData.statusTranslatable | translate }}
+                            </ion-button>
                         }
-                    </ion-badge>
-                </ion-item>
-                @if (downloadCourseEnabled) {
-                    <ion-button (click)="prefetchCourse($event)" expand="block" fill="outline" class="ion-no-margin"
-                        [disabled]="prefetchCourseData.loading">
-                        @if (!prefetchCourseData.loading) {
-                            <ion-icon [name]="prefetchCourseData.icon" slot="start" aria-hidden="true" />
-                        } @else {
-                            <ion-spinner slot="start" />
-                        }
-                        {{ prefetchCourseData.statusTranslatable | translate }}
-                    </ion-button>
-                }
-                <ion-button [disabled]="calculatingSize || totalSize <= 0" (click)="deleteForCourse($event)" expand="block" color="danger"
-                    class="ion-no-margin ion-margin-top">
-                    <ion-icon name="fas-trash" slot="start" [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
-                        { name: title }" />
-                    {{ 'addon.storagemanager.deleteall' | translate }}
-                </ion-button>
-            </ion-card-content>
-        </ion-card>
+                        <ion-button [disabled]="calculatingSize || totalSize <= 0" (click)="deleteForCourse($event)" expand="block" color="danger"
+                            class="md3-action-button danger">
+                            <ion-icon name="fas-trash" slot="start" [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
+                                { name: title }" />
+                            {{ 'addon.storagemanager.deleteall' | translate }}
+                        </ion-button>
+                    </div>
+                </div>
+            </div>
 
-        @for (section of sections; track section.id) {
-            <ng-container *ngTemplateOutlet="sectionCard; context: { section }" />
-        }
-
+            @for (section of sections; track section.id) {
+                <ng-container *ngTemplateOutlet="sectionCard; context: { section }" />
+            }
+        </div>
     </core-loading>
 </ion-content>
 
