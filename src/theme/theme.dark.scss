@@ -110,9 +110,10 @@
 
         --core-link-color: var(--info-tint);
 
-        --core-header-toolbar-background:   var(--gray-900);
-        --core-header-toolbar-color:        var(--text-color);
-        --core-header-toolbar-border-color: var(--stroke);
+        --core-header-toolbar-background:   #14202c;
+        --core-header-toolbar-color:        #f1f5f9;
+        --core-header-toolbar-border-color: transparent;
+        --core-header-toolbar-border-width: 0px;
 
         --core-footer-gray-background: var(--gray-700);
         --core-footer-gray-border: var(--gray-600);

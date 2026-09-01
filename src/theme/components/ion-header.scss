@@ -75,10 +75,14 @@ ion-header.header-md {
         }
 
         h1, h2, .subheading {
-            font: var(--mdl-typography-heading4-font);
-            letter-spacing: .0125em;
+            font-size: 22px !important;
+            font-weight: 500 !important;
+            line-height: 28px !important;
+            letter-spacing: 0 !important;
+            color: var(--core-header-toolbar-color) !important;
             text-align: start;
             padding: 0;
+            margin: 0;
         }
 
         h1 + h2,
@@ -97,8 +101,9 @@ ion-header.header-md {
             text-align: start;
 
             h1, h2, .subheading {
-                font-size: var(--mdl-typography-label-lineHeight-md);
-                font-weight: 600;
+                font-size: 22px !important;
+                font-weight: 500 !important;
+                line-height: 28px !important;
             }
 
             h1 + h2,
