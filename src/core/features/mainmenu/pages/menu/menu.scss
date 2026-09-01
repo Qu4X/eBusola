@@ -119,16 +119,35 @@ ion-tabs {
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: transparent;
+            background: transparent !important;
             color: var(--text-color);
-            transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            overflow: visible;
+            z-index: 1;
+            transition: color 240ms ease;
             --padding-start: 0;
             --padding-end: 0;
             --padding-top: 0;
             --padding-bottom: 0;
             --margin-left: 0;
             --margin-right: 0;
+
+            // Expressive MD3 animated accent pill
+            &::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: 9999px;
+                background-color: var(--ion-color-primary);
+                box-shadow: 0 2px 12px rgba(var(--ion-color-primary-rgb), 0.38);
+                opacity: 0;
+                transform: scaleX(0.35) scaleY(0.5);
+                transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                            opacity 200ms ease,
+                            box-shadow 280ms ease;
+                z-index: -1;
+                pointer-events: none;
+            }
 
             ion-icon.core-tab-icon {
                 font-size: 28px;
@@ -143,7 +162,8 @@ ion-tabs {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                transition: transform 200ms ease;
+                transition: color 240ms ease, transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+                z-index: 2;
             }
 
             ion-label {
@@ -151,18 +171,16 @@ ion-tabs {
             }
 
             &.tab-selected {
-                flex: 1 1 0;
-                background-color: var(--ion-color-primary) !important;
                 color: var(--ion-color-primary-contrast, #ffffff) !important;
-                box-shadow: 0 2px 10px rgba(var(--ion-color-primary-rgb), 0.35);
+
+                &::before {
+                    opacity: 1;
+                    transform: scaleX(1) scaleY(1);
+                }
 
                 ion-icon.core-tab-icon {
                     color: var(--ion-color-primary-contrast, #ffffff) !important;
-                    font-size: 28px;
-                    width: 28px;
-                    height: 28px;
-                    --size: 28px;
-                    transform: scale(1.05);
+                    transform: scale(1.08);
                 }
             }
 
