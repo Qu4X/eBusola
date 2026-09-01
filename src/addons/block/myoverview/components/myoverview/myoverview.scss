@@ -1,20 +1,42 @@
 @use "src/theme/globals" as *;
 
 :host {
+    .addon-block-myoverview-filters-sticky {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--background-color, #ffffff);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        padding: 6px 12px 8px;
+        margin: 0;
+        border-bottom: 1px solid var(--gray-200);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: background 200ms ease, border-color 200ms ease;
+    }
+
+    :host-context(.dark) .addon-block-myoverview-filters-sticky,
+    :host-context(:root.dark) .addon-block-myoverview-filters-sticky {
+        background: rgba(16, 24, 36, 0.92);
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
     ion-row.addon-block-myoverview-filter {
-        margin: 8px;
+        margin: 4px 0;
         padding: 0;
 
         ion-col {
             padding: 0;
-            margin-right: 2px;
-            margin-left: 2px;
+            margin-right: 3px;
+            margin-left: 3px;
         }
 
         ion-button,
         core-combobox ::ng-deep ion-select {
             --a11y-sizing-minTargetSize: 40px;
             margin: 0;
+            border-radius: 9999px;
         }
 
         ion-button {
@@ -27,7 +49,15 @@
 
         ion-searchbar {
             padding: 0;
-            --height: 40px;
+            --height: 42px;
+            --border-radius: 9999px;
+            --background: var(--ion-background-color-step-100, #f1f5f9);
+            --box-shadow: none;
+        }
+
+        :host-context(.dark) ion-searchbar,
+        :host-context(:root.dark) ion-searchbar {
+            --background: var(--ion-background-color-step-150, #1e2c3a);
         }
     }
 

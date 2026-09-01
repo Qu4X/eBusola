@@ -27,106 +27,108 @@
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" placeholderType="column" [placeholderLimit]="8">
     @if (hasCourses) {
-        <ion-row class="ion-hide-md-up addon-block-myoverview-filter">
-            <ion-col>
-                <!-- Filter courses. -->
-                <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
-                    (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
-            </ion-col>
-        </ion-row>
-        <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter">
-            @if (filters.enabled) {
-                <ion-col size="auto">
-                    <core-combobox [label]="'core.courses.filtermycourses' | translate" [(selection)]="filters.timeFilterSelected"
-                        (selectionChange)="filterCourses()">
-                        @if (filters.show.allincludinghidden) {
-                            <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="allincludinghidden">
-                                {{ 'addon.block_myoverview.allincludinghidden' | translate }}
-                            </ion-select-option>
-                        }
-                        @if (filters.show.all) {
-                            <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="all">
-                                {{ 'addon.block_myoverview.all' | translate }}
-                            </ion-select-option>
-                        }
-                        @if (filters.show.inprogress) {
-                            <ion-select-option class="ion-text-wrap"
-                                [class.core-select-option-border-bottom]="!filters.show.past && !filters.show.future" value="inprogress">
-                                {{ 'addon.block_myoverview.inprogress' | translate }}
-                            </ion-select-option>
-                        }
-                        @if (filters.show.future) {
-                            <ion-select-option class="ion-text-wrap" [class.core-select-option-border-bottom]="!filters.show.past"
-                                value="future">
-                                {{ 'addon.block_myoverview.future' | translate }}
-                            </ion-select-option>
-                        }
-                        @if (filters.show.past) {
-                            <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="past">
-                                {{ 'addon.block_myoverview.past' | translate }}
-                            </ion-select-option>
-                        }
-                        @if (filters.show.custom) {
+        <div class="addon-block-myoverview-filters-sticky">
+            <ion-row class="ion-hide-md-up addon-block-myoverview-filter">
+                <ion-col>
+                    <!-- Filter courses. -->
+                    <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
+                        (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
+                </ion-col>
+            </ion-row>
+            <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter">
+                @if (filters.enabled) {
+                    <ion-col size="auto">
+                        <core-combobox [label]="'core.courses.filtermycourses' | translate" [(selection)]="filters.timeFilterSelected"
+                            (selectionChange)="filterCourses()">
+                            @if (filters.show.allincludinghidden) {
+                                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="allincludinghidden">
+                                    {{ 'addon.block_myoverview.allincludinghidden' | translate }}
+                                </ion-select-option>
+                            }
+                            @if (filters.show.all) {
+                                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="all">
+                                    {{ 'addon.block_myoverview.all' | translate }}
+                                </ion-select-option>
+                            }
+                            @if (filters.show.inprogress) {
+                                <ion-select-option class="ion-text-wrap"
+                                    [class.core-select-option-border-bottom]="!filters.show.past && !filters.show.future" value="inprogress">
+                                    {{ 'addon.block_myoverview.inprogress' | translate }}
+                                </ion-select-option>
+                            }
+                            @if (filters.show.future) {
+                                <ion-select-option class="ion-text-wrap" [class.core-select-option-border-bottom]="!filters.show.past"
+                                    value="future">
+                                    {{ 'addon.block_myoverview.future' | translate }}
+                                </ion-select-option>
+                            }
+                            @if (filters.show.past) {
+                                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="past">
+                                    {{ 'addon.block_myoverview.past' | translate }}
+                                </ion-select-option>
+                            }
+                            @if (filters.show.custom) {
 
-                            <ng-container *ngFor="let customOption of filters.customFilters; let index = index; let last = last">
-                                <ion-select-option class="ion-text-wrap" value="custom-{{index}}"
-                                    [class.core-select-option-border-bottom]="last">
-                                    {{ customOption.name }}</ion-select-option>
-                            </ng-container>
+                                <ng-container *ngFor="let customOption of filters.customFilters; let index = index; let last = last">
+                                    <ion-select-option class="ion-text-wrap" value="custom-{{index}}"
+                                        [class.core-select-option-border-bottom]="last">
+                                        {{ customOption.name }}</ion-select-option>
+                                </ng-container>
 
-                        }
-                        @if (filters.show.favourite) {
-                            <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="favourite">
-                                {{ 'addon.block_myoverview.favourites' | translate }}
-                            </ion-select-option>
-                        }
-                        @if (filters.show.hidden) {
-                            <ion-select-option class="ion-text-wrap" value="hidden">
-                                {{ 'addon.block_myoverview.hiddencourses' | translate }}
-                            </ion-select-option>
-                        }
-                    </core-combobox>
+                            }
+                            @if (filters.show.favourite) {
+                                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="favourite">
+                                    {{ 'addon.block_myoverview.favourites' | translate }}
+                                </ion-select-option>
+                            }
+                            @if (filters.show.hidden) {
+                                <ion-select-option class="ion-text-wrap" value="hidden">
+                                    {{ 'addon.block_myoverview.hiddencourses' | translate }}
+                                </ion-select-option>
+                            }
+                        </core-combobox>
+                    </ion-col>
+                }
+                <ion-col>
+                    <!-- Filter courses. -->
+                    <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
+                        (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
                 </ion-col>
-            }
-            <ion-col>
-                <!-- Filter courses. -->
-                <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
-                    (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
-            </ion-col>
-            @if (sort.enabled) {
-                <ion-col size="auto">
-                    <core-combobox [label]="'core.sortby' | translate" [(selection)]="sort.selected" (selectionChange)="sortCourses()"
-                        icon="fas-arrow-down-short-wide" class="no-border">
-                        <ion-select-option class="ion-text-wrap" value="fullname">
-                            {{'addon.block_myoverview.title' | translate}}
-                        </ion-select-option>
-                        @if (sort.shortnameEnabled) {
-                            <ion-select-option class="ion-text-wrap" value="shortname">
-                                {{'addon.block_myoverview.shortname' | translate}}
+                @if (sort.enabled) {
+                    <ion-col size="auto">
+                        <core-combobox [label]="'core.sortby' | translate" [(selection)]="sort.selected" (selectionChange)="sortCourses()"
+                            icon="fas-arrow-down-short-wide" class="no-border">
+                            <ion-select-option class="ion-text-wrap" value="fullname">
+                                {{'addon.block_myoverview.title' | translate}}
                             </ion-select-option>
+                            @if (sort.shortnameEnabled) {
+                                <ion-select-option class="ion-text-wrap" value="shortname">
+                                    {{'addon.block_myoverview.shortname' | translate}}
+                                </ion-select-option>
+                            }
+                            <ion-select-option class="ion-text-wrap" value="lastaccess">
+                                {{'addon.block_myoverview.lastaccessed' | translate}}
+                            </ion-select-option>
+                        </core-combobox>
+                    </ion-col>
+                }
+                @if (isLayoutSwitcherAvailable) {
+                    <ion-col size="auto">
+                        @if (layout === 'card') {
+                            <ion-button fill="outline" (click)="toggleLayout('list')"
+                                [ariaLabel]="'addon.block_myoverview.aria:list' | translate">
+                                <ion-icon slot="icon-only" name="fas-list" aria-hidden="true" />
+                            </ion-button>
+                        } @else if (layout === 'list') {
+                            <ion-button fill="outline" (click)="toggleLayout('card')"
+                                [ariaLabel]="'addon.block_myoverview.aria:card' | translate">
+                                <ion-icon slot="icon-only" name="fas-table-cells-large" aria-hidden="true" />
+                            </ion-button>
                         }
-                        <ion-select-option class="ion-text-wrap" value="lastaccess">
-                            {{'addon.block_myoverview.lastaccessed' | translate}}
-                        </ion-select-option>
-                    </core-combobox>
-                </ion-col>
-            }
-            @if (isLayoutSwitcherAvailable) {
-                <ion-col size="auto">
-                    @if (layout === 'card') {
-                        <ion-button fill="outline" (click)="toggleLayout('list')"
-                            [ariaLabel]="'addon.block_myoverview.aria:list' | translate">
-                            <ion-icon slot="icon-only" name="fas-list" aria-hidden="true" />
-                        </ion-button>
-                    } @else if (layout === 'list') {
-                        <ion-button fill="outline" (click)="toggleLayout('card')"
-                            [ariaLabel]="'addon.block_myoverview.aria:card' | translate">
-                            <ion-icon slot="icon-only" name="fas-table-cells-large" aria-hidden="true" />
-                        </ion-button>
-                    }
-                </ion-col>
-            }
-        </ion-row>
+                    </ion-col>
+                }
+            </ion-row>
+        </div>
     }
 
     @if (filteredCourses.length === 0) {
