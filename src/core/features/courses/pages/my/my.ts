@@ -32,7 +32,6 @@ import { Translate } from '@singletons';
 import { CoreWait } from '@static/wait';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
 import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
 import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
 import { CoreCoursesMyPageName } from '@features/courses/constants';
@@ -52,7 +51,6 @@ import { CoreCoursesMy } from '@features/courses/services/my';
         }],
     imports: [
         CoreSharedModule,
-        CoreSiteLogoComponent,
         CoreMainMenuUserButtonComponent,
         CoreBlockComponent,
         CoreBlockSideBlocksButtonComponent,

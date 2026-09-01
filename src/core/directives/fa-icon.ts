@@ -43,10 +43,6 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
      * Validate icon, e.g. checking if it's using a deprecated name.
      */
     async validateIcon(): Promise<void> {
-        if (CoreConstants.BUILD.isDevelopment && !CoreIcons.isIconNamePrefixed(this.name)) {
-            this.logger.warn(`Not prefixed icon ${this.name} detected, it could be an Ionic icon. Font-awesome is preferred.`);
-        }
-
         if (this.name.includes('_')) {
             // Ionic icons cannot contain a '_' in the name, Ionic doesn't load them, replace it with '-'.
             this.logger.warn(`Icon ${this.name} contains '_' character and it's not allowed, replacing it with '-'.`);
