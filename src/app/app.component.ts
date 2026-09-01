@@ -130,13 +130,32 @@ export class AppComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         this.logger.debug('App component initialized');
 
-        CoreSubscriptions.once(this.outlet().activateEvents, async () => {
-            await CorePlatform.ready();
+        let splashHidden = false;
+        const hideSplash = async () => {
+            if (splashHidden) {
+                return;
+            }
+            splashHidden = true;
 
-            this.logger.debug('Hide splash screen');
-            navigator.splashscreen?.hide();
-            this.setSystemUIColorsAfterSplash();
-        });
+            try {
+                await CorePlatform.ready();
+                this.logger.debug('Hide splash screen');
+                navigator.splashscreen?.hide();
+                this.setSystemUIColorsAfterSplash();
+            } catch (error) {
+                this.logger.error('Error hiding splash screen', error);
+                navigator.splashscreen?.hide();
+            }
+        };
+
+        if (this.outlet().isActivated) {
+            hideSplash();
+        } else {
+            CoreSubscriptions.once(this.outlet().activateEvents, hideSplash);
+        }
+
+        // Failsafe: Ensure splash screen is hidden on mobile devices even if route events race
+        setTimeout(hideSplash, 2000);
     }
 
     /**
