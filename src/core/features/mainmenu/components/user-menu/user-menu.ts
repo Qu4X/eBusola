@@ -204,13 +204,12 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
             return;
         }
 
-        await this.close(event);
-
         CoreNavigator.navigateToSitePath('user/about', {
             params: {
                 userId: this.siteInfo.userid,
             },
         });
+        ModalController.dismiss();
     }
 
     /**
@@ -219,9 +218,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event.
      */
     async openPreferences(event: Event): Promise<void> {
-        await this.close(event);
-
         CoreNavigator.navigateToSitePath(CORE_SETTINGS_PREFERENCES_PAGE_NAME);
+        ModalController.dismiss();
     }
 
     /**
@@ -235,9 +233,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
             return;
         }
 
-        await this.close(event);
-
         handler.action(event, this.user, CoreUserDelegateContext.USER_MENU);
+        ModalController.dismiss();
     }
 
     /**
@@ -246,8 +243,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event.
      */
     async contactSupport(event: Event): Promise<void> {
-        await this.close(event);
         await CoreUserSupport.contact();
+        ModalController.dismiss();
     }
 
     /**
@@ -291,9 +288,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         const { CoreLoginSitesModalComponent } = await import('@features/login/components/sites-modal/sites-modal');
 
-        const closeAll = await CoreModals.openSideModal<boolean>({
+        const closeAll = await CoreModals.openModal<boolean>({
             component: CoreLoginSitesModalComponent,
-            cssClass: 'core-modal-lateral core-modal-lateral-sm',
         });
 
         if (thisModal && closeAll) {

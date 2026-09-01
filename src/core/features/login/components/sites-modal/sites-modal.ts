@@ -27,6 +27,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-login-sites-modal',
     templateUrl: 'sites-modal.html',
+    styleUrl: 'sites-modal.scss',
     imports: [
         CoreSharedModule,
     ],
