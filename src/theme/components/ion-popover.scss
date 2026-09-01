@@ -19,13 +19,58 @@ ion-popover {
 
     &.core-combobox-select {
         --width: auto;
-        --max-width: 80%;
+        --min-width: 180px;
+        --max-width: 85%;
 
-        ion-radio::part(label) {
-            white-space: normal;
+        &::part(content) {
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--stroke, var(--gray-200));
+            background: var(--ion-background-color-step-100, #ffffff);
+            padding: 4px;
+        }
+
+        ion-select-popover {
+            ion-list {
+                background: transparent;
+                padding: 0;
+            }
+
+            ion-item {
+                --background: transparent;
+                --color: var(--text-color);
+                --min-height: 42px;
+                --padding-start: 12px;
+                --padding-end: 12px;
+                --inner-padding-end: 6px;
+                --inner-border-width: 0;
+                --border-width: 0;
+                border-radius: 10px;
+                margin: 2px 0;
+                font-size: 14px;
+                font-weight: 500;
+
+                &.item-radio-checked {
+                    --background: rgba(var(--ion-color-primary-rgb), 0.12);
+                    --color: var(--ion-color-primary);
+                    font-weight: 600;
+                }
+
+                &:hover {
+                    --background: rgba(var(--ion-text-color-rgb), 0.05);
+                }
+            }
+
+            ion-radio {
+                --color: var(--text-muted, #94a3b8);
+                --color-checked: var(--ion-color-primary);
+
+                &::part(label) {
+                    white-space: normal;
+                }
+            }
         }
     }
-
 
     ion-item {
         [slot=start] {
@@ -35,5 +80,13 @@ ion-popover {
 
     &::part(backdrop) {
        touch-action: pinch-zoom;
+    }
+}
+
+:root.dark ion-popover.core-combobox-select {
+    &::part(content) {
+        border-color: rgba(255, 255, 255, 0.12);
+        background: var(--ion-background-color-step-100, #14202c);
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 }

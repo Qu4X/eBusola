@@ -13,6 +13,7 @@
         padding: 8px 12px 10px;
         margin: 0;
         border-bottom: 1px solid var(--stroke, var(--gray-200));
+        box-shadow: 0 -4px 0 var(--background-color, #ffffff);
         transition: background 200ms ease, border-color 200ms ease;
     }
 
@@ -20,6 +21,7 @@
     :host-context(:root.dark) .addon-block-myoverview-filters-sticky {
         background: var(--background-color, #0b1d28);
         border-bottom-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 -4px 0 var(--background-color, #0b1d28);
     }
 
     ion-row.addon-block-myoverview-filter {
@@ -134,7 +136,15 @@
                     padding: 0 !important;
 
                     &::part(container) {
-                        display: none !important;
+                        width: 0 !important;
+                        height: 0 !important;
+                        min-width: 0 !important;
+                        min-height: 0 !important;
+                        opacity: 0 !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        overflow: hidden !important;
+                        pointer-events: none !important;
                     }
 
                     &::part(label) {

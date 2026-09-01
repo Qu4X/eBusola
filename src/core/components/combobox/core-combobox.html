@@ -1,7 +1,7 @@
 @if (interface() !== 'modal') {
     <ion-select class="ion-text-start" [(ngModel)]="selection" (ngModelChange)="onValueChanged($event)" interface="popover"
         [disabled]="disabled()" [class.combobox-icon-only]="!!icon()"
-        [interfaceOptions]="{alignment: 'start', arrow: false, cssClass: 'core-combobox-select'}">
+        [interfaceOptions]="{alignment: alignment() || (icon() ? 'end' : 'start'), side: 'bottom', arrow: false, cssClass: 'core-combobox-select'}">
         <div slot="label">
             @if (label()) {
                 <span class="sr-only">{{ label() }}</span>

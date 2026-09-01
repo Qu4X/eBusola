@@ -61,6 +61,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 export class CoreComboboxComponent<T = unknown> implements ControlValueAccessor {
 
     readonly interface = input<'popover' | 'modal'>('popover');
+    readonly alignment = input<'start' | 'center' | 'end' | undefined>(undefined);
     readonly label = input(Translate.instant('core.show')); // Aria label.
     readonly emptySelectionText = input('');
 

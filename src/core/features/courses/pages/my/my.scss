@@ -4,7 +4,13 @@
             display: none !important;
         }
 
+        ion-content {
+            --padding-top: 0px !important;
+        }
+
         ion-list {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
             contain: none !important;
             overflow: visible !important;
             background: transparent !important;
