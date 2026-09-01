@@ -18,5 +18,10 @@ import { CoreFile } from '@services/file';
  * Clears the temporary folder.
  */
 export default async function(): Promise<void> {
-    await CoreFile.clearTmpFolder();
+    try {
+        await CoreFile.clearTmpFolder();
+    } catch {
+        // Ignore errors if file system is not ready or temporary folder does not exist.
+    }
 }
+

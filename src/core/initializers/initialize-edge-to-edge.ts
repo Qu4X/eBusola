@@ -26,41 +26,45 @@ export default async function(): Promise<void> {
         return;
     }
 
-    // overlaysWebView(true) doesn't seem to do anything with cordova-android 15+ because Cordova applies margins to the WebView
-    // from system bar insets in Android 14- (see setOnApplyWindowInsetsListener in CordovaActivity.java). However, a bug was
-    // reported when using overlaysWebView(false) in Android 7 and 8, so set it to true just in case.
-    StatusBar.overlaysWebView(true);
+    try {
+        // overlaysWebView(true) doesn't seem to do anything with cordova-android 15+ because Cordova applies margins to the WebView
+        // from system bar insets in Android 14- (see setOnApplyWindowInsetsListener in CordovaActivity.java). However, a bug was
+        // reported when using overlaysWebView(false) in Android 7 and 8, so set it to true just in case.
+        StatusBar.overlaysWebView(true);
 
-    // Listener for system bars and cutout inset changes.
-    const systemInsetListener = await Inset.create({
-        // eslint-disable-next-line no-bitwise
-        mask: InsetMask.SYSTEM_BARS | InsetMask.DISPLAY_CUTOUT,
-        includeRoundedCorners: false,
-    });
+        // Listener for system bars and cutout inset changes.
+        const systemInsetListener = await Inset.create({
+            // eslint-disable-next-line no-bitwise
+            mask: InsetMask.SYSTEM_BARS | InsetMask.DISPLAY_CUTOUT,
+            includeRoundedCorners: false,
+        });
 
-    // Listener for keyboard height changes.
-    // We need to update safe area and keyboard height CSS variables at the same time.
-    const imeInsetListener = await Inset.create({
-        mask: InsetMask.IME,
-        includeRoundedCorners: false,
-    });
+        // Listener for keyboard height changes.
+        // We need to update safe area and keyboard height CSS variables at the same time.
+        const imeInsetListener = await Inset.create({
+            mask: InsetMask.IME,
+            includeRoundedCorners: false,
+        });
 
-    const update = () => {
-        const insets = systemInsetListener.getInset();
-        const keyboardHeight = imeInsetListener.getInset().bottom;
+        const update = () => {
+            const insets = systemInsetListener.getInset();
+            const keyboardHeight = imeInsetListener.getInset().bottom;
 
-        // Update safe area CSS variables.
-        const rootStyle = document.documentElement.style;
-        rootStyle.setProperty('--ion-safe-area-left', `${insets.left}px`);
-        rootStyle.setProperty('--ion-safe-area-right', `${insets.right}px`);
-        rootStyle.setProperty('--ion-safe-area-top', `${insets.top}px`);
-        rootStyle.setProperty('--ion-safe-area-bottom', `${keyboardHeight > 0 ? 0 : insets.bottom}px`);
+            // Update safe area CSS variables.
+            const rootStyle = document.documentElement.style;
+            rootStyle.setProperty('--ion-safe-area-left', `${insets.left}px`);
+            rootStyle.setProperty('--ion-safe-area-right', `${insets.right}px`);
+            rootStyle.setProperty('--ion-safe-area-top', `${insets.top}px`);
+            rootStyle.setProperty('--ion-safe-area-bottom', `${keyboardHeight > 0 ? 0 : insets.bottom}px`);
 
-        // Update the CSS variable with the keyboard height.
-        // On iOS, the variable is updated in the forked Cordova keyboard plugin.
-        rootStyle.setProperty('--keyboard-height', `${keyboardHeight}px`);
-    };
+            // Update the CSS variable with the keyboard height.
+            // On iOS, the variable is updated in the forked Cordova keyboard plugin.
+            rootStyle.setProperty('--keyboard-height', `${keyboardHeight}px`);
+        };
 
-    systemInsetListener.addListener(update);
-    imeInsetListener.addListener(update);
+        systemInsetListener.addListener(update);
+        imeInsetListener.addListener(update);
+    } catch {
+        // Ignore errors if Inset plugin is unavailable or fails on certain devices.
+    }
 }
