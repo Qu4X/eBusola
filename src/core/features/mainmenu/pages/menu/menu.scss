@@ -75,17 +75,18 @@ ion-tabs {
         ion-tab-bar {
             position: absolute;
             bottom: calc(14px + var(--ion-safe-area-bottom, 0px));
-            left: 16px;
-            right: 16px;
+            left: 50%;
+            transform: translateX(-50%);
             width: calc(100% - 32px);
             max-width: 480px;
-            margin: 0 auto;
+            margin: 0;
             height: 64px;
             border-radius: 9999px;
             padding: 6px 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            box-sizing: border-box;
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16), 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -108,7 +109,7 @@ ion-tabs {
         }
 
         ion-tab-button {
-            flex: 1;
+            flex: 1 1 0;
             border: none;
             border-radius: 9999px;
             height: 50px;
@@ -117,10 +118,17 @@ ion-tabs {
             display: flex;
             align-items: center;
             justify-content: center;
+            text-align: center;
             background: transparent;
             color: var(--text-color);
             transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            --padding-start: 0;
+            --padding-end: 0;
+            --padding-top: 0;
+            --padding-bottom: 0;
+            --margin-left: 0;
+            --margin-right: 0;
 
             ion-icon.core-tab-icon {
                 font-size: 28px;
@@ -128,10 +136,13 @@ ion-tabs {
                 height: 28px;
                 --size: 28px;
                 padding: 0;
-                margin: 0;
+                margin: 0 auto;
                 border-radius: 0;
                 background: transparent !important;
                 color: inherit;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 transition: transform 200ms ease;
             }
 
@@ -140,17 +151,17 @@ ion-tabs {
             }
 
             &.tab-selected {
-                flex: 1.15;
+                flex: 1 1 0;
                 background-color: var(--ion-color-primary) !important;
                 color: var(--ion-color-primary-contrast, #ffffff) !important;
                 box-shadow: 0 2px 10px rgba(var(--ion-color-primary-rgb), 0.35);
 
                 ion-icon.core-tab-icon {
                     color: var(--ion-color-primary-contrast, #ffffff) !important;
-                    font-size: 30px;
-                    width: 30px;
-                    height: 30px;
-                    --size: 30px;
+                    font-size: 28px;
+                    width: 28px;
+                    height: 28px;
+                    --size: 28px;
                     transform: scale(1.05);
                 }
             }
