@@ -41,7 +41,7 @@
         @if (searchMode && searchTotal > 0) {
             <div class="md3-search-results-chip-container">
                 <span class="md3-results-chip" role="status">
-                    <ion-icon name="fas-magnifying-glass" aria-hidden="true" />
+                    <ion-icon name="search-outline" aria-hidden="true" />
                     {{ 'core.courses.totalcoursesearchresults' | translate:{$a: searchTotal} }}
                 </span>
             </div>
@@ -56,11 +56,11 @@
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreCourses($event)" [error]="loadMoreError" />
 
         @if (searchMode && !courses.length) {
-            <core-empty-box icon="fas-magnifying-glass" [message]="'core.courses.nosearchresults' | translate" role="alert" />
+            <core-empty-box icon="search-outline" [message]="'core.courses.nosearchresults' | translate" role="alert" />
         }
 
         @if (!searchMode && !courses.length) {
-            <core-empty-box icon="fas-graduation-cap" [message]="'core.courses.nocourses' | translate" />
+            <core-empty-box icon="school-outline" [message]="'core.courses.nocourses' | translate" />
         }
 
     </core-loading>

@@ -54,6 +54,10 @@ import {
     newspaper,
     cubeOutline,
     cube,
+    star,
+    starOutline,
+    ellipsisVertical,
+    ellipsisVerticalOutline,
 } from 'ionicons/icons';
 import { CoreIcons } from '@static/icons';
 
@@ -102,6 +106,10 @@ export default function(): void {
         newspaper,
         'cube-outline': cubeOutline,
         cube,
+        star,
+        'star-outline': starOutline,
+        'ellipsis-vertical': ellipsisVertical,
+        'ellipsis-vertical-outline': ellipsisVerticalOutline,
     });
     CoreIcons.addIconsToIonicons();
 }

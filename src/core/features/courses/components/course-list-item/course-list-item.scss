@@ -29,7 +29,7 @@
 // Common styles.
 .item-heading ion-icon {
     @include margin-horizontal(null, 4px);
-    color: var(--core-star-color);
+    color: #f59e0b;
 }
 
 button {
@@ -43,7 +43,17 @@ ion-card {
     border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     margin: 8px 0;
-    transition: transform 150ms ease, box-shadow 150ms ease;
+    overflow: hidden;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    &:active {
+        transform: scale(0.99);
+    }
 
     ion-item {
         --background: transparent !important;
@@ -57,10 +67,29 @@ ion-card {
     }
 }
 
-:host-context(.dark) ion-card {
-    background: #14202c !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+:host-context(.dark) {
+    ion-card {
+        background: #14202c !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+
+        &:hover {
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+        }
+    }
+
+    ion-chip.core-course-category {
+        background: rgba(255, 117, 31, 0.16) !important;
+        color: #FF751F !important;
+    }
+
+    .core-button-spinner ::ng-deep ion-button {
+        --background: rgba(20, 32, 44, 0.7) !important;
+
+        &::part(native) {
+            background: rgba(20, 32, 44, 0.7) !important;
+        }
+    }
 }
 
 .core-button-spinner {
@@ -69,25 +98,36 @@ ion-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    z-index: 2;
-    @include position(8px, 8px, null, null);
+    z-index: 5;
+    @include position(10px, 10px, null, null);
 
     ion-spinner {
         margin-top: 4px;
     }
 
     ::ng-deep ion-button {
-        --border-radius: var(--button-radius);
-        --background: var(--button-background);
-        --padding-top: var(--button-padding);
-        --padding-end: var(--button-padding);
-        --padding-bottom: var(--button-padding);
-        --padding-start: var(--button-padding);
-        width: var(--button-size);
-        height: var(--button-size);
+        --border-radius: 50% !important;
+        --background: rgba(0, 0, 0, 0.3) !important;
+        --color: #ffffff !important;
+        --padding-top: 0 !important;
+        --padding-end: 0 !important;
+        --padding-bottom: 0 !important;
+        --padding-start: 0 !important;
+        width: 36px;
+        height: 36px;
         margin: 0;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+
         &::part(native) {
-            background: var(--background);
+            background: rgba(0, 0, 0, 0.3) !important;
+            border-radius: 50% !important;
+            color: #ffffff !important;
+        }
+
+        ion-icon {
+            font-size: 18px;
+            color: #ffffff !important;
         }
     }
 
@@ -111,9 +151,22 @@ ion-chip {
     margin-left: 0;
     margin-right: 0;
     max-width: 100%;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 11px;
+    height: 24px;
 
     &.core-course-category {
         @include margin-horizontal(0px, 8px);
+        background: rgba(var(--ion-color-primary-rgb, 21, 25, 93), 0.1) !important;
+        color: var(--ion-color-primary, #15195D) !important;
+        border: none;
+    }
+
+    &.core-course-hidden-message {
+        background: rgba(var(--ion-color-warning-rgb, 245, 158, 11), 0.12) !important;
+        color: var(--ion-color-warning-shade, #b45309) !important;
+        border: none;
     }
 }
 
