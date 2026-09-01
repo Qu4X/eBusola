@@ -1,50 +1,58 @@
 ion-toggle {
-    --track-width: 52px;
-    --track-height: 32px;
-    --track-border-radius: 16px;
     --handle-width: 16px;
     --handle-height: 16px;
+    --handle-spacing: 6px;
     --handle-border-radius: 50%;
-    --handle-spacing: 8px;
+    --handle-box-shadow: none;
+    --handle-transition: transform 200ms cubic-bezier(0.2, 0, 0, 1), width 200ms ease, height 200ms ease, background-color 200ms ease;
     --track-background: var(--ion-background-color-step-150, #e2e8f0);
     --track-background-checked: var(--ion-color-primary, #ea580c);
-    --handle-background: var(--ion-background-color-step-500, #64748b);
+    --handle-background: var(--ion-background-color-step-500, #79747e);
     --handle-background-checked: var(--ion-color-primary-contrast, #ffffff);
+    contain: none;
+
+    &::part(track) {
+        width: 52px;
+        height: 32px;
+        min-width: 52px;
+        min-height: 32px;
+        border-radius: 16px;
+        box-sizing: border-box;
+        border: 2px solid var(--ion-background-color-step-400, #79747e);
+        transition: background-color 200ms ease, border-color 200ms ease;
+    }
+
+    &::part(handle) {
+        box-shadow: none;
+    }
 
     &.toggle-checked {
         --handle-width: 24px;
         --handle-height: 24px;
-        --handle-spacing: 4px;
-    }
+        --handle-spacing: 2px;
 
-    &::part(track) {
-        border: 2px solid var(--ion-background-color-step-300, #94a3b8);
-        transition: background 200ms ease, border-color 200ms ease;
-        box-sizing: border-box;
-    }
-
-    &.toggle-checked::part(track) {
-        border-color: var(--ion-color-primary);
-    }
-
-    &::part(handle) {
-        transition: transform 200ms cubic-bezier(0.2, 0, 0, 1),
-                    width 200ms ease,
-                    height 200ms ease;
+        &::part(track) {
+            border-color: var(--ion-color-primary, #ea580c);
+            background: var(--ion-color-primary, #ea580c);
+        }
     }
 }
 
 :root.dark ion-toggle {
     --track-background: var(--ion-background-color-step-150, #1b2836);
     --track-background-checked: var(--ion-color-primary, #ea580c);
-    --handle-background: var(--ion-background-color-step-400, #94a3b8);
+    --handle-background: rgba(255, 255, 255, 0.6);
     --handle-background-checked: var(--ion-color-primary-contrast, #ffffff);
 
     &::part(track) {
-        border-color: var(--ion-background-color-step-350, #475569);
+        border-color: rgba(255, 255, 255, 0.38);
+        background: var(--ion-background-color-step-150, #1b2836);
     }
 
-    &.toggle-checked::part(track) {
-        border-color: var(--ion-color-primary);
+    &.toggle-checked {
+        &::part(track) {
+            border-color: var(--ion-color-primary, #ea580c);
+            background: var(--ion-color-primary, #ea580c);
+        }
     }
 }
