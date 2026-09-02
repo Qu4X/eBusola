@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreConstants } from '@/core/constants';
 import {
     CoreUserProfileHandlerType,
     CoreUserProfileHandler,
@@ -39,14 +40,24 @@ export class CoreReportBuilderHandlerService implements CoreUserProfileHandler {
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return false;
+        // Disabled via moodle.config.json flag for this deployment.
+        if (CoreConstants.CONFIG.disableReportBuilder) {
+            return false;
+        }
+
+        return CoreReportBuilder.isEnabled();
     }
 
     /**
      * @inheritdoc
      */
-    async isEnabledForContext(): Promise<boolean> {
-        return false;
+    async isEnabledForContext(context: CoreUserDelegateContext): Promise<boolean> {
+        // Custom reports only available in user menu.
+        if (context !== CoreUserDelegateContext.USER_MENU) {
+            return false;
+        }
+
+        return this.isEnabled();
     }
 
     /**

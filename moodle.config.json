@@ -149,6 +149,7 @@
         }
     },
     "clearIABSessionWhenAutoLogin": "android",
-    "collapsibleItemsExpanded": false
+    "collapsibleItemsExpanded": false,
+    "disableReportBuilder": true
 }
 

@@ -103,12 +103,10 @@ ion-tabs {
             }
         }
 
-        ::ng-deep ion-content {
-            --padding-bottom: calc(96px + var(--ion-safe-area-bottom, 0px));
-        }
-
-        ::ng-deep ion-content::part(scroll) {
-            padding-bottom: calc(96px + var(--ion-safe-area-bottom, 0px)) !important;
+        // Pill clearance: consumed globally via --busola-pill-clearance token (theme.custom.scss).
+        // Ionic's ion-content reads --padding-bottom without needing ::ng-deep.
+        ion-content {
+            --padding-bottom: var(--busola-pill-clearance);
         }
 
         :host-context(.dark) & ion-tab-bar,
