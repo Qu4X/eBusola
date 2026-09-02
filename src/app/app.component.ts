@@ -177,7 +177,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         const interval = window.setInterval(() => {
             CoreApp.setSystemUIColors();
-        });
+        }, 100);
         setTimeout(() => {
             clearInterval(interval);
             promise.resolve();

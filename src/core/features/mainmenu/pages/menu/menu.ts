@@ -169,7 +169,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
         const tabBar = this.hostElement.querySelector('ion-tab-bar');
         tabBar?.addEventListener('animationend', (ev) => {
-            if (ev.animationName === 'slideOutBottom' &&
+            if (ev.animationName === 'md3PillSlideOut' &&
                 !this.isMainScreen() && this.tabsPlacement() === CoreMainMenuPlacement.BOTTOM) {
                 this.hiddenAnimationFinished.set(true);
             }
