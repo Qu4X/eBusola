@@ -1,14 +1,14 @@
 @use "src/theme/globals" as *;
 
 :host {
-    --horizontal-spacing: var(--mdl-spacing-4);
-    --vertical-spacing: var(--mdl-spacing-2);
+    --horizontal-spacing: var(--mdl-spacing-3);
+    --vertical-spacing: 0px;
     --colored-box-padding: var(--mdl-spacing-2);
     --card-border-width: 0px;
     --card-radius: 0px;
     --card-background: transparent;
-    --activity-border: 1px solid var(--stroke);
-    --card-padding-bottom: var(--vertical-spacing);
+    --activity-border: 1px solid var(--busola-divider, rgba(0, 0, 0, 0.06));
+    --card-padding-bottom: 0px;
 
     &:last-child {
         --activity-border: 0px;
@@ -16,12 +16,22 @@
     }
 
     ion-card {
-        margin: var(--vertical-spacing) 0px;
-        padding: 0px var(--horizontal-spacing) var(--card-padding-bottom) var(--horizontal-spacing);
-        --ion-card-border-width: var(--card-border-width);
-        --ion-card-radius: var(--card-radius);
-        --ion-card-background: var(--card-background);
-        border-bottom: var(--activity-border);
+        margin: 0px !important;
+        padding: 4px var(--horizontal-spacing) !important;
+        --ion-card-border-width: 0px !important;
+        --ion-card-radius: 0px !important;
+        --ion-card-background: transparent !important;
+        --background: transparent !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-bottom: var(--activity-border) !important;
+        border-radius: 0px !important;
+        transition: background-color 150ms ease;
+
+        &:active {
+            background: rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.08) !important;
+        }
     }
 
     ion-badge {

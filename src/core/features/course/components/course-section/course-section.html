@@ -1,6 +1,6 @@
 @if (collapsible) {
     <ion-accordion class="core-course-module-list-wrapper" [id]="section.id"
-        [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null" [value]="section.id" toggleIconSlot="start">
+        [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null" [value]="section.id" toggleIconSlot="end">
         <ng-container *ngTemplateOutlet="sectionHeader" />
 
         <div slot="content">

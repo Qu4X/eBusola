@@ -1,13 +1,37 @@
 @use "src/theme/globals" as *;
 
 :host {
-    .core-format-progress-list {
-        width: 100%;
+    .core-course-header {
+        background: var(--ion-background-color) !important;
+        border-bottom: none;
+        padding-top: 4px;
+        padding-bottom: 4px;
+
+        .core-format-progress-list {
+            --background: transparent;
+            background: transparent;
+            width: 100%;
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --inner-padding-end: 0px;
+            --border-width: 0px !important;
+            --inner-border-width: 0px !important;
+        }
     }
 
     core-course-image {
-        --core-image-size: var(--core-courseimage-on-course-size);
+        --core-image-size: 64px;
+        --core-courseimage-radius: 16px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--busola-card-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
         @include margin(8px, 16px, 8px, 0px);
+        flex-shrink: 0;
+
+        img {
+            border-radius: 16px;
+            object-fit: cover;
+        }
     }
 
     @if ($core-hide-courseimage-on-course) {
@@ -23,10 +47,34 @@
     }
 
     h1 {
-        font-size: var(--mdl-typography-heading4-fontSize);
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-color);
+        margin: 0 0 6px 0;
+        line-height: 1.3;
     }
 
-    .core-course-header {
-        background: var(--ion-item-background);
+    .core-course-progress {
+        margin-top: 6px;
+
+        core-progress-bar {
+            --bar-background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.1);
+            --bar-border-radius: 9999px;
+            --line-height: 8px;
+            --progress-color: var(--ion-color-primary);
+        }
+    }
+
+    core-course-format {
+        display: block;
+        padding-bottom: max(60px, calc(40px + var(--busola-safe-area-bottom, var(--root-safe-area-bottom, 0px))));
     }
 }
+
+:host-context(:root.dark) {
+    .core-course-header {
+        background: var(--ion-background-color) !important;
+    }
+}
+
+

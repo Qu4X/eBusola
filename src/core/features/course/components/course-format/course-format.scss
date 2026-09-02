@@ -1,0 +1,25 @@
+@use "src/theme/globals" as *;
+
+:host {
+    display: block;
+
+    ion-fab[vertical="bottom"] {
+        margin-bottom: max(24px, calc(16px + var(--busola-safe-area-bottom, var(--root-safe-area-bottom, 0px))));
+        margin-inline-end: 16px;
+
+        ion-fab-button {
+            --border-radius: 18px !important;
+            --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22) !important;
+            border-radius: 18px !important;
+            transition: transform 150ms ease;
+
+            &::part(native) {
+                border-radius: 18px;
+            }
+
+            &:active {
+                transform: scale(0.95);
+            }
+        }
+    }
+}

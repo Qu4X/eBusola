@@ -55,7 +55,13 @@ export default async function(): Promise<void> {
             rootStyle.setProperty('--ion-safe-area-left', `${insets.left}px`);
             rootStyle.setProperty('--ion-safe-area-right', `${insets.right}px`);
             rootStyle.setProperty('--ion-safe-area-top', `${insets.top}px`);
-            rootStyle.setProperty('--ion-safe-area-bottom', `${keyboardHeight > 0 ? 0 : insets.bottom}px`);
+            rootStyle.setProperty('--root-safe-area-top', `${insets.top}px`);
+            rootStyle.setProperty('--busola-safe-area-top', `${insets.top}px`);
+            const bottomInset = keyboardHeight > 0 ? 0 : insets.bottom;
+            rootStyle.setProperty('--ion-safe-area-bottom', `${bottomInset}px`);
+            rootStyle.setProperty('--root-safe-area-bottom', `${bottomInset}px`);
+            rootStyle.setProperty('--busola-safe-area-bottom', `${bottomInset}px`);
+            rootStyle.setProperty('--busola-insets-bottom', `${bottomInset}px`);
 
             // Update the CSS variable with the keyboard height.
             // On iOS, the variable is updated in the forked Cordova keyboard plugin.
@@ -64,6 +70,9 @@ export default async function(): Promise<void> {
 
         systemInsetListener.addListener(update);
         imeInsetListener.addListener(update);
+
+        // Apply initial insets immediately
+        update();
     } catch {
         // Ignore errors if Inset plugin is unavailable or fails on certain devices.
     }

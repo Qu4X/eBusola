@@ -1,25 +1,16 @@
 ion-accordion {
-    > [slot="header"] .ion-accordion-toggle-icon[slot="start"] {
-        @include margin-horizontal(null, var(--mdl-spacing-2));
-        background-color: var(--core-accordion-toggle-background);
-        border-radius: 50%;
-        padding: var(--mdl-spacing-1);
+    > [slot="header"] .ion-accordion-toggle-icon {
+        background-color: transparent !important;
+        color: var(--text-muted, #94a3b8);
+        font-size: 15px;
+        padding: 0;
+        margin-inline-start: var(--mdl-spacing-2);
+        transition: transform 200ms ease, color 150ms ease;
     }
 
-    /**
-    * Change arrow direction to match LMS: expanded is down, collapsed is right.
-    */
     &.accordion-expanding > [slot="header"] .ion-accordion-toggle-icon,
     &.accordion-expanded > [slot="header"] .ion-accordion-toggle-icon {
-        transform: none;
-    }
-
-    &.accordion-collapsing > [slot="header"] .ion-accordion-toggle-icon,
-    &.accordion-collapsed > [slot="header"] .ion-accordion-toggle-icon {
-        transform: rotate(-90deg);
-        @include rtl() {
-            transform: rotate(90deg);
-        }
+        color: var(--ion-color-primary);
     }
 
     &.accordion-expanded .hide_on_expand,

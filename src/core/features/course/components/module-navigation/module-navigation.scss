@@ -1,15 +1,27 @@
 @use "src/theme/globals" as *;
 
 :host {
-    --height: var(--core-navigation-max-height, 44px);
-    --background: var(--core-navigation-background);
-    --button-color: var(--gray-700);
+    --safe-bottom: max(
+        14px,
+        var(--busola-insets-bottom, 0px),
+        var(--busola-safe-area-bottom, 0px),
+        var(--root-safe-area-bottom, 0px),
+        env(safe-area-inset-bottom, 0px)
+    );
+    --height: calc(52px + var(--safe-bottom));
+    --background: var(--busola-surface, var(--core-navigation-background, var(--ion-background-color)));
+    --button-color: var(--ion-color-primary);
 
-    height: var(--height);
+    min-height: var(--height);
     width: 100%;
     background-color: var(--background);
     display: block;
-    border-top: 1px solid var(--stroke);
+    border-top: 1px solid var(--busola-divider, rgba(0, 0, 0, 0.08));
+    padding-bottom: var(--safe-bottom) !important;
+    padding-left: max(8px, var(--ion-safe-area-left, 0px));
+    padding-right: max(8px, var(--ion-safe-area-right, 0px));
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
 
     core-loading {
         text-align: center;
@@ -23,23 +35,36 @@
 
     .core-course-module-navigation-arrow {
         ion-button {
-            margin: 0;
-            --border-radius: 0;
-            width: 100%;
-            font: var(--mdl-typography-body-font-sm);
+            margin: 6px 4px;
+            --border-radius: 20px;
+            border-radius: 20px;
+            height: 40px;
+            font-size: 13.5px;
+            font-weight: 500;
             --color: var(--button-color);
+            --background-hover: rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.08);
+            --background-activated: rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.12);
+            transition: opacity 150ms ease, background-color 150ms ease;
 
             .button-text {
-                width:100%;
+                width: 100%;
+                letter-spacing: 0.1px;
             }
 
             ion-icon {
-                font-size: var(--mdl-typography-body-fontSize-sm);
+                font-size: 12px;
+                margin: 0 4px;
+            }
+
+            &[disabled] {
+                opacity: 0.35;
             }
         }
+
         .core-course-previous-module {
             text-align: start;
         }
+
         .core-course-next-module {
             text-align: end;
         }
@@ -52,5 +77,9 @@
 }
 
 :host-context(:root.dark) {
-    --button-color: var(--gray-100);
+    --background: var(--busola-surface-dark, #14202c);
+    --button-color: var(--ion-color-primary);
+    border-top-color: var(--busola-divider-dark, rgba(255, 255, 255, 0.08));
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.25);
 }
+

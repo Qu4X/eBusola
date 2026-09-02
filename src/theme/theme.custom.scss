@@ -26,10 +26,12 @@
   --busola-divider: rgba(0, 0, 0, 0.06);
   --busola-divider-dark: rgba(255, 255, 255, 0.08);
   --busola-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --busola-card-shadow-dark: 0 1px 4px rgba(0, 0, 0, 0.25);
+  --busola-safe-area-top: max(var(--root-safe-area-top, 0px), var(--ion-safe-area-top, 0px), env(safe-area-inset-top, 0px));
+  --busola-safe-area-bottom: max(var(--busola-insets-bottom, 0px), var(--root-safe-area-bottom, 0px), var(--ion-safe-area-bottom, 0px), env(safe-area-inset-bottom, 0px));
   /* Pill nav bottom clearance for ion-content scroll padding */
-  --busola-pill-clearance: calc(96px + var(--ion-safe-area-bottom, 0px));
+  --busola-pill-clearance: calc(96px + var(--busola-safe-area-bottom, 0px));
 }
+
 
 /*
  * Dark Theme
@@ -263,4 +265,61 @@ button.edit-avatar,
         }
     }
 }
+
+/* ==========================================================================
+   MD3 Top Segment / Tab Bar (Course, Grades, etc.)
+   ========================================================================== */
+core-tabs,
+core-tabs-outlet {
+    .core-tabs-bar {
+        --background: var(--ion-background-color);
+        background: var(--ion-background-color);
+        border-bottom: 1px solid var(--busola-divider);
+
+        swiper-slide {
+            --color: var(--text-muted);
+            --color-active: var(--ion-color-primary);
+            --color-selected: var(--ion-color-primary);
+            --border-color-active: var(--ion-color-primary);
+            border-bottom: none !important;
+
+            &[aria-selected=true],
+            &.selected {
+                border-bottom: none !important;
+                border-bottom-color: transparent !important;
+            }
+
+            ion-tab-button {
+                --color: var(--text-muted);
+                --color-selected: var(--ion-color-primary);
+                font-weight: 500;
+                position: relative;
+                transition: color 150ms ease;
+
+                h2 {
+                    font-size: 15px;
+                    letter-spacing: 0.2px;
+                }
+            }
+
+            &.selected ion-tab-button {
+                font-weight: 700;
+                --color: var(--ion-color-primary);
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 12%;
+                    right: 12%;
+                    height: 3px;
+                    border-radius: 3px 3px 0 0;
+                    background: var(--ion-color-primary);
+                }
+            }
+        }
+    }
+}
+
+
 

@@ -1,13 +1,8 @@
-<ion-header [collapsible]="(tabsComponent()?.selectedIndex === 0 || tabsComponent()?.selectedIndex === undefined)">
+<ion-header [collapsible]="false">
     <ion-toolbar>
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
-        <ion-title>
-            <h1>
-                <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id" />
-            </h1>
-        </ion-title>
 
         <ion-buttons slot="end">
             @if (course?.format !== 'singleactivity') {
@@ -27,7 +22,7 @@
     </ion-toolbar>
 </ion-header>
 <div class="core-course-header">
-    <ion-item class="core-format-progress-list ion-text-wrap list-item-limited-width" collapsible>
+    <ion-item class="core-format-progress-list ion-text-wrap list-item-limited-width" lines="none">
         @if (course) {
             <core-course-image [course]="course" />
         }
@@ -45,3 +40,4 @@
     </ion-item>
 </div>
 <core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected()" />
+
