@@ -28,10 +28,6 @@
                 <div class="ion-text-wrap ion-text-center core-login-info-box">
                     <div class="core-login-site">
                         <core-site-logo siteNameMode="p" [showLogo]="!showUserAvatar" [site]="site" />
-
-                        @if (displaySiteUrl) {
-                            <p class="core-siteurl">{{site.siteUrl}}</p>
-                        }
                     </div>
 
                     <div class="core-login-user">
@@ -84,21 +80,21 @@
 
 <ng-template #loginMethods>
     @if (showLoginForm && !isBrowserSSO) {
-        <form [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
-            <ion-item class="ion-margin-bottom" lines="inset">
+        <form [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form md3-login-form" #reconnectForm>
+            <ion-item class="ion-margin-bottom md3-input-item" lines="none">
                 <ion-input class="core-ioninput-password" name="password" type="password"
                     placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"
                     autocomplete="current-password" enterkeyhint="go" required="true" [attr.aria-label]="'core.login.password' | translate">
                     <ion-input-password-toggle slot="end" showIcon="fas-eye" hideIcon="fas-eye-slash" />
                 </ion-input>
             </ion-item>
-            <ion-button type="submit" expand="block" [disabled]="!credForm.valid" class="ion-margin core-login-login-button ion-text-wrap">
+            <ion-button type="submit" expand="block" [disabled]="!credForm.valid" class="ion-margin-top core-login-login-button md3-primary-btn ion-text-wrap">
                 {{ 'core.login.loginbutton' | translate }}
             </ion-button>
 
             <!-- Forgotten password option. -->
             @if (showForgottenPassword) {
-                <ion-button expand="block" fill="clear" class="core-login-forgotten-password core-button-as-link ion-text-wrap"
+                <ion-button expand="block" fill="clear" class="core-login-forgotten-password md3-text-btn core-button-as-link ion-text-wrap"
                     (click)="forgottenPassword()">
                     {{ 'core.login.forgotaccount' | translate }}
                 </ion-button>
