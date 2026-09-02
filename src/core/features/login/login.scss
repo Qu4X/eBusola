@@ -8,6 +8,15 @@
         --color: var(--core-login-text-color, var(--text-color));
     }
 
+    /* Container width: ensure everything aligns to the exact same width */
+    .limited-width,
+    .list-item-limited-width {
+        max-width: 440px !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        box-sizing: border-box;
+    }
+
     ion-item ion-label {
         --color: var(--core-login-text-color, var(--text-color));
 
@@ -44,6 +53,10 @@
     .core-login-info-box {
         margin-top: 16px;
         margin-bottom: 28px;
+        width: 100%;
+        max-width: 440px;
+        margin-left: auto;
+        margin-right: auto;
 
         .core-login-site {
             core-site-logo {
@@ -80,9 +93,13 @@
     }
 
     /* MD3 Form & Input Fields */
-    .core-login-methods {
+    .core-login-methods,
+    .core-login-form {
+        width: 100%;
         max-width: 440px;
-        margin: 0 auto;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: border-box;
 
         .md3-input-item,
         form .item {
@@ -93,6 +110,10 @@
             border: 1.5px solid var(--busola-divider, rgba(0, 0, 0, 0.08)) !important;
             box-shadow: var(--busola-card-shadow, 0 1px 3px rgba(0, 0, 0, 0.04));
             margin-bottom: 16px;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+            box-sizing: border-box;
             --min-height: 56px;
             --padding-start: 16px;
             --padding-end: 16px;
@@ -127,20 +148,33 @@
         }
     }
 
-    /* MD3 Primary Action Buttons */
+    /* MD3 Primary Action Buttons - Clean Pill shape with NO square host box */
     .core-login-login-button,
     .md3-primary-btn {
         --border-radius: 9999px !important;
         --background: var(--ion-color-primary) !important;
         --color: var(--ion-color-primary-contrast, #ffffff) !important;
+        --box-shadow: 0 4px 14px rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.35) !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 9999px !important;
         height: 50px;
         margin-top: 24px;
         margin-bottom: 12px;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box;
         font-size: 16px;
         font-weight: 600;
         letter-spacing: 0.3px;
-        box-shadow: 0 4px 14px rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.35);
-        transition: transform 150ms ease, box-shadow 150ms ease;
+        transition: transform 150ms ease;
+
+        &::part(native) {
+            border-radius: 9999px;
+            box-shadow: 0 4px 14px rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.35);
+        }
 
         &:active {
             transform: scale(0.98);
@@ -149,21 +183,34 @@
 
     .core-login-login-inbrowser-button {
         --border-radius: 9999px !important;
+        --box-shadow: 0 4px 14px rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.35) !important;
+        background: transparent !important;
+        box-shadow: none !important;
         height: 50px;
         font-weight: 600;
         margin-top: 16px;
         margin-bottom: 8px;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
     }
 
     /* MD3 Forgotten Password Text Button */
     .core-login-forgotten-password,
     .md3-text-btn {
         --color: var(--ion-color-primary) !important;
+        --background: transparent !important;
+        --box-shadow: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
         font-weight: 500;
         font-size: 14px;
         text-decoration: none !important;
         margin-top: 8px;
         margin-bottom: 4px;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
         letter-spacing: 0.2px;
 
         &::part(native) {
@@ -177,15 +224,17 @@
         }
     }
 
-    /* MD3 First-Time / Sign-Up Card */
+    /* MD3 First-Time / Sign-Up Card - Exactly matching form width */
     .core-login-sign-up,
     .md3-signup-card {
-        max-width: 440px;
-        margin: 28px auto 16px;
+        width: 100% !important;
+        max-width: 440px !important;
+        margin: 28px auto 16px !important;
         background: var(--busola-surface, #f8fafc);
         border: 1px solid var(--busola-divider, rgba(0, 0, 0, 0.08));
         border-radius: 20px;
         padding: 20px;
+        box-sizing: border-box;
         box-shadow: var(--busola-card-shadow, 0 1px 3px rgba(0, 0, 0, 0.04));
 
         .md3-signup-title,
@@ -202,6 +251,8 @@
             background: transparent !important;
             font-size: 14px;
             color: var(--text-muted, #64748b);
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         .md3-outlined-btn {
@@ -209,11 +260,108 @@
             --border-width: 1.5px !important;
             --border-color: var(--ion-color-primary) !important;
             --color: var(--ion-color-primary) !important;
-            height: 44px;
+            --background: transparent !important;
+            --box-shadow: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            height: 46px;
             font-weight: 600;
             margin-top: 16px;
             margin-bottom: 0px;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
         }
+    }
+
+    /* MD3 Email Signup / Create Account Styles */
+    .md3-signup-container {
+        width: 100%;
+        max-width: 480px;
+        margin: 0 auto;
+        padding-bottom: 32px;
+        box-sizing: border-box;
+    }
+
+    .md3-signup-header {
+        text-align: center;
+        margin: 16px 0 24px;
+
+        .md3-signup-sitename {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+        }
+    }
+
+    .md3-signup-section {
+        margin-bottom: 20px;
+
+        .md3-signup-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--ion-color-primary);
+            margin: 0 8px 8px;
+        }
+
+        .md3-signup-card-group {
+            background: var(--busola-surface, #f8fafc);
+            border: 1px solid var(--busola-divider, rgba(0, 0, 0, 0.08));
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--busola-card-shadow, 0 1px 3px rgba(0, 0, 0, 0.04));
+            padding: 8px 16px;
+
+            ion-item {
+                --background: transparent !important;
+                background: transparent !important;
+                --padding-start: 0;
+                --padding-end: 0;
+                --inner-padding-end: 0;
+                --inner-border-width: 0px !important;
+                --border-width: 0px !important;
+                --min-height: 54px;
+                border-bottom: 1px solid var(--busola-divider, rgba(0, 0, 0, 0.06));
+
+                &:last-of-type {
+                    border-bottom: none;
+                }
+
+                ion-input,
+                ion-select {
+                    --placeholder-color: var(--text-muted, #64748b);
+                    --placeholder-opacity: 0.8;
+                    font-size: 15px;
+                    color: var(--text-color);
+                }
+
+                ion-checkbox {
+                    --size: 20px;
+                    --checkbox-background-checked: var(--ion-color-primary);
+                    --border-color-checked: var(--ion-color-primary);
+                }
+            }
+
+            .core-input-footnote {
+                font-size: 12px;
+                color: var(--text-muted, #64748b);
+                margin: 4px 0 8px;
+            }
+        }
+    }
+
+    .core-submit-hidden-enter {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        opacity: 0 !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
     .core-login-methods-separator {
@@ -260,9 +408,11 @@
     }
 
     .core-login-sign-up,
-    .md3-signup-card {
+    .md3-signup-card,
+    .md3-signup-section .md3-signup-card-group {
         background: var(--busola-surface-dark, #14202c) !important;
         border-color: var(--busola-divider-dark, rgba(255, 255, 255, 0.08)) !important;
     }
 }
+
 
