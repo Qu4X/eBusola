@@ -86,4 +86,5 @@ export interface EnvironmentConfig {
     collapsibleItemsExpanded: boolean; // Expand or collapse the collapsible items by default.
     wsOverrides: Record<string, CoreWSOverride[]>; // Overrides to apply to WS calls.
     overrideMainMenuButtons: CoreMainMenuOverrideItem[]; // Override main menu items.
+    disableReportBuilder?: boolean; // Set to true to disable the Report Builder user menu entry for this deployment.
 }
