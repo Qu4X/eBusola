@@ -72,6 +72,8 @@ Thumbs.db
 # Moodle App
 /src/assets/lib
 /src/assets/lang/*
+!/src/assets/lang/en.json
+!/src/assets/lang/pl.json
 /src/assets/env.json
 /src/assets/fonts/icons.json
 
