@@ -43,9 +43,24 @@
             width: 44px;
             height: 44px;
             min-width: 44px;
-            border-radius: 12px;
+            min-height: 44px;
+            max-width: 44px;
+            max-height: 44px;
+            border-radius: 50%;
             background: rgba(var(--ion-color-primary-rgb, 21, 25, 93), 0.1);
             color: var(--ion-color-primary, #15195D);
+            flex-shrink: 0;
+
+            img {
+                width: 24px;
+                height: 24px;
+                max-width: 24px;
+                max-height: 24px;
+                aspect-ratio: 1 / 1;
+                object-fit: contain;
+                display: block;
+                margin: auto;
+            }
 
             ion-icon {
                 font-size: 24px;
@@ -60,8 +75,14 @@
         .core-notification-img {
             width: 44px;
             height: 44px;
-            border-radius: 12px;
+            min-width: 44px;
+            min-height: 44px;
+            max-width: 44px;
+            max-height: 44px;
+            border-radius: 50%;
             object-fit: cover;
+            aspect-ratio: 1 / 1;
+            flex-shrink: 0;
         }
 
         p.item-heading {

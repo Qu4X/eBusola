@@ -2,13 +2,13 @@
     <ion-input [ariaLabel]="placeholder()" type="search" name="search" [(ngModel)]="inputValue" [placeholder]="placeholder()"
         [autocorrect]="autocorrect()" [spellcheck]="spellcheck()" [core-auto-focus]="autoFocus()" [disabled]="disabled()" role="searchbox"
         (ionFocus)="focus()">
-        <ion-button slot="end" fill="clear" type="submit" [ariaLabel]="searchLabel()" [disabled]="disabled() || !dirty()">
+        <ion-button slot="start" fill="clear" type="submit" [ariaLabel]="searchLabel()" [disabled]="disabled()" class="search-start-btn">
             <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
         </ion-button>
         @if (showClear()) {
             <ion-button slot="end" fill="clear" [ariaLabel]="'core.clearsearch' | translate"
-                [disabled]="!searchText() && (inputValue() === '' || disabled())" (click)="clearForm()">
-                <ion-icon name="fas-delete-left" slot="icon-only" aria-hidden="true" flip-rtl />
+                [disabled]="!searchText() && (inputValue() === '' || disabled())" (click)="clearForm()" class="search-clear-btn">
+                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         }
     </ion-input>

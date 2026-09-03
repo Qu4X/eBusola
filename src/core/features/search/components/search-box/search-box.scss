@@ -26,8 +26,8 @@
         --min-height: var(--search-height);
 
         ion-input {
-            --padding-start: 20px;
-            --padding-end: 16px;
+            --padding-start: 4px;
+            --padding-end: 8px;
             --border-radius: 24px;
             --highlight-color-focused: transparent !important;
             --inner-border-width: 0px !important;
@@ -35,6 +35,7 @@
             --border-color: transparent !important;
             --box-shadow: none !important;
             min-height: var(--search-height);
+            height: var(--search-height);
             font-size: 15px;
             border: none !important;
 
@@ -42,22 +43,34 @@
                 border: none !important;
                 outline: none !important;
                 box-shadow: none !important;
+                padding-inline-start: 4px;
             }
 
-            ion-button {
-                --color: var(--ion-color-primary);
-                color: var(--ion-color-primary);
+            .search-start-btn {
+                --color: var(--text-muted, #94a3b8);
+                color: var(--text-muted, #94a3b8);
+                margin: 0;
+                --padding-start: 12px;
+                --padding-end: 4px;
+                opacity: 0.85;
 
                 ion-icon {
                     font-size: 18px;
                 }
             }
-        }
 
-        ion-button.button {
-            margin: 0;
-            --padding-start: 8px;
-            --padding-end: 12px;
+            .search-clear-btn {
+                --color: var(--text-muted, #94a3b8);
+                color: var(--text-muted, #94a3b8);
+                margin: 0;
+                --padding-start: 4px;
+                --padding-end: 12px;
+                opacity: 0.85;
+
+                ion-icon {
+                    font-size: 18px;
+                }
+            }
         }
     }
 

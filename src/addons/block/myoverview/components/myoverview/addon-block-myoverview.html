@@ -28,14 +28,14 @@
 <core-loading [hideUntil]="loaded" placeholderType="column" [placeholderLimit]="8">
     @if (hasCourses) {
         <div class="addon-block-myoverview-filters-sticky">
-            <ion-row class="ion-hide-md-up addon-block-myoverview-filter">
+            <ion-row class="ion-hide-md-up addon-block-myoverview-filter searchbar-row">
                 <ion-col>
                     <!-- Filter courses. -->
                     <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)" [searchIcon]="'md-search'"
                         (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
                 </ion-col>
             </ion-row>
-            <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter">
+            <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter filters-row">
                 @if (filters.enabled) {
                     <ion-col size="auto">
                         <core-combobox [label]="'core.courses.filtermycourses' | translate" [(selection)]="filters.timeFilterSelected"
@@ -52,7 +52,8 @@
                             }
                             @if (filters.show.inprogress) {
                                 <ion-select-option class="ion-text-wrap"
-                                    [class.core-select-option-border-bottom]="!filters.show.past && !filters.show.future" value="inprogress">
+                                    [class.core-select-option-border-bottom]="!filters.show.past && !filters.show.future"
+                                    value="inprogress">
                                     {{ 'addon.block_myoverview.inprogress' | translate }}
                                 </ion-select-option>
                             }
@@ -91,7 +92,8 @@
                 }
                 <ion-col>
                     <!-- Filter courses. -->
-                    <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)" [searchIcon]="'md-search'"
+                    <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter"
+                        (ionInput)="filterTextChanged($event.target)" [searchIcon]="'md-search'"
                         (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
                 </ion-col>
                 @if (sort.enabled) {

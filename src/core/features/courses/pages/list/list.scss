@@ -4,13 +4,20 @@
         max-width: 720px;
         margin: 0 auto;
 
+        core-search-box {
+            margin: 0 0 8px 0;
+            width: 100%;
+        }
+
         .md3-search-toggle-card {
             margin-top: 8px;
             background: var(--ion-background-color-step-50, #f8fafc);
-            border-radius: 16px;
+            border-radius: 24px;
             overflow: hidden;
-            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.08));
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            box-sizing: border-box;
 
             ion-item {
                 --background: transparent !important;
@@ -18,13 +25,24 @@
                 --min-height: 48px;
                 --padding-start: 16px;
                 --padding-end: 16px;
+                --inner-padding-end: 0px !important;
+                --inner-padding-start: 0px !important;
                 --inner-border-width: 0px !important;
                 --border-width: 0px !important;
+                margin: 0;
+                padding: 0;
 
-                .toggle-text {
-                    font-size: 14px;
-                    font-weight: 500;
-                    color: var(--text-color);
+                ion-toggle {
+                    width: 100%;
+                    padding: 0;
+                    margin: 0;
+                    justify-content: space-between;
+
+                    .toggle-text {
+                        font-size: 14px;
+                        font-weight: 500;
+                        color: var(--text-color);
+                    }
                 }
             }
         }

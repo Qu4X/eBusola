@@ -1,34 +1,37 @@
-<ion-header>
-    <ion-toolbar>
+<ion-header class="md3-qr-header ion-no-border">
+    <ion-toolbar class="md3-qr-toolbar">
         <ion-title>
             <h1>{{ title() }}</h1>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
-                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
+            <ion-button class="md3-qr-close-btn" fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
+                <ion-icon name="close-outline" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content />
+
+<ion-content class="md3-qr-content">
+    <div class="md3-qr-viewfinder" aria-hidden="true">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+    </div>
+</ion-content>
+
 @if (canEnableTorch() || canSwitchCamera()) {
-    <ion-footer>
-        <ion-row class="ion-align-items-center ion-no-padding">
-            @if (canSwitchCamera()) {
-                <ion-col>
-                    <ion-button expand="block" fill="clear" [ariaLabel]="cameraText()"
-                        (click)="toggleCamera()">
-                        <ion-icon name="fas-camera-rotate" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
-                </ion-col>
-            }
-            @if (canEnableTorch()) {
-                <ion-col>
-                    <ion-button expand="block" fill="clear" [ariaLabel]="torchText()" (click)="toggleTorch()">
-                        <ion-icon name="fas-bolt" slot="icon-only" aria-hidden="true" [class.icon-slash]="!torchEnabled()" />
-                    </ion-button>
-                </ion-col>
-            }
-        </ion-row>
-    </ion-footer>
+    <div class="md3-qr-floating-actions">
+        @if (canSwitchCamera()) {
+            <button type="button" class="md3-qr-fab-btn" [attr.aria-label]="cameraText()" (click)="toggleCamera()">
+                <ion-icon name="camera-reverse-outline" aria-hidden="true" />
+            </button>
+        }
+        @if (canEnableTorch()) {
+            <button type="button" class="md3-qr-fab-btn" [class.is-active]="torchEnabled()"
+                [attr.aria-label]="torchText()" (click)="toggleTorch()">
+                <ion-icon [name]="torchEnabled() ? 'flash' : 'flash-off-outline'" aria-hidden="true" />
+            </button>
+        }
+    </div>
 }
