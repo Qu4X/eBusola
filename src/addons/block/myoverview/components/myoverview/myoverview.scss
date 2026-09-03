@@ -25,37 +25,82 @@
     }
 
     ion-row.addon-block-myoverview-filter {
-        margin: 4px 0;
+        margin: 0;
         padding: 0;
+        width: 100%;
+
+        &.searchbar-row {
+            margin-bottom: 8px;
+
+            ion-col {
+                padding: 0;
+                margin: 0;
+                width: 100%;
+            }
+        }
+
+        &.filters-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+
+            ion-col {
+                padding: 0;
+                margin: 0;
+                display: flex;
+                align-items: center;
+            }
+        }
 
         ion-col {
             padding: 0;
-            margin-right: 3px;
-            margin-left: 3px;
+            margin: 0;
             display: flex;
             align-items: center;
         }
 
         ion-searchbar {
-            padding: 0;
-            --height: 48px;
-            --border-radius: 24px;
+            padding: 0 !important;
+            margin: 0 !important;
+            --box-shadow: none !important;
             --background: var(--ion-background-color-step-50, #f8fafc);
-            --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            --border-radius: 24px;
+            --height: 48px;
             --color: var(--text-color);
             --placeholder-color: var(--text-muted, #94a3b8);
             --icon-color: var(--text-muted, #94a3b8);
             --highlight-color-focused: transparent !important;
             --inner-border-width: 0px !important;
+            // Override the global theme variable that drives .searchbar-input's !important border
+            --border-color: transparent;
             border: 1px solid var(--stroke, rgba(0, 0, 0, 0.08));
             border-radius: 24px;
+            background: var(--ion-background-color-step-50, #f8fafc) !important;
             overflow: hidden;
             width: 100%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+            ::ng-deep {
+                .searchbar-input-container {
+                    box-shadow: none !important;
+                    background: transparent !important;
+                    border: none !important;
+                }
+                .searchbar-input {
+                    background: transparent !important;
+                    box-shadow: none !important;
+                    // Neutralize the !important border drawn by global ion-searchbar.scss
+                    border: none !important;
+                }
+            }
         }
 
         :host-context(.dark) ion-searchbar,
         :host-context(:root.dark) ion-searchbar {
             --background: #14202c !important;
+            --border-color: transparent;
+            background: #14202c !important;
             border-color: rgba(255, 255, 255, 0.08) !important;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
         }

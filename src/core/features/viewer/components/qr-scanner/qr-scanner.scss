@@ -1,19 +1,141 @@
-ion-content {
-    display: block !important;
+:host {
+    display: block;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    background-color: transparent !important;
 
-    &::part(background) {
-        background-color: transparent;
+    // ion-header already handles safe-area-inset-top internally.
+    // We only style the toolbar appearance here.
+    .md3-qr-header {
+        // Light frosted glass header – matches the reference screenshot
+        ion-toolbar.md3-qr-toolbar {
+            --background: var(--core-header-toolbar-background);
+            --color: #1a1a1a;
+            --border-width: 0;
+            --min-height: 56px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
 
-        &::after {
-            content: '';
+            ion-title {
+                color: #1a1a1a !important;
+
+                h1 {
+                    font-size: 17px;
+                    font-weight: 600;
+                    color: #1a1a1a !important;
+                    margin: 0;
+                }
+            }
+
+            .md3-qr-close-btn {
+                --color: #1a1a1a !important;
+                color: #1a1a1a !important;
+                --background: rgba(0, 0, 0, 0.08);
+                --background-hover: rgba(0, 0, 0, 0.14);
+                border-radius: 50%;
+                width: 36px;
+                height: 36px;
+                margin-inline-end: 8px;
+
+                ion-icon {
+                    font-size: 20px;
+                    color: #1a1a1a !important;
+                }
+            }
+        }
+    }
+
+    ion-content.md3-qr-content {
+        display: block !important;
+        --background: transparent !important;
+        background: transparent !important;
+
+        &::part(background) {
+            background-color: transparent;
+
+            &::after {
+                content: '';
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                width: 270px;
+                height: 270px;
+                transform: translate(-50%, -50%);
+                background-color: transparent;
+                border-radius: 28px;
+                box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+            }
+        }
+
+        .md3-qr-viewfinder {
             position: fixed;
             top: 50%;
             left: 50%;
-            width: 300px;
-            height: 300px;
+            width: 270px;
+            height: 270px;
             transform: translate(-50%, -50%);
-            background-color: transparent;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+            border-radius: 28px;
+            // Single orange border – the "arcs at corners" are just the
+            // rounded corners of this one rectangle
+            border: 3px solid #FF751F;
+            box-shadow: 0 0 12px rgba(255, 117, 31, 0.35);
+            box-sizing: border-box;
+            pointer-events: none;
+            z-index: 10;
+
+            // No corner div children needed – border itself provides the arcs
+            .corner {
+                display: none;
+            }
+        }
+    }
+
+    .md3-qr-floating-actions {
+        position: fixed;
+        bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        z-index: 30;
+        pointer-events: auto;
+
+        .md3-qr-fab-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+            transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease;
+
+            &:active {
+                transform: scale(0.92);
+            }
+
+            ion-icon {
+                font-size: 24px;
+                color: #ffffff;
+            }
+
+            &.is-active {
+                background: var(--ion-color-primary, #FF751F);
+                border-color: var(--ion-color-primary, #FF751F);
+                box-shadow: 0 0 20px rgba(var(--ion-color-primary-rgb, 255, 117, 31), 0.7);
+
+                ion-icon {
+                    color: #ffffff;
+                }
+            }
         }
     }
 }
