@@ -82,24 +82,9 @@
             max-width: 44px;
             max-height: 44px;
             border-radius: 50%;
-            // Use the primary color variable without a hardcoded fallback,
-            // so it always follows the current theme
             background: rgba(var(--ion-color-primary-rgb), 0.12);
             color: var(--ion-color-primary);
             flex-shrink: 0;
-
-            img {
-                width: 24px;
-                height: 24px;
-                max-width: 24px;
-                max-height: 24px;
-                aspect-ratio: 1 / 1;
-                object-fit: contain;
-                display: block;
-                margin: auto;
-                // Keep icons visible in light mode
-                filter: none;
-            }
 
             ion-icon {
                 font-size: 22px;

@@ -39,27 +39,11 @@
 
                         @if (notification.useridfrom > 0) {
                             <core-user-avatar [user]="notification.userFrom" slot="start" [courseId]="notification.courseid">
-                                @if (notification.iconurl) {
-                                    <div class="core-avatar-extra-img">
-                                        <img [url]="notification.iconurl" alt="" role="presentation" core-external-content>
-                                    </div>
-                                }
                             </core-user-avatar>
                         } @else {
-
-                            @if (notification.imgUrl) {
-                                <img class="core-notification-img" [url]="notification.imgUrl" core-external-content alt="" role="presentation"
-                                    slot="start">
-                            } @else {
-                                <div class="core-notification-icon md3-tonal-notification-icon" slot="start">
-                                    @if (notification.iconurl) {
-                                        <img [url]="notification.iconurl" core-external-content alt="" role="presentation">
-                                    } @else {
-                                        <ion-icon name="notifications-outline" aria-hidden="true" />
-                                    }
-                                </div>
-                            }
-
+                            <div class="core-notification-icon md3-tonal-notification-icon" slot="start">
+                                <ion-icon [name]="getNotificationIcon(notification)" aria-hidden="true" />
+                            </div>
                         }
 
                         <ion-label>
@@ -84,10 +68,11 @@
                 }
 
                 @if (!notifications || notifications.empty) {
-                    <core-empty-box icon="notifications-outline" [message]="'addon.notifications.therearentnotificationsyet' | translate" />
+                    <core-empty-box icon="notifications-outline"
+                        [message]="'addon.notifications.therearentnotificationsyet' | translate" />
                 }
-                <core-infinite-loading [enabled]="notifications.loaded && !notifications.completed" (action)="fetchMoreNotifications($event)"
-                    [error]="fetchMoreNotificationsFailed" />
+                <core-infinite-loading [enabled]="notifications.loaded && !notifications.completed"
+                    (action)="fetchMoreNotifications($event)" [error]="fetchMoreNotificationsFailed" />
             </div>
         </core-loading>
 

@@ -291,4 +291,56 @@ export default class AddonNotificationsListPage implements AfterViewInit, OnDest
         this.appResumeSubscription?.unsubscribe();
     }
 
+    /**
+     * Map a Moodle notification to a Material Design 3 Ionicon name.
+     * Uses `component` and `eventtype` fields from the Moodle WS response.
+     */
+    getNotificationIcon(notification: AddonNotificationsNotificationMessageFormatted): string {
+        const component = (notification.component ?? '').toLowerCase();
+        const eventtype = (notification.eventtype ?? '').toLowerCase();
+
+        // Assignments
+        if (component.includes('assign')) {
+            if (eventtype.includes('due') || eventtype.includes('reminder')) return 'alarm-outline';
+            if (eventtype.includes('submission')) return 'cloud-upload-outline';
+            if (eventtype.includes('graded') || eventtype.includes('grade')) return 'ribbon-outline';
+            return 'document-text-outline';
+        }
+        // Forums
+        if (component.includes('forum')) {
+            if (eventtype.includes('reply') || eventtype.includes('post')) return 'chatbubble-outline';
+            return 'chatbubbles-outline';
+        }
+        // Grades / Gradebook
+        if (component.includes('grade') || eventtype.includes('grade')) return 'ribbon-outline';
+        // Quiz
+        if (component.includes('quiz')) {
+            if (eventtype.includes('attempt') || eventtype.includes('submit')) return 'checkbox-outline';
+            return 'help-circle-outline';
+        }
+        // Messages / Chat
+        if (component.includes('message') || component.includes('chat')) return 'mail-outline';
+        // Calendar / Events
+        if (component.includes('calendar') || eventtype.includes('due') || eventtype.includes('event')) {
+            return 'calendar-outline';
+        }
+        // Enrolment
+        if (component.includes('enrol') || eventtype.includes('enrol')) return 'school-outline';
+        // Badges
+        if (component.includes('badge')) return 'medal-outline';
+        // Course completion
+        if (component.includes('completion') || eventtype.includes('completion')) return 'checkmark-circle-outline';
+        // Feedback / Survey
+        if (component.includes('feedback') || component.includes('survey')) return 'star-outline';
+        // Workshop
+        if (component.includes('workshop')) return 'people-outline';
+        // H5P / Content
+        if (component.includes('h5p') || component.includes('resource')) return 'play-circle-outline';
+        // System / Admin
+        if (component.includes('core') || component.includes('moodle')) return 'information-circle-outline';
+
+        // Default fallback
+        return 'notifications-outline';
+    }
+
 }
