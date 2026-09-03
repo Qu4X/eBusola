@@ -41,18 +41,18 @@
 
     &.collapsible {
         .core-course-module-list-wrapper {
-            background: var(--busola-surface, #f8fafc);
-            border: 1px solid var(--busola-divider, rgba(0, 0, 0, 0.08));
+            background: var(--busola-surface);
+            border: 1px solid var(--busola-divider);
             border-radius: 20px;
             margin: 10px 16px;
             width: calc(100% - 32px);
-            box-shadow: var(--busola-card-shadow, 0 1px 3px rgba(0, 0, 0, 0.04));
+            box-shadow: var(--busola-card-shadow);
             overflow: hidden;
             transition: box-shadow 200ms ease, border-color 200ms ease;
 
             &.accordion-expanded {
-                border-color: rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.3);
-                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+                border-color: var(--busola-divider);
+                box-shadow: var(--busola-card-shadow);
             }
 
             ion-card {
@@ -69,7 +69,7 @@
     /* Section content inside accordion */
     div[slot="content"] {
         padding: 4px 6px 8px;
-        border-top: 1px solid var(--busola-divider, rgba(0, 0, 0, 0.06));
+        border-top: 1px solid var(--busola-divider);
     }
 
     .section-summary {
@@ -90,18 +90,18 @@
 :host-context(:root.dark) {
     &.collapsible {
         .core-course-module-list-wrapper {
-            background: var(--busola-surface-dark, #14202c);
-            border-color: var(--busola-divider-dark, rgba(255, 255, 255, 0.08));
+            background: var(--busola-surface);
+            border-color: var(--busola-divider);
 
             &.accordion-expanded {
-                border-color: rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.4);
-                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+                border-color: var(--busola-divider);
+                box-shadow: var(--busola-card-shadow);
             }
         }
     }
 
     div[slot="content"] {
-        border-top-color: var(--busola-divider-dark, rgba(255, 255, 255, 0.06));
+        border-top-color: var(--busola-divider);
     }
 }
 

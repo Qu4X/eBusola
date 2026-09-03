@@ -62,69 +62,41 @@
                     flex-wrap: wrap;
                     gap: 6px;
                     margin-bottom: 4px;
-
-                    .package-name {
-                        font-weight: 700;
-                        font-size: 15px;
-
-                        a {
-                            color: var(--ion-color-primary);
-                            text-decoration: none;
-
-                            &:hover {
-                                text-decoration: underline;
-                            }
-                        }
-                    }
-
-                    .package-version {
-                        font-size: 12px;
-                        font-weight: 600;
-                        color: var(--text-muted, #64748b);
-                    }
                 }
 
-                .license-publisher {
-                    font-size: 13px;
+                p.license-name {
+                    font-weight: 600;
+                    font-size: var(--mdl-typography-fontSize-md, 15px);
                     color: var(--text-color);
-                    margin: 0 0 6px 0;
+                    margin: 0 0 4px;
                 }
 
                 .license-badge-row {
-                    margin-bottom: 4px;
+                    display: flex;
+                    gap: 6px;
+                    flex-wrap: wrap;
 
                     .badge-chip {
                         display: inline-block;
-                        padding: 3px 10px;
+                        padding: 2px 8px;
                         font-size: 11px;
-                        font-weight: 700;
-                        border-radius: 9999px;
-                        background: rgba(var(--ion-color-primary-rgb), 0.12);
+                        font-weight: 600;
+                        border-radius: 6px;
+                        background: rgba(var(--ion-color-primary-rgb), 0.1);
                         color: var(--ion-color-primary);
-                        letter-spacing: 0.3px;
-                    }
-                }
 
-                .license-link {
-                    font-size: 12px;
-                    margin: 2px 0 0 0;
-
-                    a {
-                        color: var(--text-muted, #64748b);
-                        text-decoration: none;
-                        word-break: break-all;
-
-                        &:hover {
-                            color: var(--ion-color-primary);
+                        &.version {
+                            background: rgba(var(--ion-text-color-rgb), 0.06);
+                            color: var(--text-muted, #64748b);
                         }
                     }
                 }
 
-                .md3-link-button {
+                ion-button {
                     --padding-start: 8px;
                     --padding-end: 8px;
-                    height: 40px;
-                    --color: var(--ion-color-primary);
+                    height: 36px;
+                    --color: var(--text-muted, #64748b);
 
                     ion-icon {
                         font-size: 18px;
@@ -134,7 +106,7 @@
 
             .md3-card-divider {
                 height: 1px;
-                background: var(--stroke, rgba(0, 0, 0, 0.06));
+                background: var(--busola-divider);
                 margin-inline-start: 16px;
             }
         }
@@ -142,19 +114,11 @@
 
     :host-context(.dark) {
         .md3-searchbar {
-            --background: var(--ion-background-color-step-100, #14202c);
-            --box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+            --background: var(--busola-surface);
+            --box-shadow: var(--busola-card-shadow);
         }
 
         .md3-settings-group .md3-group-card {
-            background: var(--ion-background-color-step-100, #14202c);
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-
-            .md3-card-divider {
-                background: rgba(255, 255, 255, 0.06);
-            }
-
             ion-item.md3-license-item .license-badge-row .badge-chip {
                 background: rgba(var(--ion-color-primary-rgb), 0.2);
                 color: var(--ion-color-primary-tint, #ff8c42);

@@ -16,6 +16,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CoreCourses } from '../../services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CorePrefetchStatusInfo } from '@features/course/services/course-prefetch';
+import { CoreCourseDownloadStatusIcon } from '@features/course/constants';
 import { PopoverController } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -25,6 +26,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-courses-course-options-menu',
     templateUrl: 'core-courses-course-options-menu.html',
+    styleUrl: 'course-options-menu.scss',
     imports: [
         CoreSharedModule,
     ],
@@ -41,6 +43,23 @@ export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
      */
     ngOnInit(): void {
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+    }
+
+    /**
+     * Get MD3 icon for prefetch action.
+     *
+     * @returns Icon name.
+     */
+    getPrefetchIcon(): string {
+        switch (this.prefetch.icon) {
+            case CoreCourseDownloadStatusIcon.OUTDATED:
+                return 'sync-outline';
+            case CoreCourseDownloadStatusIcon.DOWNLOADED:
+                return 'checkmark-circle-outline';
+            case CoreCourseDownloadStatusIcon.NOT_DOWNLOADED:
+            default:
+                return 'cloud-download-outline';
+        }
     }
 
     /**

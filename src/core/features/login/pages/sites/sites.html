@@ -11,38 +11,52 @@
         <ion-buttons slot="end">
             @if (accountsList.count > 0) {
                 <ion-button fill="clear" (click)="toggleDelete()" [ariaLabel]="'core.login.toggleremove' | translate">
-                    <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
+                    <ion-icon slot="icon-only" name="create-outline" aria-hidden="true" />
                 </ion-button>
             }
             <ion-button (click)="openSettings()" [ariaLabel]="'core.settings.appsettings' | translate">
-                <ion-icon slot="icon-only" name="fas-gear" aria-hidden="true" />
+                <ion-icon slot="icon-only" name="settings-outline" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content class="limited-width">
+<ion-content>
     <core-loading [hideUntil]="loaded">
-        <core-sites-list [accountsList]="accountsList" [sitesClickable]="true" (onSiteClicked)="login($event)">
-            <ng-template #siteItem let-site="site" let-isCurrentSite="isCurrentSite">
-                @if (showDelete) {
-                    <ion-button slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
-                        [ariaLabel]="'core.login.removeaccount' | translate"
-                        animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation">
-                        <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
-                } @else if (site.badge) {
-                    <ion-badge slot="end" animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation">
-                        <span aria-hidden="true">{{site.badge}}</span>
-                        <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge }
-                        }}</span>
-                    </ion-badge>
-                }
-            </ng-template>
-        </core-sites-list>
+        <div class="md3-settings-container">
+            <!-- Site Logo Banner matching user account page -->
+            <div class="md3-logo-banner">
+                <div class="core-logo-container">
+                    <img src="assets/img/login_logo.png" class="core-logo light-logo" alt="Busola E-Learning">
+                    <img src="assets/img/busola_el_logo_dark.png" class="core-logo dark-logo" alt="Busola E-Learning">
+                </div>
+            </div>
+
+            <!-- Accounts Section -->
+            <div class="md3-settings-group">
+                <div class="md3-group-title">{{ 'core.login.accounts' | translate }}</div>
+                <core-sites-list [accountsList]="accountsList" [sitesClickable]="true" (onSiteClicked)="login($event)">
+                    <ng-template #siteItem let-site="site" let-isCurrentSite="isCurrentSite">
+                        @if (showDelete) {
+                            <ion-button slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
+                                [ariaLabel]="'core.login.removeaccount' | translate"
+                                animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation"
+                                class="md3-delete-button">
+                                <ion-icon name="trash-outline" slot="icon-only" aria-hidden="true" />
+                            </ion-button>
+                        } @else if (site.badge) {
+                            <ion-badge slot="end" animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation">
+                                <span aria-hidden="true">{{site.badge}}</span>
+                                <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge } }}</span>
+                            </ion-badge>
+                        }
+                    </ng-template>
+                </core-sites-list>
+            </div>
+        </div>
     </core-loading>
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
-        <ion-fab-button (click)="add()" [attr.aria-label]="'core.login.add' | translate">
-            <ion-icon name="fas-plus" aria-hidden="true" />
+        <ion-fab-button (click)="add()" [attr.aria-label]="'core.login.add' | translate" class="md3-fab">
+            <ion-icon name="add-outline" aria-hidden="true" />
             <span class="sr-only">{{ 'core.login.add' | translate }}</span>
         </ion-fab-button>
     </ion-fab>

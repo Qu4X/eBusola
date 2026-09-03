@@ -18,11 +18,11 @@
         }
 
         .md3-group-card {
-            background: var(--ion-background-color-step-50, #f8fafc);
+            background: var(--busola-surface);
             border-radius: 20px;
             overflow: hidden;
-            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--busola-divider);
+            box-shadow: var(--busola-card-shadow);
 
             ion-item {
                 --background: transparent;
@@ -144,12 +144,7 @@
     }
 
     :host-context(.dark) {
-        .md3-settings-group .md3-group-card,
         core-sites-list ion-card {
-            background: var(--ion-background-color-step-100, #14202c);
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-
             .core-sites-list-sitename {
                 border-bottom-color: rgba(255, 255, 255, 0.06) !important;
             }

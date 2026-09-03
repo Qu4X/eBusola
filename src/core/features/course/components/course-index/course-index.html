@@ -5,7 +5,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
+                <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -54,17 +54,17 @@
                     <ion-badge slot="end">{{highlighted}}</ion-badge>
                 }
                 @if (section.availabilityinfo) {
-                    <ion-icon name="fas-lock" slot="end" class="restricted" [attr.aria-label]="'core.restricted' | translate" />
+                    <ion-icon name="lock-closed-outline" slot="end" class="restricted" [attr.aria-label]="'core.restricted' | translate" />
                 }
                 @if (!section.visible && !section.uservisible) {
-                    <ion-icon name="fas-eye-slash" slot="end" class="restricted" [attr.aria-label]="'core.notavailable' | translate" />
+                    <ion-icon name="eye-off-outline" slot="end" class="restricted" [attr.aria-label]="'core.notavailable' | translate" />
                 }
                 @if (!section.visible && section.uservisible) {
-                    <ion-icon name="fas-eye-slash" slot="end" class="restricted"
+                    <ion-icon name="eye-off-outline" slot="end" class="restricted"
                         [attr.aria-label]="'core.course.hiddenfromstudents' | translate" />
                 }
                 @if (section.hasVisibleModules) {
-                    <ion-icon name="fas-chevron-right" flip-rtl slot="end" class="expandable-status-icon"
+                    <ion-icon name="chevron-forward-outline" flip-rtl slot="end" class="expandable-status-icon"
                         (ariaButtonClick)="toggleExpand($event, section)"
                         [attr.aria-label]="(section.expanded ? 'core.collapse' : 'core.expand') | translate"
                         [attr.aria-expanded]="section.expanded" [attr.aria-controls]="'core-course-index-section-' + section.id"
@@ -85,13 +85,13 @@
                             @if (modOrSubsection.completionStatus === undefined) {
                                 <ion-icon class="completioninfo completion_none" name="" slot="start" aria-hidden="true" />
                             } @else if (modOrSubsection.completionStatus === 0) {
-                                <ion-icon class="completioninfo completion_incomplete" name="far-circle" slot="start"
+                                <ion-icon class="completioninfo completion_incomplete" name="ellipse-outline" slot="start"
                                     [attr.aria-label]="'core.course.todo' | translate" />
                             } @else if (modOrSubsection.completionStatus === 1 || modOrSubsection.completionStatus === 2) {
-                                <ion-icon class="completioninfo completion_complete" name="fas-circle" color="success" slot="start"
+                                <ion-icon class="completioninfo completion_complete" name="checkmark-circle-outline" color="success" slot="start"
                                     [attr.aria-label]="'core.course.done' | translate" />
                             } @else if (modOrSubsection.completionStatus === 3) {
-                                <ion-icon class="completioninfo completion_fail" name="fas-xmark" color="danger" slot="start"
+                                <ion-icon class="completioninfo completion_fail" name="close-circle-outline" color="danger" slot="start"
                                     [attr.aria-label]="'core.course.failed' | translate" />
                             }
                             <ion-label>
@@ -101,7 +101,7 @@
                                 </p>
                             </ion-label>
                             @if (!modOrSubsection.uservisible) {
-                                <ion-icon name="fas-lock" slot="end" class="restricted" [attr.aria-label]="'core.restricted' | translate" />
+                                <ion-icon name="lock-closed-outline" slot="end" class="restricted" [attr.aria-label]="'core.restricted' | translate" />
                             }
                         </ion-item>
                     }

@@ -19,10 +19,10 @@
         display: flex;
         align-items: center;
         padding: 14px 16px;
-        background: var(--ion-background-color-step-50, #f8fafc);
-        border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+        background: var(--busola-surface);
+        border: 1px solid var(--busola-divider);
         border-radius: 18px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        box-shadow: var(--busola-card-shadow);
         cursor: pointer;
         overflow: hidden;
         transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
@@ -84,16 +84,16 @@
 
     // Section Content Card
     .md3-section-card {
-        background: var(--ion-background-color-step-50, #f8fafc);
-        border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+        background: var(--busola-surface);
+        border: 1px solid var(--busola-divider);
         border-radius: 20px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        box-shadow: var(--busola-card-shadow);
         margin-bottom: 20px;
         overflow: hidden;
 
         .md3-section-header {
             padding: 16px 18px 12px;
-            border-bottom: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+            border-bottom: 1px solid var(--busola-divider);
 
             .md3-section-title {
                 font-size: 18px;
@@ -134,7 +134,7 @@
             font-size: 14px;
             color: var(--text-muted, #64748b);
             line-height: 1.5;
-            border-bottom: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+            border-bottom: 1px solid var(--busola-divider);
         }
 
         .md3-section-modules {
@@ -161,29 +161,26 @@
         core-course-module.core-sitehome-news {
             --card-border-width: 1px;
             --card-radius: 18px;
-            --activity-border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+            --activity-border: 1px solid var(--busola-divider);
 
             ::ng-deep ion-card {
-                background: var(--ion-background-color-step-50, #f8fafc) !important;
+                background: var(--busola-surface) !important;
                 border-radius: 18px !important;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+                border: 1px solid var(--busola-divider) !important;
+                box-shadow: var(--busola-card-shadow) !important;
             }
         }
     }
 
     :host-context(.dark) {
         .md3-home-card {
-            background: var(--ion-background-color-step-100, #14202c);
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-
             &:hover {
                 box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
             }
 
             .md3-card-icon-container {
-                background: rgba(255, 117, 31, 0.16);
-                color: var(--ion-color-primary, #FF751F);
+                background: rgba(var(--ion-color-primary-rgb), 0.16);
+                color: var(--ion-color-primary);
             }
 
             .md3-card-title {
@@ -195,19 +192,13 @@
             }
 
             &.md3-search-card .md3-card-icon-container {
-                background: rgba(255, 117, 31, 0.2);
-                color: #FF751F;
+                background: rgba(var(--ion-color-secondary-rgb), 0.2);
+                color: var(--ion-color-secondary);
             }
         }
 
         .md3-section-card {
-            background: var(--ion-background-color-step-100, #14202c);
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-
             .md3-section-header {
-                border-bottom-color: rgba(255, 255, 255, 0.06);
-
                 .md3-section-title {
                     color: var(--text-color, #f1f5f9);
                 }
@@ -215,14 +206,7 @@
 
             .md3-section-summary {
                 color: rgba(255, 255, 255, 0.7);
-                border-bottom-color: rgba(255, 255, 255, 0.06);
             }
-        }
-
-        .md3-news-card core-course-module.core-sitehome-news ::ng-deep ion-card {
-            background: var(--ion-background-color-step-100, #14202c) !important;
-            border-color: rgba(255, 255, 255, 0.08) !important;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
         }
     }
 }

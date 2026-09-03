@@ -39,9 +39,9 @@ button {
 ion-card {
     --border-radius: var(--card-radius);
     border-radius: var(--card-radius);
-    background: var(--ion-background-color-step-50, #f8fafc);
-    border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    background: var(--busola-surface);
+    border: 1px solid var(--busola-divider);
+    box-shadow: var(--busola-card-shadow);
     margin: 8px 0;
     overflow: hidden;
     transition: transform 180ms ease, box-shadow 180ms ease;
@@ -69,9 +69,9 @@ ion-card {
 
 :host-context(.dark) {
     ion-card {
-        background: #14202c !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        background: var(--busola-surface) !important;
+        border-color: var(--busola-divider) !important;
+        box-shadow: var(--busola-card-shadow);
 
         &:hover {
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
@@ -79,8 +79,8 @@ ion-card {
     }
 
     ion-chip.core-course-category {
-        background: rgba(255, 117, 31, 0.16) !important;
-        color: #FF751F !important;
+        background: rgba(var(--ion-color-primary-rgb), 0.16) !important;
+        color: var(--ion-color-primary) !important;
     }
 
     .core-button-spinner ::ng-deep ion-button {
@@ -158,8 +158,8 @@ ion-chip {
 
     &.core-course-category {
         @include margin-horizontal(0px, 8px);
-        background: rgba(var(--ion-color-primary-rgb, 21, 25, 93), 0.1) !important;
-        color: var(--ion-color-primary, #15195D) !important;
+        background: rgba(var(--ion-color-primary-rgb), 0.1) !important;
+        color: var(--ion-color-primary) !important;
         border: none;
     }
 

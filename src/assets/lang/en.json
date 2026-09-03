@@ -2528,6 +2528,8 @@
     "core.settings.enabledownloadsection": "Enable download sections",
     "core.settings.enabledynamiccolors": "Dynamic color (Material You)",
     "core.settings.enabledynamiccolorsdescription": "Match app theme and accent colors to your device wallpaper.",
+    "core.settings.enablehaptics": "Vibrations & haptics",
+    "core.settings.enablehapticsdescription": "Subtle tactile feedback for touches, toggles, and interactions.",
     "core.settings.enablepinchtozoom": "Enable pinch-to-zoom",
     "core.settings.encryptedpushsupported": "Encrypted push notifications supported",
     "core.settings.entriesincache": "{{$a}} entries in cache",

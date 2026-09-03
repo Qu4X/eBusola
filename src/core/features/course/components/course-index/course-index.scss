@@ -37,8 +37,8 @@ core-progress-bar {
     transition: border-color 200ms ease, box-shadow 200ms ease;
 
     &.md3-index-card-expanded {
-        border-color: rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.35);
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        border-color: var(--busola-divider, rgba(0, 0, 0, 0.08));
+        box-shadow: var(--busola-card-shadow, 0 1px 3px rgba(0, 0, 0, 0.04));
     }
 
     .core-course-index-section-content {
@@ -201,8 +201,8 @@ div.core-course-index-subsection {
         border-color: var(--busola-divider-dark, rgba(255, 255, 255, 0.08));
 
         &.md3-index-card-expanded {
-            border-color: rgba(var(--ion-color-primary-rgb, 0, 151, 178), 0.4);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            border-color: var(--busola-divider-dark, rgba(255, 255, 255, 0.08));
+            box-shadow: var(--busola-card-shadow, 0 1px 4px rgba(0, 0, 0, 0.25));
         }
 
         .core-course-index-section-content {

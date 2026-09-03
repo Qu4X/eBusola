@@ -14,9 +14,9 @@
         ion-card {
             margin: 0 0 20px 0;
             border-radius: 20px;
-            background: var(--ion-background-color-step-50, #f8fafc);
-            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            background: var(--busola-surface);
+            border: 1px solid var(--busola-divider);
+            box-shadow: var(--busola-card-shadow);
             overflow: hidden;
 
             .core-sites-list-sitename {
@@ -110,11 +110,11 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: var(--ion-background-color-step-50, #f8fafc);
+        background: var(--busola-surface);
         border-radius: 20px;
         padding: 16px 20px;
-        border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        border: 1px solid var(--busola-divider);
+        box-shadow: var(--busola-card-shadow);
 
         .total-label-group {
             display: flex;
@@ -143,10 +143,6 @@
 
     :host-context(.dark) {
         core-sites-list ion-card {
-            background: var(--ion-background-color-step-100, #14202c);
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-
             .core-sites-list-sitename {
                 border-bottom-color: rgba(255, 255, 255, 0.06) !important;
             }
@@ -162,10 +158,6 @@
         }
 
         .md3-total-card {
-            background: var(--ion-background-color-step-100, #14202c);
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-
             .total-value {
                 color: var(--ion-color-primary-tint, #ff8c42);
             }

@@ -1,10 +1,10 @@
 ion-card {
-    --border-width: var(--ion-card-border-width);
+    --border-width: var(--ion-card-border-width, 1px);
     --border-style: solid;
-    --border-color: var(--ion-card-border-color);
-    --box-shadow: none;
-    --border-radius: var(--ion-card-radius);
-    --background: var(--ion-background-color-step-50);
+    --border-color: var(--busola-divider, var(--ion-card-border-color));
+    --box-shadow: var(--busola-card-shadow, none);
+    --border-radius: var(--card-radius, var(--ion-card-radius, 20px));
+    --background: var(--busola-surface);
 
     box-shadow: var(--box-shadow);
     margin: var(--ion-card-vertical-margin) var(--ion-card-horizontal-margin);

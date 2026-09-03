@@ -25,8 +25,8 @@ ion-popover {
         &::part(content) {
             border-radius: 16px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--stroke, var(--gray-200));
-            background: var(--ion-background-color-step-100, #ffffff);
+            border: 1px solid var(--busola-divider);
+            background: var(--busola-surface);
             padding: 4px;
         }
 
@@ -85,8 +85,8 @@ ion-popover {
 
 :root.dark ion-popover.core-combobox-select {
     &::part(content) {
-        border-color: rgba(255, 255, 255, 0.12);
-        background: var(--ion-background-color-step-100, #14202c);
+        border-color: var(--busola-divider);
+        background: var(--busola-surface);
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 }

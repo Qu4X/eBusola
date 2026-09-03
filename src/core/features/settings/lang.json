@@ -39,6 +39,8 @@
     "enabledownloadsection": "Enable download sections",
     "enabledynamiccolors": "Dynamic color (Material You)",
     "enabledynamiccolorsdescription": "Match app theme and accent colors to your device wallpaper.",
+    "enablehaptics": "Vibrations & haptics",
+    "enablehapticsdescription": "Subtle tactile feedback for touches, toggles, and interactions.",
     "enablepinchtozoom": "Enable pinch-to-zoom",
     "encryptedpushsupported": "Encrypted push notifications supported",
     "entriesincache": "{{$a}} entries in cache",

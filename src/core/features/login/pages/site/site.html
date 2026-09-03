@@ -10,7 +10,7 @@
 
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="openSettings()" [ariaLabel]="'core.settings.appsettings' | translate">
-                <ion-icon slot="icon-only" name="fas-gear" aria-hidden="true" />
+                <ion-icon slot="icon-only" name="settings-outline" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -52,7 +52,7 @@
                             <ion-item button (click)="connect(enteredSiteUrl.url, $event)"
                                 [attr.aria-label]="'core.login.connect' | translate" [detail]="true" class="core-login-entered-site">
                                 <ion-thumbnail slot="start" aria-hidden="true">
-                                    <ion-icon name="fas-pen" aria-hidden="true" />
+                                    <ion-icon name="create-outline" aria-hidden="true" />
                                 </ion-thumbnail>
                                 <ion-label>
                                     <h2 class="ion-text-wrap">{{ 'core.login.yourenteredsite' | translate }}</h2>
@@ -121,7 +121,7 @@
             </div>
             <ion-button expand="block" fill="outline" class="ion-margin core-login-site-qrcode" (click)="showInstructionsAndScanQR()"
                 aria-haspopup="dialog">
-                <ion-icon slot="start" name="fas-qrcode" aria-hidden="true" />
+                <ion-icon slot="start" name="qr-code-outline" aria-hidden="true" />
                 {{ 'core.scanqr' | translate }}
             </ion-button>
 

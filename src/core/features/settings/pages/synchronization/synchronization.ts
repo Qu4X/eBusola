@@ -128,6 +128,8 @@ export default class CoreSettingsSynchronizationPage implements OnInit, OnDestro
             CoreToasts.show({
                 message: 'core.settings.sitesynccompleted',
                 translateMessage: true,
+                icon: 'checkmark-circle-outline',
+                cssClass: 'md3-sync-completed-toast',
             });
         } catch (error) {
             if (this.isDestroyed) {

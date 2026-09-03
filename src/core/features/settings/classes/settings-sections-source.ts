@@ -37,17 +37,17 @@ export class CoreSettingsSectionsSource extends CoreRoutedItemsManagerSource<Cor
             {
                 name: 'core.settings.general',
                 path: CORE_SETTINGS_GENERAL_PAGE_NAME,
-                icon: 'md-build',
+                icon: 'settings-outline',
             },
             {
                 name: 'core.settings.spaceusage',
                 path: CORE_SETTINGS_SPACE_USAGE_PAGE_NAME,
-                icon: 'md-storage',
+                icon: 'server-outline',
             },
             {
                 name: 'core.settings.synchronization',
                 path: CORE_SETTINGS_SYNC_PAGE_NAME,
-                icon: 'md-sync',
+                icon: 'sync-outline',
             },
         ];
 
@@ -55,7 +55,7 @@ export class CoreSettingsSectionsSource extends CoreRoutedItemsManagerSource<Cor
             sections.push({
                 name: 'core.sharedfiles.sharedfiles',
                 path: `${SHAREDFILES_PAGE_NAME}/list/root`,
-                icon: 'fas-folder',
+                icon: 'folder-outline',
                 params: { manage: true },
             });
         }
@@ -63,7 +63,7 @@ export class CoreSettingsSectionsSource extends CoreRoutedItemsManagerSource<Cor
         sections.push({
             name: 'core.settings.about',
             path: CORE_SETTINGS_ABOUT_PAGE_NAME,
-            icon: 'md-info',
+            icon: 'information-circle-outline',
         });
 
         return { items: sections };

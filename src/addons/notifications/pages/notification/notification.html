@@ -86,9 +86,10 @@
         }
 
         @if (loaded && actions && actions.length > 0) {
-            <div collapsible-footer appearOnBottom slot="fixed">
+            <div collapsible-footer appearOnBottom slot="fixed" class="md3-notification-footer">
                 <div class="list-item-limited-width adaptable-buttons-row">
-                    <ion-button expand="block" (click)="action.action(action.sites[0])" *ngFor="let action of actions">
+                    <ion-button expand="block" (click)="action.action(action.sites[0])" *ngFor="let action of actions"
+                        class="md3-notification-action-btn">
                         <ion-icon slot="start" name="{{action.icon}}" aria-hidden="true" />
                         {{ action.message | translate }}
                     </ion-button>

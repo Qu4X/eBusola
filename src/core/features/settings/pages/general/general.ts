@@ -29,6 +29,7 @@ import { CoreNative } from '@features/native/services/native';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorService } from '@features/editor/services/editor';
+import { CoreHaptics } from '@services/haptics';
 
 /**
  * Page that displays the general settings.
@@ -48,6 +49,8 @@ export default class CoreSettingsGeneralPage {
     zoomLevels: { value: CoreZoomLevel; style: number; selected: boolean }[] = [];
     selectedZoomLevel = CoreZoomLevel.NONE;
     pinchToZoom = false;
+    hapticsSupported = false;
+    hapticsEnabled = true;
     debugDisplay = false;
     analyticsAvailable = false;
     analyticsEnabled = false;
@@ -116,6 +119,9 @@ export default class CoreSettingsGeneralPage {
         if (this.analyticsAvailable) {
             this.analyticsEnabled = await CoreConfig.get(CoreConfigSettingKey.ANALYTICS_ENABLED, true);
         }
+
+        this.hapticsSupported = CoreHaptics.isVibrationSupported();
+        this.hapticsEnabled = CoreHaptics.isEnabled();
 
         this.displayIframeHelp = CoreIframe.shouldDisplayHelp();
 
@@ -217,6 +223,7 @@ export default class CoreSettingsGeneralPage {
         ev.stopPropagation();
         ev.preventDefault();
 
+        CoreHaptics.selection();
         this.selectedZoomLevel = value;
 
         this.zoomLevels = this.zoomLevels.map((fontSize) => {
@@ -234,10 +241,8 @@ export default class CoreSettingsGeneralPage {
      *
      * @param ev Event
      */
-    pinchToZoomChanged(ev: Event): void {
-        ev.stopPropagation();
-        ev.preventDefault();
-
+    pinchToZoomChanged(): void {
+        CoreHaptics.selection();
         CoreSettingsHelper.applyPinchToZoom(this.pinchToZoom);
         CoreConfig.set(CoreConfigSettingKey.PINCH_TO_ZOOM, this.pinchToZoom ? 1 : 0);
     }
@@ -247,53 +252,49 @@ export default class CoreSettingsGeneralPage {
      *
      * @param ev Event
      */
-    colorSchemeChanged(ev: Event): void {
-        ev.stopPropagation();
-        ev.preventDefault();
-
+    colorSchemeChanged(ev?: Event): void {
+        if (ev) {
+            ev.stopPropagation();
+        }
+        CoreHaptics.selection();
         CoreSettingsHelper.setColorScheme(this.selectedScheme);
         CoreConfig.set(CoreConfigSettingKey.COLOR_SCHEME, this.selectedScheme);
     }
 
     /**
      * Called when dynamic colors setting is enabled or disabled.
-     *
-     * @param ev Event
      */
-    async dynamicColorsChanged(ev?: Event): Promise<void> {
-        if (ev) {
-            ev.stopPropagation();
-            ev.preventDefault();
-        }
-
+    async dynamicColorsChanged(): Promise<void> {
+        CoreHaptics.selection();
         await CoreConfig.set(CoreConfigSettingKey.DYNAMIC_COLOR_ENABLED, this.dynamicColorsEnabled ? 1 : 0);
         await CoreSettingsHelper.applyDynamicColors();
     }
 
     /**
-     * Called when the debug display setting is enabled or disabled.
-     *
-     * @param ev Event
+     * Called when haptics/vibration setting is changed.
      */
-    debugDisplayChanged(ev: Event): void {
-        ev.stopPropagation();
-        ev.preventDefault();
+    async hapticsChanged(): Promise<void> {
+        await CoreHaptics.setEnabled(this.hapticsEnabled);
+        if (this.hapticsEnabled) {
+            CoreHaptics.selection();
+        }
+    }
 
+    /**
+     * Called when the debug display setting is enabled or disabled.
+     */
+    debugDisplayChanged(): void {
+        CoreHaptics.selection();
         CoreConfig.set(CoreConfigSettingKey.DEBUG_DISPLAY, this.debugDisplay ? 1 : 0);
         CoreAlerts.setDebugDisplay(this.debugDisplay);
     }
 
     /**
      * Called when the analytics setting is enabled or disabled.
-     *
-     * @param ev Event
      */
-    async analyticsEnabledChanged(ev: Event):  Promise<void> {
-        ev.stopPropagation();
-        ev.preventDefault();
-
+    async analyticsEnabledChanged():  Promise<void> {
+        CoreHaptics.selection();
         await CoreAnalytics.enableAnalytics(this.analyticsEnabled);
-
         CoreConfig.set(CoreConfigSettingKey.ANALYTICS_ENABLED, this.analyticsEnabled ? 1 : 0);
     }
 

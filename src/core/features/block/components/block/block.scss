@@ -2,10 +2,24 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    background: var(--background);
+    background: transparent;
 
     ion-card {
-        --border-radius: var(--mdl-shape-borderRadius-sm);
+        --border-radius: var(--card-radius, 20px);
+        background: var(--busola-surface);
+        border: 1px solid var(--busola-divider);
+        box-shadow: var(--busola-card-shadow);
+
+        &.addon-block-myoverview,
+        &.addon-block_myoverview,
+        &.block_myoverview {
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
     }
 
     ::ng-deep ion-item-divider {

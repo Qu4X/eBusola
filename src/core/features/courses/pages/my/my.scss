@@ -26,15 +26,33 @@
             contain: none !important;
             overflow: visible !important;
             display: block;
+            margin: 0 !important;
+            padding: 0 !important;
 
-            ion-card.addon-block-myoverview {
-                --border-width: 0;
-                margin: 0;
+            // Reset ONLY the outer core-block wrapper card, NOT the course items
+            > ion-card,
+            > ion-card.addon-block-myoverview {
+                --border-width: 0 !important;
+                border: none !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 overflow: visible !important;
                 contain: none !important;
-                box-shadow: none;
-                background: transparent;
+                box-shadow: none !important;
+                background: transparent !important;
             }
+        }
+
+        // Ensure course cards inside the block retain full MD3 card border and surface
+        core-courses-course-list-item ion-card,
+        .core-courseoverview ion-card {
+            border: 1px solid var(--busola-divider) !important;
+            border-radius: 18px !important;
+            background: var(--busola-surface) !important;
+            box-shadow: var(--busola-card-shadow) !important;
+            margin: 8px 0 !important;
+            overflow: hidden !important;
         }
     }
 }

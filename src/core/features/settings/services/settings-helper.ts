@@ -34,6 +34,7 @@ import { CoreHTMLClasses } from '@static/html-classes';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Params } from '@angular/router';
 import { CoreNative } from '@features/native/services/native';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -503,12 +504,22 @@ export class CoreSettingsHelperProvider {
         }
 
         try {
-            const diagnostic = CoreNative.plugin('diagnostic');
-            if (!diagnostic) {
-                return;
+            let systemColors: Record<string, string> | null = null;
+            if (CorePlatform.isAndroid()) {
+                try {
+                    const diagnostic = CoreNative.plugin('diagnostic');
+                    if (diagnostic) {
+                        systemColors = await diagnostic.getSystemColors();
+                    }
+                } catch {
+                    // Ignore on platforms without native diagnostic plugin
+                }
             }
 
-            const systemColors = await diagnostic.getSystemColors();
+            if ((!systemColors || Object.keys(systemColors).length === 0) && !CorePlatform.isMobile()) {
+                systemColors = this.getBrowserMockSystemColors();
+            }
+
             if (!systemColors || Object.keys(systemColors).length === 0) {
                 return;
             }
@@ -540,13 +551,40 @@ export class CoreSettingsHelperProvider {
             this.setCSSColorProperty('primary', primary);
             this.setCSSColorProperty('secondary', secondary);
 
+            const bgRgb = this.hexToRgb(background);
+            const textRgb = this.hexToRgb(text);
+
             const root = document.documentElement.style;
             root.setProperty('--background-color', background);
+            root.setProperty('--ion-background-color', background);
+            root.setProperty('--ion-background-color-rgb', `${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}`);
             root.setProperty('--text-color', text);
+            root.setProperty('--ion-text-color', text);
+            root.setProperty('--ion-text-color-rgb', `${textRgb.r}, ${textRgb.g}, ${textRgb.b}`);
             root.setProperty('--ion-item-background', surface);
+            root.setProperty('--busola-surface', surface);
+            root.setProperty('--busola-surface-light', surface);
+            root.setProperty('--busola-surface-dark', surface);
             root.setProperty('--stroke', isDarkMode
                 ? (systemColors.system_neutral2_700 || '#49454F')
                 : (systemColors.system_neutral2_300 || '#CAC4D0'));
+            root.setProperty('--busola-divider', isDarkMode
+                ? 'rgba(255, 255, 255, 0.12)'
+                : 'rgba(0, 0, 0, 0.08)');
+
+            const headerBg = isDarkMode
+                ? surface
+                : (systemColors.system_neutral2_100 || systemColors.system_neutral1_50 || surface);
+            root.setProperty('--busola-header-bg', headerBg);
+            root.setProperty('--busola-header-color', text);
+            root.setProperty('--core-header-toolbar-background', headerBg);
+            root.setProperty('--core-header-toolbar-color', text);
+            root.setProperty('--core-header-buttons-color', text);
+            root.setProperty('--core-header-text-color', text);
+
+            root.setProperty('--core-combobox-background', surface);
+            root.setProperty('--core-combobox-color', text);
+            root.setProperty('--core-combobox-border-color', isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)');
 
             // Generate background step-colors and text step-colors
             for (let i = 50; i <= 950; i += 50) {
@@ -590,8 +628,11 @@ export class CoreSettingsHelperProvider {
         root.setProperty(`--${name}-tint`, tint);
         root.setProperty(`--${name}-contrast`, contrast);
 
-        root.setProperty(`--ion-color-${name}`, `var(--${name})`);
-        root.setProperty(`--ion-color-${name}-base`, `var(--ion-color-${name})`);
+        root.setProperty(`--busola-${name}`, hex);
+        root.setProperty(`--busola-${name}-rgb`, `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+
+        root.setProperty(`--ion-color-${name}`, hex);
+        root.setProperty(`--ion-color-${name}-base`, hex);
         root.setProperty(`--ion-color-${name}-rgb`, `${rgb.r}, ${rgb.g}, ${rgb.b}`);
         root.setProperty(`--ion-color-${name}-contrast`, contrast);
         root.setProperty(`--ion-color-${name}-contrast-rgb`, `${contrastRgb.r}, ${contrastRgb.g}, ${contrastRgb.b}`);
@@ -607,7 +648,14 @@ export class CoreSettingsHelperProvider {
         const propertiesToRemove = [
             '--primary', '--primary-shade', '--primary-tint', '--primary-contrast',
             '--secondary', '--secondary-shade', '--secondary-tint', '--secondary-contrast',
-            '--background-color', '--text-color', '--ion-item-background', '--stroke',
+            '--background-color', '--ion-background-color', '--ion-background-color-rgb',
+            '--text-color', '--ion-text-color', '--ion-text-color-rgb',
+            '--ion-item-background', '--stroke',
+            '--busola-surface', '--busola-surface-light', '--busola-surface-dark', '--busola-divider',
+            '--busola-header-bg', '--busola-header-color',
+            '--busola-primary', '--busola-primary-rgb', '--busola-secondary', '--busola-secondary-rgb',
+            '--core-header-toolbar-background', '--core-header-toolbar-color', '--core-header-buttons-color', '--core-header-text-color',
+            '--core-combobox-background', '--core-combobox-color', '--core-combobox-border-color',
             '--gray-100', '--gray-200', '--gray-300', '--gray-500', '--gray-700', '--gray-900',
             '--ion-color-primary', '--ion-color-primary-base', '--ion-color-primary-rgb',
             '--ion-color-primary-contrast', '--ion-color-primary-contrast-rgb',
@@ -729,7 +777,89 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
-     * Get extra pages items to display in the developer settings page.
+     * Returns mock Material You (Monet) system palette for browser testing.
+     */
+    getBrowserMockSystemColors(theme = 'blue'): Record<string, string> {
+        const palettes: Record<string, Record<string, string>> = {
+            blue: {
+                system_accent1_200: '#9ecaff',
+                system_accent1_300: '#75b3f8',
+                system_accent1_500: '#007bc5',
+                system_accent1_600: '#0062a0',
+                system_accent2_200: '#b8c8d9',
+                system_accent2_600: '#4f606e',
+                system_neutral1_900: '#191c1e',
+                system_neutral1_800: '#272a2d',
+                system_neutral1_50: '#e2e2e6',
+                system_neutral1_10: '#f8f9fd',
+                system_neutral2_50: '#f0f0f4',
+                system_neutral2_100: '#e0e2ec',
+                system_neutral2_800: '#2b2d30',
+                system_neutral2_700: '#424548',
+                system_neutral2_300: '#c4c6c9',
+            },
+            green: {
+                system_accent1_200: '#99d598',
+                system_accent1_300: '#7ebd7e',
+                system_accent1_500: '#388e3c',
+                system_accent1_600: '#2e7d32',
+                system_accent2_200: '#b7cbb3',
+                system_accent2_600: '#4d614a',
+                system_neutral1_900: '#181d17',
+                system_neutral1_800: '#262b25',
+                system_neutral1_50: '#e1e5de',
+                system_neutral1_10: '#f7fbf3',
+                system_neutral2_50: '#eff2eb',
+                system_neutral2_100: '#dfe4dc',
+                system_neutral2_800: '#2a2e29',
+                system_neutral2_700: '#414640',
+                system_neutral2_300: '#c2c7c0',
+            },
+            purple: {
+                system_accent1_200: '#d0bcff',
+                system_accent1_300: '#b69df8',
+                system_accent1_500: '#7f52db',
+                system_accent1_600: '#6750a4',
+                system_accent2_200: '#ccc2dc',
+                system_accent2_600: '#625b71',
+                system_neutral1_900: '#1c1b1f',
+                system_neutral1_800: '#2b2930',
+                system_neutral1_50: '#e6e1e5',
+                system_neutral1_10: '#fdf8fd',
+                system_neutral2_50: '#f4eff4',
+                system_neutral2_100: '#e6e0ec',
+                system_neutral2_800: '#2f2d33',
+                system_neutral2_700: '#48464c',
+                system_neutral2_300: '#cac4d0',
+            },
+            orange: {
+                system_accent1_200: '#ffb59d',
+                system_accent1_300: '#ff8c69',
+                system_accent1_500: '#d9532f',
+                system_accent1_600: '#b33d1b',
+                system_accent2_200: '#e7bdb1',
+                system_accent2_600: '#77574e',
+                system_neutral1_900: '#201a18',
+                system_neutral1_800: '#2f2422',
+                system_neutral1_50: '#ede0dc',
+                system_neutral1_10: '#fff8f6',
+                system_neutral2_50: '#f5eee9',
+                system_neutral2_100: '#ece0dc',
+                system_neutral2_800: '#342d2a',
+                system_neutral2_700: '#4d4441',
+                system_neutral2_300: '#d0c3be',
+            },
+        };
+
+        const activeTheme = (typeof window !== 'undefined' && (window as unknown as { currentMonetTheme?: string }).currentMonetTheme)
+            ? (window as unknown as { currentMonetTheme: string }).currentMonetTheme
+            : theme;
+
+        return palettes[activeTheme] || palettes.blue;
+    }
+
+    /**
+     * Returns extra items to display in the developer settings page.
      *
      * @returns Extra items.
      */
@@ -740,6 +870,13 @@ export class CoreSettingsHelperProvider {
 }
 
 export const CoreSettingsHelper = makeSingleton(CoreSettingsHelperProvider);
+
+if (typeof window !== 'undefined') {
+    (window as unknown as { setMonetTheme: (theme: string) => void }).setMonetTheme = (theme: string) => {
+        (window as unknown as { currentMonetTheme: string }).currentMonetTheme = theme;
+        CoreSettingsHelper.applyDynamicColors();
+    };
+}
 
 /**
  * Data to display extra links to new pages in the developer settings page.

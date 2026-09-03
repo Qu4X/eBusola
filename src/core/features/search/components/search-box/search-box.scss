@@ -10,11 +10,11 @@
         position: relative;
         z-index: 4;
         margin: 0;
-        border: 1px solid var(--stroke, rgba(0, 0, 0, 0.08));
+        border: 1px solid var(--busola-divider);
         border-radius: 24px;
-        background: var(--ion-background-color-step-50, #f1f5f9);
+        background: var(--busola-surface);
         color: var(--text-color);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--busola-card-shadow);
         transition: border-color 200ms ease, box-shadow 200ms ease;
         overflow: hidden;
 
@@ -106,9 +106,9 @@
 
 :host-context(.dark) {
     form {
-        background: #14202c !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        background: var(--busola-surface) !important;
+        border-color: var(--busola-divider) !important;
+        box-shadow: var(--busola-card-shadow);
 
         &:focus-within {
             border-color: var(--ion-color-primary) !important;
@@ -116,8 +116,8 @@
     }
 
     .core-search-history {
-        background: #14202c !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
+        background: var(--busola-surface) !important;
+        border-color: var(--busola-divider) !important;
     }
 }
 

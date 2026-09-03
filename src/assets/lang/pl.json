@@ -2936,6 +2936,8 @@
     "core.settings.enabledownloadsection": "Włącz sekcje pobierania",
     "core.settings.enabledynamiccolors": "Kolory dynamiczne",
     "core.settings.enabledynamiccolorsdescription": "Dopasuj kolory akcentów aplikacji do tapety urządzenia.",
+    "core.settings.enablehaptics": "Wibracje i haptyka",
+    "core.settings.enablehapticsdescription": "Subtelne reakcje dotykowe przy stuknięciach, przełącznikach i interakcjach.",
     "core.settings.enablepinchtozoom": "Włącz przybliżanie gestem",
     "core.settings.encryptedpushsupported": "Szyfrowane powiadomienia push są obsługiwane",
     "core.settings.entriesincache": "{{$a}} wpisów w pamięci podręcznej",

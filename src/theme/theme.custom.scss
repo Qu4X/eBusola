@@ -16,9 +16,10 @@
   --ion-color-tertiary-shade: #00859d;
   --ion-color-tertiary-tint: #1aa1ba;
 
-  /* eBusola custom design tokens */
-  --busola-surface: #f8fafc;
+  /* eBusola custom design tokens - MD3 Surface Container */
+  --busola-surface-light: #f8fafc;
   --busola-surface-dark: #14202c;
+  --busola-surface: var(--busola-surface-light, #f8fafc);
   --busola-avatar-edit-bg: #15195D;
   --busola-avatar-edit-border: #ffffff;
   --busola-avatar-edit-bg-dark: #FF751F;
@@ -26,10 +27,19 @@
   --busola-divider: rgba(0, 0, 0, 0.06);
   --busola-divider-dark: rgba(255, 255, 255, 0.08);
   --busola-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --busola-card-shadow-dark: 0 1px 4px rgba(0, 0, 0, 0.25);
   --busola-safe-area-top: max(var(--root-safe-area-top, 0px), var(--ion-safe-area-top, 0px), env(safe-area-inset-top, 0px));
   --busola-safe-area-bottom: max(var(--busola-insets-bottom, 0px), var(--root-safe-area-bottom, 0px), var(--ion-safe-area-bottom, 0px), env(safe-area-inset-bottom, 0px));
   /* Pill nav bottom clearance for ion-content scroll padding */
   --busola-pill-clearance: calc(96px + var(--busola-safe-area-bottom, 0px));
+
+  --core-combobox-background: var(--busola-surface);
+  --core-combobox-color: var(--text-color);
+  --core-combobox-border-color: var(--busola-divider);
+
+  /* Dynamic Header Toolbar & Accent Bridges (Light) */
+  --core-header-toolbar-background: var(--busola-header-bg, #edf2f7);
+  --core-header-toolbar-color: var(--busola-header-color, #0f172a);
 }
 
 
@@ -63,11 +73,31 @@ body.dark,
   --ion-color-tertiary-tint: #1aa1ba;
 
   /* eBusola dark mode token overrides */
-  --busola-surface: var(--busola-surface-dark);
+  --busola-surface: var(--busola-surface-dark, #14202c);
   --busola-avatar-edit-bg: var(--busola-avatar-edit-bg-dark);
   --busola-avatar-edit-border: var(--busola-avatar-edit-border-dark);
   --busola-divider: var(--busola-divider-dark);
   --busola-card-shadow: var(--busola-card-shadow-dark);
+
+  --core-combobox-background: var(--busola-surface);
+  --core-combobox-color: var(--text-color);
+  --core-combobox-border-color: var(--busola-divider);
+
+  /* Dynamic Header Toolbar & Accent Bridges */
+  --core-header-toolbar-background: var(--busola-header-bg, #14202c);
+  --core-header-toolbar-color: var(--busola-header-color, #f1f5f9);
+
+  --primary: var(--busola-primary, #FF751F);
+  --primary-rgb: var(--busola-primary-rgb, 255, 117, 31);
+  --ion-color-primary: var(--primary);
+  --ion-color-primary-base: var(--primary);
+  --ion-color-primary-rgb: var(--primary-rgb);
+
+  --secondary: var(--busola-secondary, #15195D);
+  --secondary-rgb: var(--busola-secondary-rgb, 21, 25, 93);
+  --ion-color-secondary: var(--secondary);
+  --ion-color-secondary-base: var(--secondary);
+  --ion-color-secondary-rgb: var(--secondary-rgb);
 }
 
 /* ==========================================================================
@@ -94,11 +124,11 @@ body.dark,
     }
 
     .md3-group-card {
-        background: var(--busola-surface);
+        background: var(--busola-surface) !important;
         border-radius: 20px;
         overflow: hidden;
-        border: 1px solid var(--busola-divider);
-        box-shadow: var(--busola-card-shadow);
+        border: 1px solid var(--busola-divider) !important;
+        box-shadow: var(--busola-card-shadow) !important;
 
         ion-item {
             --background: transparent !important;
@@ -319,6 +349,18 @@ core-tabs-outlet {
             }
         }
     }
+}
+
+page-core-courses-my core-block > ion-card,
+ion-card.addon-block-myoverview,
+ion-card.addon-block_myoverview,
+ion-card.block_myoverview {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 

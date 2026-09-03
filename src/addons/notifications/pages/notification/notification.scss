@@ -1,27 +1,32 @@
-@use "src/theme/globals" as *;
-
 :host {
     --icon-size: 44px;
     --extra-icon-size: 16px;
+    --safe-bottom: max(
+        16px,
+        var(--busola-insets-bottom, 0px),
+        var(--busola-safe-area-bottom, 0px),
+        var(--root-safe-area-bottom, 0px),
+        env(safe-area-inset-bottom, 0px)
+    );
 
     .md3-notification-detail-container {
-        padding: 16px;
+        padding: 16px 16px calc(76px + var(--safe-bottom));
         max-width: 720px;
         margin: 0 auto;
     }
 
     .md3-notification-detail-card {
-        background: var(--ion-background-color-step-50, #f8fafc);
-        border: 1px solid var(--stroke, rgba(0, 0, 0, 0.06));
+        background: var(--busola-surface, #f8fafc);
+        border: 1px solid var(--busola-divider, rgba(0, 0, 0, 0.06));
         border-radius: 20px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        box-shadow: var(--busola-card-shadow, 0 1px 3px rgba(0, 0, 0, 0.04));
         overflow: hidden;
         padding: 8px 4px 16px;
     }
 
     .md3-notification-divider {
         height: 1px;
-        background: var(--stroke, rgba(0, 0, 0, 0.06));
+        background: var(--busola-divider, rgba(0, 0, 0, 0.06));
         margin: 4px 16px 12px;
     }
 
@@ -47,8 +52,8 @@
             max-width: 44px;
             max-height: 44px;
             border-radius: 50%;
-            background: rgba(var(--ion-color-primary-rgb, 21, 25, 93), 0.1);
-            color: var(--ion-color-primary, #15195D);
+            background: rgba(var(--ion-color-primary-rgb), 0.12);
+            color: var(--ion-color-primary);
             flex-shrink: 0;
 
             img {
@@ -120,34 +125,65 @@
         }
     }
 
-    .adaptable-buttons-row {
-        padding: 12px 16px;
-        max-width: 720px;
-        margin: 0 auto;
+    .md3-notification-footer,
+    div[collapsible-footer] {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        z-index: 100 !important;
+        background: var(--busola-surface, var(--ion-background-color, #ffffff)) !important;
+        border-top: 1px solid var(--busola-divider) !important;
+        padding-top: 10px !important;
+        padding-bottom: var(--safe-bottom) !important;
+        padding-left: max(16px, var(--ion-safe-area-left, 0px)) !important;
+        padding-right: max(16px, var(--ion-safe-area-right, 0px)) !important;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08) !important;
+        box-sizing: border-box !important;
 
-        ion-button {
-            --border-radius: 14px;
-            --background: var(--ion-color-primary, #15195D);
-            font-weight: 600;
-            height: 46px;
+        .adaptable-buttons-row {
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+
+            ion-button.md3-notification-action-btn,
+            ion-button {
+                --border-radius: 9999px !important;
+                --background: var(--ion-color-primary) !important;
+                --color: var(--ion-color-primary-contrast, #ffffff) !important;
+                --box-shadow: 0 4px 14px rgba(var(--ion-color-primary-rgb), 0.35) !important;
+                font-weight: 600;
+                font-size: 15px;
+                letter-spacing: 0.3px;
+                height: 48px;
+                margin: 0 !important;
+                width: 100%;
+
+                ion-icon {
+                    font-size: 20px;
+                    margin-inline-end: 8px;
+                }
+            }
         }
     }
 
     :host-context(.dark) {
         .md3-notification-detail-card {
-            background: #14202c;
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+            background: var(--busola-surface, #14202c);
+            border-color: var(--busola-divider, rgba(255, 255, 255, 0.08));
+            box-shadow: var(--busola-card-shadow, 0 1px 4px rgba(0, 0, 0, 0.25));
         }
 
         .md3-notification-divider {
-            background: rgba(255, 255, 255, 0.06);
+            background: var(--busola-divider, rgba(255, 255, 255, 0.06));
         }
 
         .core-notification-title {
             .md3-tonal-notification-icon {
-                background: rgba(255, 117, 31, 0.16);
-                color: var(--ion-color-primary, #FF751F);
+                background: rgba(var(--ion-color-primary-rgb), 0.16);
+                color: var(--ion-color-primary);
             }
 
             p.item-heading {
@@ -163,9 +199,17 @@
             color: var(--text-color, #e2e8f0);
         }
 
-        .adaptable-buttons-row ion-button {
-            --background: #FF751F;
-            --color: #ffffff;
+        .md3-notification-footer,
+        div[collapsible-footer] {
+            background: var(--busola-surface, #14202c) !important;
+            border-top-color: var(--busola-divider) !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4) !important;
+
+            .adaptable-buttons-row ion-button {
+                --background: var(--ion-color-primary) !important;
+                --color: var(--ion-color-primary-contrast, #ffffff) !important;
+                --box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
+            }
         }
     }
 }

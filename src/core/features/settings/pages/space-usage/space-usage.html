@@ -30,7 +30,7 @@
                     <ng-template #siteItem let-site="site">
                         <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage(site)"
                             [hidden]="site.spaceUsage <= 0 && !site.hasCacheEntries" class="md3-delete-button">
-                            <ion-icon name="fas-trash" slot="icon-only"
+                            <ion-icon name="trash-outline" slot="icon-only"
                                 [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: site.siteName }" />
                         </ion-button>
                     </ng-template>
@@ -40,7 +40,7 @@
             <!-- Total Space Summary Card -->
             <div class="md3-total-card">
                 <div class="total-label-group">
-                    <ion-icon name="fas-database" class="total-icon" />
+                    <ion-icon name="server-outline" class="total-icon" />
                     <span class="total-label">{{ 'core.settings.total' | translate }}</span>
                 </div>
                 <span class="total-value">{{ totalSpaceUsage | coreBytesToSize }}</span>

@@ -196,7 +196,7 @@ export default class AddonNotificationsNotificationPage implements OnInit, OnDes
             // URL is not supported. Add an action to open it in browser.
             actions.push({
                 message: 'core.view',
-                icon: 'fas-eye',
+                icon: 'eye-outline',
                 action: (siteId) => this.openInBrowser(siteId),
             });
         }

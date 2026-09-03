@@ -11,11 +11,11 @@
 
         .md3-search-toggle-card {
             margin-top: 8px;
-            background: var(--ion-background-color-step-50, #f8fafc);
+            background: var(--busola-surface);
             border-radius: 24px;
             overflow: hidden;
-            border: 1px solid var(--stroke, rgba(0, 0, 0, 0.08));
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--busola-divider);
+            box-shadow: var(--busola-card-shadow);
             width: 100%;
             box-sizing: border-box;
 
@@ -80,9 +80,9 @@
 
 :host-context(.dark) {
     .md3-courses-search-header .md3-search-toggle-card {
-        background: #14202c !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        background: var(--busola-surface) !important;
+        border-color: var(--busola-divider) !important;
+        box-shadow: var(--busola-card-shadow);
     }
 
     .md3-search-results-chip-container .md3-results-chip {

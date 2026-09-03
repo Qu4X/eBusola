@@ -16,7 +16,7 @@
         <div class="md3-settings-group">
             <div class="md3-group-card">
                 <ion-item button class="ion-text-wrap" (click)="openLicensesPage()" [detail]="true" lines="none">
-                    <ion-icon name="far-copyright" slot="start" aria-hidden="true" class="md3-settings-icon" />
+                    <ion-icon name="document-text-outline" slot="start" aria-hidden="true" class="md3-settings-icon" />
                     <ion-label class="item-label">{{ 'core.settings.opensourcelicenses' | translate }}</ion-label>
                 </ion-item>
 
@@ -24,7 +24,7 @@
                     <div class="md3-card-divider"></div>
                     <ion-item class="ion-text-wrap" button core-link [autoLogin]="false" [href]="privacyPolicy" [detail]="true"
                         detailIcon="open-outline" lines="none">
-                        <ion-icon name="fas-user-shield" slot="start" aria-hidden="true" class="md3-settings-icon" />
+                        <ion-icon name="shield-checkmark-outline" slot="start" aria-hidden="true" class="md3-settings-icon" />
                         <ion-label class="item-label">{{ 'core.settings.privacypolicy' | translate }}</ion-label>
                     </ion-item>
                 }
@@ -33,7 +33,7 @@
                     <div class="md3-card-divider"></div>
                     <ion-item class="ion-text-wrap" button core-link [autoLogin]="false" [href]="a11yStatement" [detail]="true"
                         detailIcon="open-outline" lines="none">
-                        <ion-icon name="fas-universal-access" slot="start" aria-hidden="true" class="md3-settings-icon" />
+                        <ion-icon name="accessibility-outline" slot="start" aria-hidden="true" class="md3-settings-icon" />
                         <ion-label class="item-label">{{ 'core.settings.accessstatement' | translate }}</ion-label>
                     </ion-item>
                 }
@@ -41,7 +41,7 @@
                 @if (feedbackFormUrl && showSurvey) {
                     <div class="md3-card-divider"></div>
                     <ion-item class="ion-text-wrap" button core-link [href]="feedbackFormUrl" [detail]="true" detailIcon="open-outline" lines="none">
-                        <ion-icon name="fas-bullhorn" slot="start" aria-hidden="true" class="md3-settings-icon" />
+                        <ion-icon name="megaphone-outline" slot="start" aria-hidden="true" class="md3-settings-icon" />
                         <ion-label class="item-label">{{ 'core.settings.helpusimprove' | translate }}</ion-label>
                     </ion-item>
                 }
@@ -50,7 +50,7 @@
                     <div class="md3-card-divider"></div>
                     <ion-item class="ion-text-wrap" button core-link [autoLogin]="false" [href]="legalDisclaimer" [detail]="true"
                         detailIcon="open-outline" lines="none">
-                        <ion-icon name="fas-scale-balanced" slot="start" aria-hidden="true" class="md3-settings-icon" />
+                        <ion-icon name="book-outline" slot="start" aria-hidden="true" class="md3-settings-icon" />
                         <ion-label class="item-label">{{ 'core.settings.legaldisclaimer' | translate }}</ion-label>
                     </ion-item>
                 }

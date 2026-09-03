@@ -68,7 +68,7 @@
                                 <p class="item-heading">{{ 'core.settings.enabledynamiccolors' | translate }}</p>
                                 <p class="subdued">{{ 'core.settings.enabledynamiccolorsdescription' | translate }}</p>
                             </ion-label>
-                            <ion-toggle [(ngModel)]="dynamicColorsEnabled" (ionChange)="dynamicColorsChanged($event)" slot="end" />
+                            <ion-toggle [(ngModel)]="dynamicColorsEnabled" (ngModelChange)="dynamicColorsChanged()" slot="end" />
                         </ion-item>
                     }
                 </div>
@@ -82,19 +82,36 @@
         <div class="md3-settings-group">
             <div class="md3-group-title">{{ 'core.settings.advanced' | translate }}</div>
             <div class="md3-group-card">
-                <ion-item lines="none">
-                    <ion-toggle [(ngModel)]="pinchToZoom" (ionChange)="pinchToZoomChanged($event)">
+                @if (hapticsSupported) {
+                    <ion-item lines="none" class="ion-text-wrap">
+                        <ion-label class="ion-text-wrap">
+                            <p class="item-heading">{{ 'core.settings.enablehaptics' | translate }}</p>
+                            <p class="subdued">{{ 'core.settings.enablehapticsdescription' | translate }}</p>
+                        </ion-label>
+                        <ion-toggle [(ngModel)]="hapticsEnabled" (ngModelChange)="hapticsChanged()" slot="end"
+                            [attr.aria-label]="'core.settings.enablehaptics' | translate" />
+                    </ion-item>
+
+                    <div class="md3-card-divider"></div>
+                }
+
+                <ion-item lines="none" class="ion-text-wrap">
+                    <ion-label class="ion-text-wrap">
                         <p class="item-heading">{{ 'core.settings.enablepinchtozoom' | translate }}</p>
-                    </ion-toggle>
+                    </ion-label>
+                    <ion-toggle [(ngModel)]="pinchToZoom" (ngModelChange)="pinchToZoomChanged()" slot="end"
+                        [attr.aria-label]="'core.settings.enablepinchtozoom' | translate" />
                 </ion-item>
 
                 <div class="md3-card-divider"></div>
 
-                <ion-item lines="none">
-                    <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged($event)">
+                <ion-item lines="none" class="ion-text-wrap">
+                    <ion-label class="ion-text-wrap">
                         <p class="item-heading">{{ 'core.settings.debugdisplay' | translate }}</p>
                         <p class="subdued">{{ 'core.settings.debugdisplaydescription' | translate }}</p>
-                    </ion-toggle>
+                    </ion-label>
+                    <ion-toggle [(ngModel)]="debugDisplay" (ngModelChange)="debugDisplayChanged()" slot="end"
+                        [attr.aria-label]="'core.settings.debugdisplay' | translate" />
                 </ion-item>
 
                 @if (analyticsAvailable) {
@@ -104,7 +121,7 @@
                             <p class="item-heading">{{ 'core.settings.enableanalytics' | translate }}</p>
                             <p class="subdued">{{ 'core.settings.enableanalyticsdescription' | translate }}</p>
                         </ion-label>
-                        <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)" slot="end" />
+                        <ion-toggle [(ngModel)]="analyticsEnabled" (ngModelChange)="analyticsEnabledChanged()" slot="end" />
                     </ion-item>
                 }
             </div>

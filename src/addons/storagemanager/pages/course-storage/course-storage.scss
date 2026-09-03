@@ -3,52 +3,85 @@
 :host {
     --course-storage-max-activity-height: 120px;
 
-    ion-card ion-item.size {
-        --inner-padding-end: 0px;
+    .md3-settings-container {
+        padding: 16px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .md3-settings-group {
+        margin-bottom: 24px;
+
+        .md3-group-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ion-color-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 0 8px 8px;
+        }
+
+        .md3-group-card {
+            background: var(--busola-surface);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--busola-divider);
+            box-shadow: var(--busola-card-shadow);
+        }
     }
 
     ion-card.section {
+        background: var(--busola-surface);
+        border: 1px solid var(--busola-divider);
+        border-radius: 20px;
+        box-shadow: var(--busola-card-shadow);
+        margin: 0 0 16px 0;
+        overflow: hidden;
+
         ion-item.card-header {
             padding: 0;
+            --background: transparent;
             --border-width: 0px;
+            --min-height: 56px;
 
             .item-heading {
-                font: var(--mdl-typography-heading4-font);
-                min-height: auto;
+                font-weight: 600;
+                font-size: 15px;
+                color: var(--text-color);
+                margin: 0;
             }
 
             ion-icon.expandable-status-icon {
-                margin-inline-end: var(--mdl-spacing-2);
-                background-color: var(--core-accordion-toggle-background);
-                padding: var(--mdl-spacing-1);
-                border-radius: 50%;
-                &:hover {
-                    background: var(--secondary);
+                margin-inline-end: 12px;
+                background: transparent;
+                color: var(--text-muted, #94a3b8);
+                font-size: 18px;
+                transition: transform 200ms ease, color 150ms ease;
+
+                &.expandable-status-icon-expanded {
+                    transform: rotate(90deg);
+                    color: var(--ion-color-primary);
                 }
             }
         }
 
         ion-card-content {
             padding: 0;
+            border-top: 1px solid var(--busola-divider);
 
-            .core-course-storage-activity ion-label {
-                p.item-heading {
-                    position: relative;
-                    max-height: var(--course-storage-max-activity-height);
-                    overflow: hidden;
-                    ::ng-deep * {
-                        pointer-events: none !important;
-                    }
+            ion-item.core-course-storage-activity {
+                --background: transparent;
+                --border-width: 0 0 1px 0;
+                --border-color: var(--busola-divider);
+                --min-height: 50px;
 
-                    &:before {
-                        content: '';
-                        height: var(--course-storage-max-activity-height);
-                        position: absolute;
-                        @include position(0, 0, null, 0);
-                        background: linear-gradient(to bottom, rgba(var(--background-gradient-rgb), 0) calc(100% - 30px), rgba(var(--background-gradient-rgb), 1) calc(100% - 20px));
-                        z-index: 6;
-                        pointer-events: none;
-                    }
+                &:last-of-type {
+                    --border-width: 0;
+                }
+
+                ion-label p.item-heading {
+                    font-size: 14px;
+                    color: var(--text-color);
                 }
             }
         }

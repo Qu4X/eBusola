@@ -1,6 +1,6 @@
 <core-navbar-buttons slot="end" prepend>
     <ion-button fill="clear" (click)="gotoCourseDownloads()" [ariaLabel]="'addon.storagemanager.coursedownloads' | translate">
-        <ion-icon name="fas-cloud-arrow-down" slot="icon-only" aria-hidden="true" />
+        <ion-icon name="cloud-download-outline" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 <core-dynamic-component [component]="courseFormatComponent" [data]="data">
@@ -65,12 +65,12 @@
         @if (communicationRoomUrl) {
             <ion-fab-button size="small" [href]="communicationRoomUrl" core-link [capture]="false"
                 [attr.aria-label]="'core.course.communicationroomlink' | translate">
-                <ion-icon name="far-comments" aria-hidden="true" />
+                <ion-icon name="chatbubbles-outline" aria-hidden="true" />
             </ion-fab-button>
         }
         @if (displayCourseIndex) {
             <ion-fab-button (click)="openCourseIndex()" [attr.aria-label]="'core.course.courseindex' | translate" color="secondary">
-                <ion-icon name="fas-list-ul" aria-hidden="true" />
+                <ion-icon name="list-outline" aria-hidden="true" />
             </ion-fab-button>
         }
     </ion-fab>

@@ -28,6 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',
+    styleUrl: '../../login.scss',
     imports: [
         CoreSharedModule,
     ],
