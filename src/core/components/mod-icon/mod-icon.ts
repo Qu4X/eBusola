@@ -70,7 +70,14 @@ export class CoreModIconComponent {
     readonly colorize = input(true, { transform: toBoolean }); // Colorize the icon. Only applies on 4.0+.
     readonly isBranded = input(false, { transform: toBoolean }); // If icon is branded and no colorize will be applied.
 
-    readonly iconUrl = linkedSignal(() => CoreText.decodeHTMLEntities(this.modicon() || this.getFallbackIcon()));
+    readonly iconUrl = linkedSignal(() => {
+        if (this.computedModName() === 'hvp') {
+            const path = CoreCourseModuleHelper.getModuleIconsPath();
+            return `${path}h5pactivity.svg`;
+        }
+
+        return CoreText.decodeHTMLEntities(this.modicon() || this.getFallbackIcon());
+    });
     readonly isLocalUrl = computed(() => this.iconUrl().startsWith(assetsPath));
 
     // Cache icon if the url is not the theme generic one.
@@ -104,6 +111,11 @@ export class CoreModIconComponent {
         }
 
         if (this.iconVersion() === IconVersion.LEGACY_VERSION) {
+            return false;
+        }
+
+        // hvp is mapped to native h5pactivity monologo icon, so it should be colorized (not branded).
+        if (this.computedModName() === 'hvp') {
             return false;
         }
 
@@ -199,6 +211,10 @@ export class CoreModIconComponent {
     protected calculatePurposeClass(): string {
         if (this.iconVersion() === IconVersion.LEGACY_VERSION) {
             return '';
+        }
+
+        if (this.computedModName() === 'hvp') {
+            return this.iconVersion() === IconVersion.VERSION_4_0 ? ModPurpose.CONTENT : ModPurpose.INTERACTIVECONTENT;
         }
 
         const purposeClass = CoreCourseModuleDelegate.supportsFeature<ModPurpose>(

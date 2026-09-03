@@ -218,6 +218,11 @@ export class CoreCourseModuleHelperService {
             return mimetypeIcon;
         }
 
+        if (moduleName === 'hvp') {
+            const path = this.getModuleIconsPath();
+            return `${path}h5pactivity.svg`;
+        }
+
         if (!this.isCoreModule(moduleName)) {
             if (modicon) {
                 return modicon;
