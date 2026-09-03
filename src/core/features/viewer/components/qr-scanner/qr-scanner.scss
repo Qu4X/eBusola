@@ -8,31 +8,31 @@
     // ion-header already handles safe-area-inset-top internally.
     // We only style the toolbar appearance here.
     .md3-qr-header {
-        // Light frosted glass header – matches the reference screenshot
+        // Light/Dark adaptive frosted glass header – matches the rest of the app
         ion-toolbar.md3-qr-toolbar {
             --background: var(--core-header-toolbar-background);
-            --color: #1a1a1a;
+            --color: var(--core-header-toolbar-color);
             --border-width: 0;
             --min-height: 56px;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
 
             ion-title {
-                color: #1a1a1a !important;
+                color: var(--core-header-toolbar-color) !important;
 
                 h1 {
                     font-size: 17px;
                     font-weight: 600;
-                    color: #1a1a1a !important;
+                    color: var(--core-header-toolbar-color) !important;
                     margin: 0;
                 }
             }
 
             .md3-qr-close-btn {
-                --color: #1a1a1a !important;
-                color: #1a1a1a !important;
-                --background: rgba(0, 0, 0, 0.08);
-                --background-hover: rgba(0, 0, 0, 0.14);
+                --color: var(--core-header-toolbar-color) !important;
+                color: var(--core-header-toolbar-color) !important;
+                --background: rgba(var(--core-header-toolbar-color-rgb, 128, 128, 128), 0.12);
+                --background-hover: rgba(var(--core-header-toolbar-color-rgb, 128, 128, 128), 0.2);
                 border-radius: 50%;
                 width: 36px;
                 height: 36px;
@@ -40,7 +40,7 @@
 
                 ion-icon {
                     font-size: 20px;
-                    color: #1a1a1a !important;
+                    color: var(--core-header-toolbar-color) !important;
                 }
             }
         }
