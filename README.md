@@ -1,22 +1,25 @@
 # eBusola
 
-This repository contains a customized and rebranded fork of the official Moodle Mobile App, tailored specifically for the eBusola platform.
+This repository contains a customized fork of the official Moodle mobile app for the eBusola platform.
 
-## Rebranding & Customization
+## Customization
 
-This fork applies custom branding, configurations, and minor corrections to align the mobile app experience with the eBusola platform.
+This fork applies custom styles, configuration settings, and minor corrections for the eBusola platform.
 
 ## Getting Started
 
-Since this is a fork of the Moodle App, all standard build, development, and testing procedures apply.
+Because this project is a fork of the Moodle app, standard build and test procedures apply.
 
-* **Development Setup**: Refer to the official [Moodle App Developer Documentation](https://moodledev.io/general/app/development/setup) for setting up the local environment.
-* **Official Documentation**: See the [Moodle App Docs](https://docs.moodle.org/en/Moodle_app) for user documentation.
+- **Developer Setup**: Read the [Moodle App Developer Documentation](https://moodledev.io/general/app/development/setup) to configure the local environment.
 
-## License & Copyright Disclaimer
+- **User Documentation**: Read the [Moodle App Docs](https://docs.moodle.org/en/Moodle_app) for user guides.
 
-This project is a fork of the official Moodle App repository.
+## License and Trademarks
 
-* **Original Codebase**: Copyright © [Moodle Pty Ltd](https://moodle.com).
-* **License**: The codebase is distributed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). See the [COPYING.txt](file:///c:/MoodleBusolaApp/busola_moodleapp-1/COPYING.txt) file for the full license text.
-* **Trademark Disclaimer**: Moodle™ is a registered trademark of Moodle Pty Ltd. This project is a custom fork and is not endorsed by, affiliated with, or supported by Moodle Pty Ltd.
+This project is a fork of the official Moodle app repository.
+
+- **Original Codebase**: Copyright © [Moodle Pty Ltd](https://moodle.com).
+
+- **License**: Moodle Pty Ltd distributes the original codebase under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). See [COPYING.txt](file:///c:/MoodleBusolaApp/busola_moodleapp-1/COPYING.txt) for the full license text.
+
+- **Trademarks**: Moodle™ is a registered trademark of Moodle Pty Ltd. This project is an independent fork. Moodle Pty Ltd does not endorse, sponsor, or affiliate with this project.
